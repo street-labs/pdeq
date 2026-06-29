@@ -344,12 +344,18 @@ for line in lines:
         out.append(line)
         continue
     if line.startswith("|------|") or line.startswith("|---"):
-        # Table separator: ensure correct column count.
-        dashes = line.count("|") - 1
-        expected = 5
-        if dashes == 4:
-            line = line.rstrip("|").rstrip() + "------|"
-        out.append(line)
+        # Table separator: ensure exactly 5 column segments
+        # (Slug|Type|Defined In|Referenced In|Code). Idempotent — appends only
+        # the missing trailing segments. The earlier version stripped the
+        # closing pipe before appending one back, so the column count never grew
+        # and every run fattened the last cell by six dashes (non-convergent,
+        # violating NFR-code-mapping-determinism).
+        sep = line.rstrip()
+        cols = sep.count("|") - 1
+        while cols < 5:
+            sep += "------|"
+            cols += 1
+        out.append(sep)
         continue
     # Data row?
     if line.startswith("| ") and line.count("|") >= 5:
@@ -725,15 +731,37 @@ else
     INDEX="$INDEX_BACKUP"
     rm -f "$tmpidx"
   else
-    # Default mode: rewrite in place; re-stage if running as pre-commit hook.
+    # Default mode: refresh the working-tree index.md in place so it reflects
+    # current markers. The developer reviews and commits the result.
     before=$(cat "$INDEX")
     rewrite_index_code_column "$markers_tsv"
     after=$(cat "$INDEX")
     if [ "$before" != "$after" ]; then
       echo "  ⓘ index.md Code column updated"
-      # Re-stage if we're in a git commit context.
-      if [ -n "${GIT_INDEX_FILE:-}" ] || git diff --cached --quiet 2>/dev/null; then
-        git -C "$ROOT" add "$INDEX" 2>/dev/null || true
+      # Pre-commit hook context (GIT_INDEX_FILE set): stage ONLY the rewrite,
+      # applied to the *staged* version of index.md, so unrelated unstaged edits
+      # to the working-tree file are never swept into the commit.
+      # The whole working-tree file is never `git add`-ed.
+      # Implements: FR-code-mapping-index-populated
+      if [ -n "${GIT_INDEX_FILE:-}" ]; then
+        rel="${INDEX#$ROOT/}"
+        staged_idx=$(mktemp)
+        if git -C "$ROOT" show ":$rel" > "$staged_idx" 2>/dev/null; then
+          # Apply the same Code-column rewrite to the staged blob, then stage
+          # just that blob via update-index (does not touch the working tree).
+          INDEX_WT="$INDEX"; INDEX="$staged_idx"
+          rewrite_index_code_column "$markers_tsv"
+          INDEX="$INDEX_WT"
+          blob=$(git -C "$ROOT" hash-object -w "$staged_idx" 2>/dev/null || true)
+          if [ -n "$blob" ]; then
+            git -C "$ROOT" update-index --cacheinfo 100644 "$blob" "$rel" 2>/dev/null || true
+          fi
+        else
+          # index.md not in the index yet (brand-new file being added): there is
+          # nothing unstaged to protect, so stage the working-tree file directly.
+          git -C "$ROOT" add "$INDEX" 2>/dev/null || true
+        fi
+        rm -f "$staged_idx"
       fi
     fi
   fi

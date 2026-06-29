@@ -1,6 +1,6 @@
 ---
-product-hash: ed6db9bb10905f9d40e8570d9d3ca7fceb6422dccb9c62c9ff294c196ad45b53
-product-slugs: [AC-code-mapping-acknowledged-unimplemented, AC-code-mapping-audit-speed, AC-code-mapping-deterministic-output, AC-code-mapping-escape-hatch, AC-code-mapping-index-drops-removed, AC-code-mapping-index-reflects-markers, AC-code-mapping-marker-scope-enforced, AC-code-mapping-marker-syntax-per-type, AC-code-mapping-multi-slug-counted, AC-code-mapping-near-match-rejected, AC-code-mapping-orphan-marker-rejected, AC-code-mapping-planned-paths-living, AC-code-mapping-qa-pass-without-evidence-rejected, AC-code-mapping-retirement-blocks, AC-code-mapping-stale-planned-path-rejected, AC-code-mapping-uncovered-blocks, AC-code-mapping-uncovered-warns, FR-code-mapping-acknowledged-unimplemented, FR-code-mapping-audit-coverage, FR-code-mapping-audit-coverage-blocks, FR-code-mapping-audit-coverage-grace, FR-code-mapping-audit-escape-hatch, FR-code-mapping-audit-qa-status-evidence, FR-code-mapping-audit-scan, FR-code-mapping-audit-validates-path, FR-code-mapping-audit-validates-slug, FR-code-mapping-index-code-locations, FR-code-mapping-index-populated, FR-code-mapping-index-removes-stale, FR-code-mapping-marker-language, FR-code-mapping-marker-multi, FR-code-mapping-marker-presence, FR-code-mapping-marker-retirement-blocks, FR-code-mapping-marker-scope, FR-code-mapping-marker-slug-reference, FR-code-mapping-planned-paths, FR-code-mapping-planned-paths-living, FR-code-mapping-planned-paths-per-platform, NFR-code-mapping-audit-speed, NFR-code-mapping-determinism, NFR-code-mapping-precision, NFR-code-mapping-review-cost]
+product-hash: ab43c53071e9fb63ce559ec4715c26dd27c0fa60cd08dc21e9efdd44cbf242a7
+product-slugs: [AC-code-mapping-acknowledged-unimplemented, AC-code-mapping-audit-speed, AC-code-mapping-deterministic-output, AC-code-mapping-escape-hatch, AC-code-mapping-index-drops-removed, AC-code-mapping-index-reflects-markers, AC-code-mapping-index-stage-preserves-unstaged, AC-code-mapping-marker-scope-enforced, AC-code-mapping-marker-syntax-per-type, AC-code-mapping-multi-slug-counted, AC-code-mapping-near-match-rejected, AC-code-mapping-orphan-marker-rejected, AC-code-mapping-planned-paths-living, AC-code-mapping-qa-pass-without-evidence-rejected, AC-code-mapping-retirement-blocks, AC-code-mapping-stale-planned-path-rejected, AC-code-mapping-uncovered-blocks, AC-code-mapping-uncovered-warns, FR-code-mapping-acknowledged-unimplemented, FR-code-mapping-audit-coverage, FR-code-mapping-audit-coverage-blocks, FR-code-mapping-audit-coverage-grace, FR-code-mapping-audit-escape-hatch, FR-code-mapping-audit-qa-status-evidence, FR-code-mapping-audit-scan, FR-code-mapping-audit-validates-path, FR-code-mapping-audit-validates-slug, FR-code-mapping-index-code-locations, FR-code-mapping-index-populated, FR-code-mapping-index-removes-stale, FR-code-mapping-marker-language, FR-code-mapping-marker-multi, FR-code-mapping-marker-presence, FR-code-mapping-marker-retirement-blocks, FR-code-mapping-marker-scope, FR-code-mapping-marker-slug-reference, FR-code-mapping-planned-paths, FR-code-mapping-planned-paths-living, FR-code-mapping-planned-paths-per-platform, NFR-code-mapping-audit-speed, NFR-code-mapping-determinism, NFR-code-mapping-precision, NFR-code-mapping-review-cost]
 ---
 # Requirement ↔ Code Mapping — CLI Test Plan
 
@@ -112,6 +112,7 @@ All test cases in this plan are `[auto]` — the feature has no judgment-based b
 | `AC-code-mapping-planned-paths-living` | `TC-code-mapping-stale-path-blocks` | Not started |
 | `AC-code-mapping-index-reflects-markers` | `TC-code-mapping-index-populated` | Not started |
 | `AC-code-mapping-index-drops-removed` | `TC-code-mapping-index-removes-stale` | Not started |
+| `AC-code-mapping-index-stage-preserves-unstaged` | `TC-code-mapping-index-stage-isolation` | Not started |
 | `AC-code-mapping-escape-hatch` | `TC-code-mapping-override-demotes`, `TC-code-mapping-override-reports-suppressed` | Not started |
 | `AC-code-mapping-near-match-rejected` | `TC-code-mapping-near-match-ignored` | Not started |
 | `AC-code-mapping-audit-speed` | `TC-code-mapping-audit-under-2s` | Not started |
@@ -356,16 +357,15 @@ Probes the core marker-detection logic in isolation from the rest of the audit.
   2. Inspect `index.md`.
 - **Expected Result**: `FR-ex-one` row has Code column `engineering/apps/cli/src/main.ts:N` where N is the marker's line.
 
-#### Default mode auto-stages rewritten index `TC-code-mapping-index-auto-stage`
+#### Pre-commit hook stages rewritten index `TC-code-mapping-index-auto-stage`
 - **Type**: Integration (git fixture)
 - **Covers**: `FR-code-mapping-index-populated`
 - **Fixture**: `index-drift-missing-rewrite/` — starting `index.md` has the `Code` column present but empty for `FR-ex-one`, while `src/main.ts` contains a valid marker. Drift is deterministic: audit should write `engineering/apps/cli/src/main.ts:12` into the cell.
 - **Steps**:
-  1. Run the audit in default (pre-commit) mode.
-  2. Run `git status` and assert `index.md` is both modified and staged.
-  3. Run `git commit -m "test" --allow-empty-message` (or equivalent) to trigger trailer append.
-  4. Run `git log -1 --format=%b`.
-- **Expected Result**: After step 2, `git status` shows `index.md` staged. After step 4, trailer contains `pdeq-audit: index-code-column-updated`.
+  1. Run the audit with `GIT_INDEX_FILE` set (pre-commit hook context).
+  2. Run `git diff --cached -- index.md` and assert the `engineering/apps/cli/src/main.ts:12` rewrite is staged.
+  3. Commit, then run the audit again in `--check` mode.
+- **Expected Result**: After step 2, the Code-column rewrite is present in the staged diff. Step 3 exits 0 — the staged/committed index is current, confirming the rewrite was staged (no separate trailer is used; the staged diff itself records the change).
 
 #### Skip-index-rewrite env bypasses phase 9 `TC-code-mapping-skip-index-rewrite`
 - **Type**: Integration
@@ -384,6 +384,17 @@ Probes the core marker-detection logic in isolation from the rest of the audit.
 - **Steps**:
   1. Run the audit with `--check`.
 - **Expected Result**: Exit 1. Stderr contains `index.md Code column out of date — run ./scripts/audit-traceability.sh`. `index.md` is NOT modified.
+
+#### Hook staging preserves unrelated unstaged index edits `TC-code-mapping-index-stage-isolation`
+- **Type**: Integration (git fixture)
+- **Covers**: `AC-code-mapping-index-stage-preserves-unstaged`
+- **Fixture**: `index-drift-missing-rewrite/` — same as `TC-code-mapping-index-auto-stage`, but before running the audit the working-tree `index.md` is given an **unrelated, unstaged** edit (e.g. an extra in-progress row that is NOT staged), and a separate file is staged so the commit has staged content.
+- **Steps**:
+  1. Add an unrelated row to the working-tree `index.md` and leave it unstaged; stage some other file.
+  2. Run the audit with `GIT_INDEX_FILE` set (pre-commit hook context).
+  3. Run `git diff --cached -- index.md` (what would be committed).
+  4. Run `git diff -- index.md` (what stays in the working tree).
+- **Expected Result**: The staged diff (step 3) contains only the Code-column rewrite and does **not** contain the unrelated row. The unrelated row remains as an unstaged working-tree change (step 4). Committing does not include it.
 
 #### Removing a marker removes its index entry `TC-code-mapping-index-removes-stale`
 - **Type**: Integration
