@@ -372,6 +372,142 @@ idx.write_text("\n".join(out))
 PY
 }
 
+# ─── QA Coverage Matrix status integrity ─────────────────────────────────────
+
+# Collect TC- slugs cited in source/test code. A TC slug in a code file is
+# evidence that an automated test references it; TC slugs in .md specs are plan
+# citations, not test evidence, so spec markdown is filtered out by extension.
+# Emits unique sorted TC- slugs on stdout.
+collect_tc_in_code() {
+  # rg --with-filename --no-line-number -o emits `path:match`, so the code
+  # extension is followed by a colon, not end-of-line. Match `.ext:` to keep
+  # only code files (drops .md spec citations). The match (last field) has no
+  # colon, so awk -F: '{print $NF}' extracts it cleanly.
+  local code_ext_re='\.(swift|ts|tsx|js|jsx|mjs|cjs|go|java|kt|c|cc|cpp|h|hpp|rs|scala|dart|sh|bash|zsh|py|rb|pl|sql):'
+  if command -v rg >/dev/null 2>&1; then
+    local rg_args=()
+    while IFS= read -r a; do rg_args+=("$a"); done < <(build_exclude_args_rg)
+    rg --pcre2 --hidden --with-filename --no-line-number --no-heading \
+       "${rg_args[@]}" -o 'TC-[a-z0-9-]+' "$ROOT" 2>/dev/null \
+       | grep -E "$code_ext_re" | awk -F: '{print $NF}' | sort -u || true
+  else
+    local grep_args=() ext
+    local code_exts=(swift ts tsx js jsx mjs cjs go java kt c cc cpp h hpp rs scala dart sh bash zsh py rb pl sql)
+    while IFS= read -r a; do grep_args+=("$a"); done < <(build_exclude_args_grep)
+    for ext in "${code_exts[@]}"; do grep_args+=("--include=*.$ext"); done
+    grep -rhoP "${grep_args[@]}" 'TC-[a-z0-9-]+' "$ROOT" 2>/dev/null | sort -u || true
+  fi
+}
+
+# Emits "status\ttc_csv" rows for each Coverage Matrix row that cites >=1 TC slug.
+# Rows without TC slugs (e.g. structural coverage described in prose) are skipped.
+parse_qa_matrix() {
+  local spec="$1"
+  [ -f "$spec" ] || return 0
+  QA_MATRIX_SPEC="$spec" python3 << 'PY'
+import os, re, pathlib, sys
+path = pathlib.Path(os.environ["QA_MATRIX_SPEC"])
+text = path.read_text()
+m = re.search(r'^##\s+Coverage Matrix\s*$', text, flags=re.MULTILINE)
+if not m:
+    sys.exit(0)
+start = m.end()
+rest = text[start:]
+next_h = re.search(r'^#{1,2} ', rest, flags=re.MULTILINE)
+section = rest if not next_h else rest[:next_h.start()]
+for line in section.splitlines():
+    s = line.strip()
+    if not s.startswith('|'):
+        continue
+    if re.match(r'\|[-: ]+\|', s):
+        continue
+    cells = [c.strip() for c in s.strip('|').split('|')]
+    if len(cells) < 3:
+        continue
+    status = cells[-1]
+    tcs = re.findall(r'TC-[a-z0-9-]+', ' '.join(cells[:-1]))
+    if not tcs:
+        continue
+    seen = set(); uniq = []
+    for t in tcs:
+        if t not in seen: seen.add(t); uniq.append(t)
+    print(f"{status}\t{','.join(uniq)}")
+PY
+}
+
+# True if $1 has a "Test Execution Results" section that names the TC slug $2 and
+# records a status line matching $3 (Pass/Fail). Per-TC (not per-file) so a collective
+# execution record cannot evidence a TC it never named.
+qa_file_has_manual_status() {
+  local file="$1" tc="$2" want="$3"
+  [ -f "$file" ] || return 1
+  QA_ER_FILE="$file" QA_ER_TC="$tc" QA_ER_WANT="$want" python3 << 'PY'
+import os, re, pathlib, sys
+text = pathlib.Path(os.environ["QA_ER_FILE"]).read_text()
+tc = os.environ["QA_ER_TC"]; want = os.environ["QA_ER_WANT"]
+lines = text.split("\n"); n = len(lines); i = 0
+def is_heading(l): return re.match(r'^#{1,6}\s', l) is not None
+while i < n:
+    if re.match(r'^#{3,4}\s+Test Execution Results', lines[i]):
+        j = i + 1; body = []
+        while j < n and not is_heading(lines[j]):
+            body.append(lines[j]); j += 1
+        sect = "\n".join(body)
+        has_tc = tc in sect
+        has_status = re.search(r'(\*\*)?Status(\*\*)?:\s*' + re.escape(want), sect, re.IGNORECASE) is not None
+        if has_tc and has_status:
+            sys.exit(0)
+        i = j; continue
+    i += 1
+sys.exit(1)
+PY
+}
+
+# Implements: FR-code-mapping-audit-qa-status-evidence
+# Reject a QA Coverage Matrix row marked Pass with no evidence (no TC slug cited
+# in code and no manual Test Execution Results record), and a row marked Fail
+# with no manual execution record. Rows without TC slugs are not auto-verifiable.
+check_qa_status_integrity() {
+  [ -d "$QA_DIR" ] || return 0
+  local tc_in_code
+  tc_in_code=$(collect_tc_in_code)
+  while IFS= read -r -d '' spec; do
+    local relspec="${spec#$ROOT/}"
+    while IFS=$'\t' read -r status tc_csv; do
+      [ -z "$status" ] && continue
+      case "$status" in
+        *[Pp]ass*|PASS)
+          local evidenced=0 tc
+          IFS=',' read -ra tcs <<< "$tc_csv"
+          for tc in "${tcs[@]}"; do
+            if grep -qx "$tc" <<<"$tc_in_code" || qa_file_has_manual_status "$spec" "$tc" "Pass"; then evidenced=1; break; fi
+          done
+          if [ "$evidenced" -eq 0 ]; then
+            errf "$relspec Coverage Matrix marks [$tc_csv] as Pass but no test code cites any of its TC slugs and no Test Execution Results record names them"
+          fi
+          ;;
+        *[Ff]ail*|FAIL)
+          local tc evidenced=0
+          IFS=',' read -ra tcs <<< "$tc_csv"
+          for tc in "${tcs[@]}"; do
+            if qa_file_has_manual_status "$spec" "$tc" "Fail"; then evidenced=1; break; fi
+          done
+          if [ "$evidenced" -eq 0 ]; then
+            errf "$relspec Coverage Matrix marks [$tc_csv] as Fail but no Test Execution Results record names them"
+          fi
+          ;;
+        *[Ss]kip*)
+          ;;  # Intentionally not run in this environment — no evidence required.
+        "Not started"|"In progress"|Pending|Blocked|planned|""|"—")
+          ;;  # No evidence required for non-terminal statuses.
+        *)
+          warnf "$relspec Coverage Matrix has unrecognized status '$status' for [$tc_csv]"
+          ;;
+      esac
+    done < <(parse_qa_matrix "$spec")
+  done < <(find "$QA_DIR" -name "*.md" -not -name "CLAUDE.md" -print0 2>/dev/null)
+}
+
 # ─── Main ────────────────────────────────────────────────────────────────────
 
 echo "Auditing traceability..."
@@ -528,6 +664,12 @@ if [ -d "$ENGINEERING_DIR" ]; then
   done < <(find "$ENGINEERING_DIR" -name "*.md" -not -name "CLAUDE.md" -print0 2>/dev/null)
 fi
 sort -u "$unimplemented_slugs_file" -o "$unimplemented_slugs_file" 2>/dev/null || true
+echo ""
+
+# ─── Phase 7b: QA Coverage Matrix status integrity ──────────────────────────
+
+echo "[7b/9] QA Coverage Matrix status integrity..."
+check_qa_status_integrity
 echo ""
 
 # ─── Phase 8: Coverage + grace period ────────────────────────────────────────

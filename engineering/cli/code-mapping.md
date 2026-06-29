@@ -393,6 +393,7 @@ Authoritative planned code locations for every FR defined in `product/code-mappi
 | FR-code-mapping-audit-coverage-blocks | scripts/audit-traceability.sh:check_coverage | planned |
 | FR-code-mapping-audit-coverage-grace | scripts/audit-traceability.sh:grace_delta | planned |
 | FR-code-mapping-audit-escape-hatch | scripts/audit-traceability.sh:main (PDEQ_ALLOW_DRIFT handling) | planned |
+| FR-code-mapping-audit-qa-status-evidence | scripts/audit-traceability.sh:check_qa_status_integrity | implemented |
 | FR-code-mapping-index-code-locations | scripts/audit-traceability.sh:rewrite_index_code_column; index.md | planned |
 | FR-code-mapping-index-populated | scripts/audit-traceability.sh:rewrite_index_code_column | planned |
 | FR-code-mapping-index-removes-stale | scripts/audit-traceability.sh:rewrite_index_code_column | planned |
