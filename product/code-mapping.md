@@ -54,7 +54,7 @@ The existing traceability audit is extended to reconcile markers, planned paths,
 The index surfaces code alongside spec references, in the same place all other slug references live.
 
 - **Code locations in index** `FR-code-mapping-index-code-locations`: The traceability index lists code locations for each slug alongside its existing spec references.
-- **Automatic population** `FR-code-mapping-index-populated`: Running the audit populates or updates the code-location entries for every slug with at least one marker. Index entries for code never need manual editing.
+- **Automatic population** `FR-code-mapping-index-populated`: Running the audit populates or updates the code-location entries for every slug with at least one marker. Index entries for code never need manual editing. When this update happens during a commit, only the generated code-location change is included in the commit — unrelated unstaged edits to the index are never swept in.
 - **Stale-location removal** `FR-code-mapping-index-removes-stale`: When a marker disappears from the code, the corresponding code location is removed from the index on the next audit run.
 
 ### Non-Functional Requirements
@@ -80,6 +80,7 @@ These cover the testable, observable outcomes QA verifies directly.
 - [ ] **Living Code Map after file move** `AC-code-mapping-planned-paths-living`: After a file listed in a Code Map is moved or renamed, the audit passes only once the Code Map has been updated to reference the new location.
 - [ ] **Index reflects markers** `AC-code-mapping-index-reflects-markers`: After running the audit, the traceability index lists every code location where a marker exists for the corresponding slug.
 - [ ] **Index drops removed markers** `AC-code-mapping-index-drops-removed`: When a marker is removed from the code, the corresponding code location disappears from the index on the next audit run.
+- [ ] **Index staging preserves unstaged changes** `AC-code-mapping-index-stage-preserves-unstaged`: When the audit rewrites the index's code locations during a commit, only that rewrite is staged; any unrelated unstaged edits already present in the index file remain in the working tree and are not added to the commit.
 - [ ] **Escape hatch honored** `AC-code-mapping-escape-hatch`: A commit that would otherwise fail the audit can be landed by the documented override mechanism, and the audit report names which conditions the override suppressed.
 - [ ] **QA Pass without evidence rejected** `AC-code-mapping-qa-pass-without-evidence-rejected`: A QA Coverage Matrix row marked Pass whose test-case slugs appear in no source/test code and whose QA doc has no Test Execution Results record is rejected by the audit.
 - [ ] **Near-match rejected** `AC-code-mapping-near-match-rejected`: Text that mentions a slug prefix but does not form a complete, well-formed slug is ignored by the marker scan and is neither counted as a marker nor reported as an orphan.
