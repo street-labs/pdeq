@@ -45,7 +45,8 @@ fi
 # Framework files trigger the gate's preconditions. Anything staged outside
 # this set is invisible to the gate (docs, specs, tests, fixtures).
 framework_changes=$(git diff --cached --name-only -- \
-  'CLAUDE.md' '*/CLAUDE.md' 'scripts/*.sh' '.claude/commands/*.md' 'pdeq.schema.json' \
+  'AGENTS.md' '*/AGENTS.md' 'CLAUDE.md' '*/CLAUDE.md' \
+  'scripts/*.sh' 'pdeq-rules/commands/*.md' '.claude/commands/*.md' 'pdeq.schema.json' \
   2>/dev/null || true)
 
 # ─── Step 2: check whether VERSION was bumped ───────────────────────────────
