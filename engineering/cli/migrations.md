@@ -1,5 +1,5 @@
 ---
-product-hash: 7e42c8798456b4865d3587297815795edd1881abf503cac093811f6011b752a7
+product-hash: d810b089ab8e3446078548f3898ccbc91cfe13b5014dbdb36c0c64ce11468462
 product-slugs: [AC-migrations-absent-reported, AC-migrations-dry-run-accurate, AC-migrations-gate-allows-nonbreaking, AC-migrations-gate-blocks, AC-migrations-idempotent-rerun, AC-migrations-lineage-refused, AC-migrations-missing-file-refused, AC-migrations-no-bump-on-failure, AC-migrations-nonbreaking-advance, AC-migrations-noop-when-current, AC-migrations-ordered-apply, AC-migrations-scope-respected, AC-migrations-self-migration-runs, AC-migrations-semantic-context, AC-migrations-update-bump-failure, AC-migrations-update-dry-run, AC-migrations-update-end-to-end, AC-migrations-update-in-session, AC-migrations-update-noop, FR-migrations-absent-version, FR-migrations-atomic-bump, FR-migrations-author-written, FR-migrations-bootstrap-chain, FR-migrations-breaking-gate, FR-migrations-dry-run, FR-migrations-explicit-run, FR-migrations-failure-report, FR-migrations-idempotent, FR-migrations-lineage-integrity, FR-migrations-mechanical-block, FR-migrations-missing-file-refused, FR-migrations-no-false-positive, FR-migrations-nonbreaking-advance, FR-migrations-noop-when-current, FR-migrations-one-per-version, FR-migrations-order-within, FR-migrations-ordered, FR-migrations-ordered-application, FR-migrations-pending-detection, FR-migrations-recoverable-partial, FR-migrations-scoped-writes, FR-migrations-self-migration, FR-migrations-semantic-block, FR-migrations-unknown-version, FR-migrations-update-bump-failure, FR-migrations-update-bumps-pin, FR-migrations-update-chains, FR-migrations-update-command, FR-migrations-update-dry-run, FR-migrations-update-in-session, FR-migrations-update-noop, FR-migrations-version-bump, FR-migrations-version-field, FR-migrations-version-readable, NFR-migrations-determinism, NFR-migrations-enforcement-precision, NFR-migrations-idempotency, NFR-migrations-scope-minimalism]
 ---
 # Migrations — CLI Technical Spec
@@ -467,10 +467,10 @@ Argument surface (parsed from `$ARGUMENTS` inside `pdeq-update.md`):
 
 | Form | Meaning |
 |---|---|
-| (empty) | Bump pin, then chain into the migration loop. |
-| `--dry-run` | Preview the bump target and the migrations a real `/pdeq-update` would queue. No git writes, no migration runs, no symlink changes. |
+| (empty) | Bump pin, then prompt to chain into the migration loop. |
+| `--dry-run` | Preview the bump target and the migrations a real `/pdeq-update` would queue. No git writes, no migration runs, no symlink changes, no prompt. |
 
-No `--from`, no `--yes` flag (auto-run handoff is fixed by design Surface 12).
+No `--from`, no `--yes` flag — the chain prompt is mandatory by design (Surface 12, Open Questions resolution), and headless/CI flows should drive the underlying shell helpers (`git submodule update --remote --force .pdeq`, `scripts/sync-symlinks.sh --prune --json`, `scripts/migrate.sh list-pending` / `parse` / `bump`) directly rather than `/pdeq-update`.
 
 Satisfies `FR-migrations-update-command`.
 
@@ -526,10 +526,26 @@ Satisfies `FR-migrations-update-bumps-pin`, `FR-migrations-update-bump-failure`.
 
 Two viable approaches were considered:
 
-- **A) Inline reuse (chosen).** `pdeq-update.md` is structurally a superset of `pdeq-migrate.md`'s prompt. After the bump succeeds, the same loop pattern (Steps 1–5 of `pdeq-migrate.md`) runs in the same prompt with the same shell helpers (`scripts/migrate.sh list-pending`, `parse`, `bump`, `audit-scope`). The migrate steps are duplicated in the update prompt body, indented two spaces under a `▸ Migrating` lead-in to match design Surface 12's nested visual.
+- **A) Inline reuse (chosen).** `pdeq-update.md` is structurally a superset of `pdeq-migrate.md`'s prompt. After the bump succeeds **and the consumer accepts the chain prompt**, the same loop pattern (Steps 1–5 of `pdeq-migrate.md`) runs in the same prompt with the same shell helpers (`scripts/migrate.sh list-pending`, `parse`, `bump`, `audit-scope`). The migrate steps are duplicated in the update prompt body, indented two spaces under a `▸ Migrating` lead-in to match design Surface 12's nested visual.
 - **B) Delegation.** `pdeq-update.md` ends with an instruction to "now run /pdeq-migrate" or invokes `/pdeq-migrate` as a subagent. Rejected because: (i) Claude Code does not have a stable in-prompt mechanism for one slash command to invoke another mid-execution as a structured call, only as a prose instruction the model may or may not follow verbatim; (ii) the chained migrate run needs to share state (`PINNED`, `POST_PIN_SHA`, the in-session symlink-sync result) with the bump preamble, which requires either env-var passing through a Bash subshell or repeated re-discovery; (iii) the surface output is meant to read as one continuous flow, not two distinct command invocations stitched together.
 
 Choice rationale: the migration loop is already prompt-driven and the pdeq-migrate.md prompt is short enough (~150 lines) that duplicating the relevant Steps 4–5 inside pdeq-update.md is cheaper than designing a delegation protocol. The duplication is bounded — the shared logic lives in `scripts/migrate.sh` subcommands, which both prompts call identically. If the migrate prompt grows substantially in the future, a `scripts/migrate.sh run-loop` umbrella subcommand could be introduced and both prompts call it — but that refactor is deferred until needed.
+
+### Chain prompt — implementation
+
+Between the bump-success block and the chained-migration loop, `pdeq-update.md` runs three steps:
+
+1. **Compute the pending set** against the just-advanced pin via `scripts/migrate.sh list-pending`.
+2. **Print the one-line pending summary** (`N migrations pending: <versions>`) so the user has the count and the version list before being asked.
+3. **Branch on the pending set:**
+   - If empty (pure non-breaking advance): skip the prompt entirely, drop straight into the chained migration loop, which emits design Surface 3b (`~ No migrations pending. Advancing recorded version X → Y`) inside the indented region. Rationale: there is no mechanical or semantic edit to gate behind a review checkpoint, so the prompt would be theater.
+   - If non-empty: issue the chain prompt `? Apply pending migrations now? [Y/n]:` via the harness's question mechanism (in Claude Code: the AskUserQuestion tool with a binary yes/no answer; in CLI/agentic harnesses without it: a plain read of stdin from the agent's terminal). A bare Enter, `y`, `yes`, or `Y` is treated as accept; anything else is treated as decline. The accept token comparison is case-insensitive against the literal accept set; "any non-accept token declines" is the safer default (a confused agent answering `maybe` or echoing the prompt should not silently begin a mutating run).
+
+On accept: proceed into the chained-migration loop (Steps 1–5 of `pdeq-migrate.md`) under the indented `▸ Migrating` region.
+
+On decline: emit design Surface 15 (declined-chain output) and exit 0. Specifically: print the yellow `~ pdeq: bumped to <POST_PINNED>; migrations not applied.` summary, the recorded / pinned / pending block, the `New / Updated / Removed commands` lines (from the symlink-sync JSON report already captured in the in-session-availability step), and the `git diff` + `/pdeq-migrate` hint. No call to `scripts/migrate.sh bump` is made — recorded `pdeqVersion` stays at its pre-update value.
+
+Satisfies `FR-migrations-update-chains` (offer path covered by the prompt mechanic itself; apply path covered by the accept branch).
 
 `pdeq-update.md` reuses Surface 5 (mid-migration failure) verbatim — the chained run is not re-skinned. If a migration fails after a successful bump, the failing block's `✗` line is printed at the chained-region's two-space indent (so it stays visually attached to its `▸ <version>` migration header), then the runner emits a single blank line, **drops the indent prefix**, and prints Surface 5's `✗ Migration X.Y.Z failed at the <block> step.` summary plus its `pdeq: recorded …` / `Pinned pdeq version: …` / `Remaining: …` / `What to do:` recovery text left-aligned. The final `✓ pdeq: updated to …` summary is not printed — the run failed. Implementation note: the inline-reuse loop carries the indent as a prefix string (`"  "`) it prepends to each emitted line; on chained failure, the prefix is reset to empty after the failing-block line is emitted, before the Surface 5 summary block runs. The user fixes the cause and re-runs `/pdeq-update`; on re-run the bump step short-circuits to no-op (pin already at `POST_PINNED`), the migration loop resumes from the last fully-applied migration via the existing per-migration bump semantics. No bespoke recovery path needed.
 
@@ -900,10 +916,10 @@ that do not yet exist (the /pdeq-migrate command file and audit-migrations.sh ga
 | FR-migrations-recoverable-partial | scripts/migrate.sh | implemented |
 | FR-migrations-unknown-version | scripts/migrate.sh | implemented |
 | FR-migrations-missing-file-refused | scripts/migrate.sh | implemented |
-| FR-migrations-update-command | .claude/commands/pdeq-update.md | planned |
-| FR-migrations-update-bumps-pin | .claude/commands/pdeq-update.md | planned |
-| FR-migrations-update-chains | .claude/commands/pdeq-update.md | planned |
-| FR-migrations-update-in-session | .claude/commands/pdeq-update.md; scripts/sync-symlinks.sh | planned |
-| FR-migrations-update-noop | .claude/commands/pdeq-update.md | planned |
-| FR-migrations-update-bump-failure | .claude/commands/pdeq-update.md | planned |
-| FR-migrations-update-dry-run | .claude/commands/pdeq-update.md | planned |
+| FR-migrations-update-command | pdeq-rules/commands/pdeq-update.md | implemented |
+| FR-migrations-update-bumps-pin | pdeq-rules/commands/pdeq-update.md | implemented |
+| FR-migrations-update-chains | pdeq-rules/commands/pdeq-update.md | implemented |
+| FR-migrations-update-in-session | pdeq-rules/commands/pdeq-update.md; scripts/sync-symlinks.sh | implemented |
+| FR-migrations-update-noop | pdeq-rules/commands/pdeq-update.md | implemented |
+| FR-migrations-update-bump-failure | pdeq-rules/commands/pdeq-update.md | implemented |
+| FR-migrations-update-dry-run | pdeq-rules/commands/pdeq-update.md | implemented |
