@@ -137,16 +137,26 @@ If not `DRY_RUN`:
    ```
      ✓ pinned pdeq advanced <PRE_PINNED> → <POST_PINNED>
    ```
-5. Reconcile symlinks for the new submodule contents:
+5. Reconcile symlinks for the new submodule contents (the claude realization —
+   for harnesses without a commands dir, `sync-symlinks.sh` is a no-op):
    ```
    SYMLINK_REPORT=$(scripts/sync-symlinks.sh --prune --json)
    ```
-   Capture `created` and `deleted` arrays from the JSON for the final summary. Compute updated commands (file content changed in the new submodule):
+   Then compute the command-availability sets **harness-agnostically** from the
+   command *source* (`pdeq-rules/commands/*.md`), so they are correct even for
+   harnesses (codex, pi) that have no `.claude/commands` symlink surface — those
+   harnesses read the prompt files directly, so a source add/remove/change is
+   what "new/removed/updated command" means for them:
    ```
-   UPDATED_COMMANDS=$(git -C .pdeq diff --name-only "$PRE_PIN_SHA" "$POST_PIN_SHA" -- '.claude/commands/*.md' 'pdeq-rules/commands/*.md' \
-                       | sed 's|^.*/||; s|\.md$||' | sort -u)
-   # Filter out any name that is also in the JSON's `created` or `deleted` arrays.
+   CMD_DELTA=$(git -C .pdeq diff --name-status "$PRE_PIN_SHA" "$POST_PIN_SHA" -- 'pdeq-rules/commands/*.md')
+   _name() { sed 's|^.*/||; s|\.md$||; s|^|/|'; }   # path -> /basename
+   NEW_COMMANDS=$(awk '$1=="A"{print $2}'       <<<"$CMD_DELTA" | _name | sort -u)
+   REMOVED_COMMANDS=$(awk '$1=="D"{print $2}'   <<<"$CMD_DELTA" | _name | sort -u)
+   UPDATED_COMMANDS=$(awk '$1 ~ /^M/{print $2}' <<<"$CMD_DELTA" | _name | sort -u)
    ```
+   `SYMLINK_REPORT` confirms the claude symlinks were created/pruned but is **not**
+   the source of these sets — keying the surface on it would silently show nothing
+   on codex/pi, which have no symlink surface.
 
 Satisfies `FR-migrations-update-bumps-pin`.
 
@@ -195,12 +205,15 @@ Print the one-line summary even when the set is empty (this is the consumer's cu
 
 ### 4a. Prompt (only when `PENDING` is non-empty)
 
-Issue the chain prompt to the consumer. In a Claude Code session, use the AskUserQuestion tool with a binary yes/no question:
+Issue the chain prompt to the consumer using **the harness's question mechanism** (see the harness capability matrix in `engineering/cli/harness-agnostic.md`). The harness-neutral contract is a binary yes/no question that defaults to yes:
 
 > Question: `Apply pending migrations now?` (header: `Apply migrations`)
 > Options: `Yes — apply now` (recommended) / `No — leave bump in place, run /pdeq-migrate later`
 
-Treat answers `Yes` (or an empty/default response in non-Claude harnesses that map a bare Enter to yes) as accept. Treat anything else — `No`, an unexpected token, an error fetching the answer — as decline. The "any non-accept token declines" rule is the safer default; a confused or echoing agent reply should not silently begin a mutating run.
+- **Claude Code**: realize it with the `AskUserQuestion` tool (structured yes/no).
+- **Harnesses without a structured prompt tool (codex, pi)**: ask the same question as a plain conversational turn and read the reply.
+
+Accept on an affirmative or default answer (`Yes`, `y`, `yes`, or a bare Enter). Treat anything else — `No`, an unexpected token, an error fetching the answer — as decline. "Any non-accept token declines" is the safe default; a confused or echoing agent reply must not silently begin a mutating run.
 
 Echo the user's answer back inline for the captured transcript:
 
@@ -251,7 +264,7 @@ Then, in fixed order — `New` → `Updated` → `Removed` — print each line t
   Review the diff before committing.
 ```
 
-The `New commands available` set is the basenames (`.md` stripped, slash prefixed) in `SYMLINK_REPORT.created` whose path contains a `commands` segment. The `Removed commands` set is the same for `SYMLINK_REPORT.deleted`. The `Updated commands` set is `UPDATED_COMMANDS` from Step 3b.5, minus any name that appears in the new or removed sets.
+The three sets are `NEW_COMMANDS`, `UPDATED_COMMANDS`, and `REMOVED_COMMANDS` computed in Step 3b.5 from the command-source diff — so the surface is identical across harnesses (for claude they also match the `SYMLINK_REPORT` created/deleted symlinks; for codex/pi, which have no symlink surface, they reflect the prompt files the agent will now read directly).
 
 Exit 0. Satisfies `FR-migrations-update-in-session`, `AC-migrations-update-in-session`.
 
