@@ -52,6 +52,8 @@ This guarantees `NFR-lane-discipline-backcompat` and `FR-lane-discipline-default
 
 **Expected false positives are acceptable.** Platform terms like `CLI` will match legitimately in a `cli`-platform project's specs. That is fine and intended: Layer 1 is a crude net, which is exactly why its commit-time incarnation is warn-only (`NFR-lane-discipline-nonblocking-backstop`) and why Layer 2 exists to adjudicate context.
 
+**Slug identifiers are excluded from the scan.** Before matching a line, `pcre_scan()` strips requirement-slug tokens (`(FR|NFR|AC|TC)-[a-z0-9-]+`) from it. Slugs are *permanent identifiers*, not prose, so a red-flag term embedded in a slug is not lane bleed — and because slugs can never be renamed, flagging one would produce permanent, unfixable warning noise. This matters for any project whose own vocabulary overlaps a slug: a project that lists `OAuth` in `laneAudit` and has a slug `FR-ex-oauth-callback` must not have that slug self-trip. The strip is surgical: only the slug token is removed, so prose on the same line (`… `FR-ex-browser-thing`: opens in a browser`) still flags the real `browser`. Choosing lane-neutral slug names for new requirements is a matter for the Layer-2 Lane Reviewer to advise, not the deterministic backstop to enforce.
+
 **Markers.** Each realizing block carries a `# Implements: <slug>` marker (shell syntax). `read_lane_terms()` → `FR-lane-discipline-project-terms`; the merged default alternation → `FR-lane-discipline-default-terms`; the overall scan → `FR-lane-discipline-lexical-backstop`.
 
 ### Layer 1 — pre-commit wiring (warn-only)

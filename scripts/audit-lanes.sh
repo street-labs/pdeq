@@ -62,10 +62,15 @@ try:
     rx = re.compile(pat, flags)
 except re.error:
     sys.exit(0)
+# Requirement slugs are permanent identifiers, not prose — a term embedded in a
+# slug (e.g. 'browser' in FR-ex-browser-viewable, or a project's own OAuth term in
+# FR-ex-oauth-callback) is not lane bleed. Strip slug tokens before matching so
+# a slug never self-trips; the surrounding prose is still scanned in full.
+slug_rx = re.compile(r'(?:FR|NFR|AC|TC)-[a-z0-9-]+')
 try:
     with open(path, encoding='utf-8', errors='replace') as f:
         for i, line in enumerate(f, 1):
-            if rx.search(line):
+            if rx.search(slug_rx.sub('', line)):
                 sys.stdout.write('%d:%s\n' % (i, line.rstrip('\n')))
 except OSError:
     pass
