@@ -1,8 +1,14 @@
 {
-  "pdeqVersion": "0.4.0",
+  "pdeqVersion": "0.5.0",
   "specsRoot": ".",
   "codeRoot": ".",
   "platforms": ["cli"],
   "harnesses": ["claude", "codex"],
-  "selfHost": true
+  "selfHost": true,
+  "laneAudit": {
+    "vendors": [],
+    "protocols": [],
+    "platforms": [],
+    "libraries": []
+  }
 }

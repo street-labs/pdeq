@@ -418,7 +418,7 @@ This is the supported invocation path for non-Claude harnesses until a native ex
 
 ## Quality Subagents
 
-In addition to the four functional agents, two quality-checking roles can be invoked:
+In addition to the four functional agents, three quality-checking roles can be invoked:
 
 ### Reviewer
 
@@ -439,6 +439,43 @@ The consistency checker reads across all artifacts and checks for:
 - **Slug integrity**: Slugs that are referenced but not defined, or defined but not referenced
 
 Invoke the consistency checker periodically, or as part of `/pdeq-kickoff`.
+
+### Lane Reviewer
+
+<!-- Implements: FR-lane-discipline-structural-review, FR-lane-discipline-taxonomy, FR-lane-discipline-severity, FR-lane-discipline-structured-output, FR-lane-discipline-term-suggestions -->
+
+The lane reviewer reads **product specs** and flags design/engineering/platform bleed — content that belongs in the design, engineering, or QA lane rather than in a platform-neutral product spec. It is the **principle-enforcing** half of lane discipline; the deterministic `scripts/audit-lanes.sh` backstop is the other half. See `product/lane-discipline.md` for the requirements and `engineering/cli/lane-discipline.md` for the full contract.
+
+**Why two layers.** `audit-lanes.sh` greps for a configured list of red-flag terms. A grep catches *words*, not *structure*: it misses bleed phrased in implementation-shaped or host-specific language that names no listed term ("authorization code exchange" is OAuth-shaped without the word OAuth; "subsequent invocations" is host-specific without any flagged word), and it cannot tell a real violation from a legitimate mention. The lane reviewer reasons about the text, so it catches what the grep cannot. **A clean `audit-lanes.sh` run does not imply an in-lane spec** — the reviewer is the real check.
+
+**What it flags — a taxonomy of categories, not a closed word list** (generalize beyond these examples to any vendor/protocol/etc. you recognize):
+
+| Category | Examples |
+|---|---|
+| Vendor names | Square, Toast, Stripe, Auth0 |
+| Protocol / algorithm names | OAuth, PKCE, JWT, CSRF, REST, gRPC, idempotency key |
+| Host / platform as product | CLI, BFF, iOS, Android, web, server — when treated *as the product* rather than one manifestation of it |
+| Library / framework names | Vapor, React, argument-parser, SwiftUI |
+| Concrete surfaces | command names, flag names, exit codes, env var names, file paths, ports, redirect URIs |
+| Implementation mechanisms | keychain / secret store, file permissions, background polling, thread/queue, cache |
+| Testing terms | unit, E2E, XCTest, mock, stub |
+
+**Severity — distinguish violations from allowed mentions.** Not every match is a violation. Classify each finding with exactly one severity:
+
+- `violation` — the text prescribes implementation/platform detail as a requirement; it must be reworded.
+- `allowed: overview context` — a host or technology named in prose overview for orientation, not stated as a requirement.
+- `allowed: per-host NFR constraint` — a non-functional requirement that legitimately states a constraint scoped to a specific host or platform.
+
+(Add further `allowed: <reason>` variants only via `engineering/cli/lane-discipline.md`.)
+
+**Output — a structured table**, one row per finding, so a human or a later script can act on it:
+
+| File | Line | Flagged text | Category | Severity | Suggested rewording |
+|---|---|---|---|---|---|
+
+An empty table means no findings. After the table, if the reviewer found a concrete vendor/protocol/library word that `audit-lanes.sh`'s current `laneAudit` terms would miss, it appends a short **suggested-additions** note (e.g., `laneAudit.protocols += ["OAuth"]`) so the deterministic net grows smarter over time.
+
+Invoke the lane reviewer as part of `/pdeq-kickoff` (Step 4) and whenever reviewing a product spec on its own. It is **advisory** — never a commit-time gate.
 
 ## Shared Project Files
 

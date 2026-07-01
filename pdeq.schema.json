@@ -73,6 +73,37 @@
       "default": [],
       "examples": [["docs/legacy/**", "scripts/third-party/**"]]
     },
+    "laneAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Project-specific red-flag terms for the lane-discipline lexical backstop (scripts/audit-lanes.sh). Each array EXTENDS (never replaces) the built-in default term list, so configuring a project's own vocabulary adds to the shipped guard rather than silencing it. Terms are matched as literal, word-boundary alternatives against product specs. The category split is for self-documentation and mirrors the agent lane-review taxonomy; the deterministic audit greps the union of all four. Omit entirely to use only the built-in defaults. Realizes FR-lane-discipline-project-terms.",
+      "properties": {
+        "vendors": {
+          "type": "array",
+          "description": "Vendor / service names that must not appear in platform-neutral product specs.",
+          "items": { "type": "string" },
+          "examples": [["Square", "Toast", "Stripe"]]
+        },
+        "protocols": {
+          "type": "array",
+          "description": "Protocol or algorithm names (auth flows, wire protocols, crypto primitives) that indicate engineering bleed.",
+          "items": { "type": "string" },
+          "examples": [["OAuth", "PKCE", "JWT"]]
+        },
+        "platforms": {
+          "type": "array",
+          "description": "Host or platform names that should not be treated as the product itself in a shared product spec.",
+          "items": { "type": "string" },
+          "examples": [["CLI", "BFF"]]
+        },
+        "libraries": {
+          "type": "array",
+          "description": "Library or framework names that are engineering decisions, not product requirements.",
+          "items": { "type": "string" },
+          "examples": [["Vapor", "argument-parser"]]
+        }
+      }
+    },
     "nested": {
       "type": "object",
       "description": "Configuration for nested installs (inside a monorepo package or feature subdirectory). Omit for root-level installs.",
@@ -101,6 +132,20 @@
       "platforms": ["web"],
       "harnesses": ["claude"],
       "pdeqDir": ".pdeq"
+    },
+    {
+      "$comment": "Install with a project-tuned lane-audit term list — the deterministic backstop also flags this project's vendors/protocols/platforms/libraries",
+      "pdeqVersion": "0.4.0",
+      "specsRoot": ".",
+      "codeRoot": "../src",
+      "platforms": ["cli", "ios"],
+      "harnesses": ["claude", "codex"],
+      "laneAudit": {
+        "vendors": ["Square", "Toast"],
+        "protocols": ["OAuth", "PKCE"],
+        "platforms": ["CLI", "BFF"],
+        "libraries": ["Vapor", "argument-parser"]
+      }
     },
     {
       "$comment": "Nested install — PDEQ lives inside a feature subfolder, used from multiple harnesses",

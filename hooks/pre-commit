@@ -3,9 +3,10 @@
 # pdeq pre-commit hook.
 #
 # Runs the pdeq pre-commit pipeline: traceability audit (including marker scan
-# + index Code-column rewrite), then decision-log merge. Any pdeq-provided
-# script that is missing is silently skipped, so this hook works on partial
-# installs (e.g., before a feature's script lands).
+# + index Code-column rewrite), then the lane-discipline lexical backstop
+# (warn-only), then decision-log merge. Any pdeq-provided script that is missing
+# is silently skipped, so this hook works on partial installs (e.g., before a
+# feature's script lands).
 #
 # Installed by `scripts/init.sh` via `git config core.hooksPath <path>`.
 #
@@ -29,6 +30,14 @@ REPO=$(git rev-parse --show-toplevel)
 # Run pdeq audits in order. Each one is optional — absent scripts skip cleanly.
 if [ -x "$REPO/scripts/audit-traceability.sh" ]; then
   "$REPO/scripts/audit-traceability.sh"
+fi
+
+# Lane-discipline lexical backstop — WARN-ONLY: the `|| true` swallows its
+# non-zero exit so a heuristic keyword scan never blocks a commit. The script
+# keeps its exit-1 for standalone/CI use; only the hook demotes it to a warning.
+# Implements: FR-lane-discipline-backstop-at-commit
+if [ -x "$REPO/scripts/audit-lanes.sh" ]; then
+  "$REPO/scripts/audit-lanes.sh" || true
 fi
 
 if [ -x "$REPO/scripts/merge-decisions.sh" ]; then

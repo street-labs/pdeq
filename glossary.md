@@ -18,6 +18,14 @@ This file defines shared vocabulary for the project. All agents must use consist
 
 **Inline marker** — A short comment placed at the implementation site in code that cites one or more requirement slugs (e.g. `FR-auth-email-login`) the surrounding block realizes. The authoritative link between a requirement and its implementation; lives with the code rather than in a separate mapping file.
 
+**Lane discipline** — The practice of keeping each spec within its functional area's scope, in particular keeping product specs free of design, engineering, and platform detail so they remain a portable, platform-neutral baseline. Enforced by two layers: a lexical backstop and a lane review. See `product/lane-discipline.md`.
+
+**Lexical backstop** — The deterministic keyword audit (`scripts/audit-lanes.sh`) that scans product specs for configured red-flag terms — built-in defaults plus a project's own `laneAudit` vocabulary in `pdeq.json`. Cheap and agent-free; runs warn-only at commit time. It catches *words*, not structure, so a clean run does not by itself mean a spec is in-lane.
+
+**Lane review / Lane Reviewer** — The agent-run quality pass (root `AGENTS.md` §Quality Subagents) that reads product specs and flags lane bleed by reasoning about the meaning and structure of the text, classifying each finding by category and severity (`violation` vs `allowed`). The principle-enforcing complement to the lexical backstop; advisory, never a commit-time gate.
+
+**Structural bleed** — Design/engineering/platform detail that appears in a product spec through *phrasing* rather than a recognizable keyword — e.g. a requirement described as a protocol exchange without naming the protocol, or a single host treated as if it were the product. Invisible to the lexical backstop; the target of the lane review.
+
 **In-session command availability** — The contract that any new or modified pdeq slash command shipped by a freshly-bumped pdeq version is invocable in the same coding-agent session that ran the upgrade, without requiring a session restart. Realized by the symlink sync step of `/pdeq-update` plus the harness's on-demand command-file lookup.
 
 **Mechanical transform** — The deterministic portion of a migration. Applies the same rule to every applicable file without human judgment — for example, a rename, a move, or a rule-based rewrite. Runs before the semantic transform within a single migration.
