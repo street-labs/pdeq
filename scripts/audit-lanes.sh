@@ -30,7 +30,7 @@ if [ ! -d "$PRODUCT_DIR" ]; then
 fi
 
 # Collect all product spec files (top-level and platform subfolders, excluding CLAUDE.md)
-product_files=$(find "$PRODUCT_DIR" -name "*.md" -not -name "CLAUDE.md" 2>/dev/null || true)
+product_files=$(find "$PRODUCT_DIR" -name "*.md" -not -name "CLAUDE.md" -not -name "AGENTS.md" 2>/dev/null || true)
 
 if [ -z "$product_files" ]; then
   echo "No product spec files found."
@@ -90,7 +90,7 @@ echo "[4/4] Checking for web-specific terms in base product specs..."
 # Only check top-level product/*.md (not product/web/*.md)
 web_terms="browser|viewport|DOM\b|CSS\b|HTML\b|localStorage|sessionStorage|window\.close|navigator\."
 
-base_files=$(find "$PRODUCT_DIR" -maxdepth 1 -name "*.md" -not -name "CLAUDE.md" 2>/dev/null || true)
+base_files=$(find "$PRODUCT_DIR" -maxdepth 1 -name "*.md" -not -name "CLAUDE.md" -not -name "AGENTS.md" 2>/dev/null || true)
 
 if [ -n "$base_files" ]; then
   while IFS= read -r file; do

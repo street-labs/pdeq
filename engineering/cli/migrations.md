@@ -308,9 +308,13 @@ Since the pdeq repo does not currently check in a pre-commit hook file (hooks li
 The hook fires only on commits in the pdeq repo. Algorithm:
 
 ```bash
-# 1. Collect staged framework-file changes.
+# 1. Collect staged framework-file changes. The canonical command source is
+#    pdeq-rules/commands/*.md (what installs symlink from) and the canonical
+#    agent file is AGENTS.md; the Claude-specific CLAUDE.md / .claude/commands
+#    mirrors are watched too so a claude-only edit still trips the gate.
 framework_changes=$(git diff --cached --name-only -- \
-  'CLAUDE.md' '*/CLAUDE.md' 'scripts/*.sh' '.claude/commands/*.md' 'pdeq.schema.json')
+  'AGENTS.md' '*/AGENTS.md' 'CLAUDE.md' '*/CLAUDE.md' \
+  'scripts/*.sh' 'pdeq-rules/commands/*.md' '.claude/commands/*.md' 'pdeq.schema.json')
 
 # 2. Check whether VERSION is among the staged changes.
 version_change=$(git diff --cached --name-only -- VERSION)

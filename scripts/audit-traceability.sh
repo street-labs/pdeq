@@ -511,7 +511,7 @@ check_qa_status_integrity() {
           ;;
       esac
     done < <(parse_qa_matrix "$spec")
-  done < <(find "$QA_DIR" -name "*.md" -not -name "CLAUDE.md" -print0 2>/dev/null)
+  done < <(find "$QA_DIR" -name "*.md" -not -name "CLAUDE.md" -not -name "AGENTS.md" -print0 2>/dev/null)
 }
 
 # ─── Main ────────────────────────────────────────────────────────────────────
@@ -667,7 +667,7 @@ if [ -d "$ENGINEERING_DIR" ]; then
           ;;
       esac
     done < <(parse_code_map "$spec")
-  done < <(find "$ENGINEERING_DIR" -name "*.md" -not -name "CLAUDE.md" -print0 2>/dev/null)
+  done < <(find "$ENGINEERING_DIR" -name "*.md" -not -name "CLAUDE.md" -not -name "AGENTS.md" -print0 2>/dev/null)
 fi
 sort -u "$unimplemented_slugs_file" -o "$unimplemented_slugs_file" 2>/dev/null || true
 echo ""
