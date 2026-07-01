@@ -3,6 +3,10 @@
 [![CI](https://github.com/street-labs/pdeq/actions/workflows/ci.yml/badge.svg)](https://github.com/street-labs/pdeq/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/street-labs/pdeq)](https://github.com/street-labs/pdeq/releases)
+[![Status: alpha](https://img.shields.io/badge/status-alpha-orange.svg)](#status)
+
+> [!WARNING]
+> **Alpha.** PDEQ is early and still being vetted in real projects. Expect rough edges and breaking changes between releases. Pin the `.pdeq` submodule to a release tag, skim the [CHANGELOG](CHANGELOG.md) before updating, and run the migration each release ships. Feedback is welcome — via pull request, since issues are disabled (see [Contributing](#contributing)).
 
 PDEQ is a spec-driven workflow for coding agents. It gives any project four structured lanes — **P**roduct, **D**esign, **E**ngineering, **Q**A — where markdown specs are the source of truth and code is derived from them. Every requirement is traceable from its product spec to the test that verifies it, and a pre-commit hook keeps specs and code in sync.
 
@@ -205,6 +209,10 @@ Full schema: [`pdeq.schema.json`](pdeq.schema.json)
 | `scripts/merge-decisions.sh` | Merges `decisions-pending.md` into `decisions.md` at commit time |
 | `scripts/init.sh` | Installs PDEQ into a project (submodule + `@` imports + symlinks + pdeq.json) |
 | `scripts/bootstrap.sh` | Validates bootstrap preconditions and resolves paths before `/pdeq-bootstrap` runs |
+
+## Status
+
+PDEQ is **alpha**. It's actively used and vetted in the maintainer's own projects, but it hasn't been broadly battle-tested yet — file layouts, conventions, and command behavior may still change between releases. Each breaking (MINOR/MAJOR) release ships a migration to carry existing projects forward, so if you adopt PDEQ, pin the `.pdeq` submodule to a release tag and update deliberately with `/pdeq-update`. Rough edges are expected; reports and fixes are very welcome as pull requests.
 
 ## Contributing
 
