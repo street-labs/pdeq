@@ -21,6 +21,19 @@
 #
 set -euo pipefail
 
+# Source the shared harness adapter (single source of truth), resolving this
+# script's real dir through symlinks (portable to bash 3.2 / BSD readlink). When
+# run from a consumer, this file is a symlink into .pdeq/scripts/, so the lib
+# resolves to .pdeq/scripts/lib/harness.sh.
+_pdeq_self="${BASH_SOURCE[0]}"
+while [ -h "$_pdeq_self" ]; do
+  _pdeq_dir="$(cd -P "$(dirname "$_pdeq_self")" && pwd)"
+  _pdeq_self="$(readlink "$_pdeq_self")"
+  [ "${_pdeq_self#/}" = "$_pdeq_self" ] && _pdeq_self="$_pdeq_dir/$_pdeq_self"
+done
+# shellcheck source=lib/harness.sh
+. "$(cd -P "$(dirname "$_pdeq_self")" && pwd)/lib/harness.sh"
+
 OPT_PRUNE=0
 OPT_JSON=0
 for arg in "$@"; do
@@ -59,39 +72,15 @@ if [[ ! -d "$PDEQ_PATH" ]]; then
   exit 2
 fi
 
-# ─── Harness adapter (mirror of scripts/init.sh) ────────────────────────────
+# ─── Harness resolution (via the shared adapter) ────────────────────────────
 
-# Returns the relative directory each harness expects markdown slash commands
-# in, or empty if the harness does not support markdown slash commands.
-harness_commands_dir() {
-  case "$1" in
-    claude)     echo ".claude/commands" ;;
-    codex|pi)   echo "" ;;
-    *)          return 1 ;;
-  esac
-}
-
-# Resolve enabled harnesses from pdeq.json (harnesses array) or default to
-# claude. Same precedence as init.sh's resolve_harnesses.
+# harness_commands_dir + PDEQ_KNOWN_HARNESSES come from lib/harness.sh (sourced
+# above). Resolve the enabled harness list through the shared resolver so the
+# parse logic isn't duplicated here.
 HARNESSES_ARR=()
-PDEQ_CONFIG="$GIT_ROOT/pdeq.json"
-if [[ -f "$PDEQ_CONFIG" ]]; then
-  block=$(tr -d '\n' < "$PDEQ_CONFIG" \
-          | grep -oE '"harnesses"[[:space:]]*:[[:space:]]*\[[^]]*\]' \
-          || true)
-  if [[ -n "$block" ]]; then
-    body="${block#*\[}"
-    body="${body%\]*}"
-    while IFS= read -r tok; do
-      tok="${tok//\"/}"
-      tok="${tok// /}"
-      [[ -n "$tok" ]] && HARNESSES_ARR+=("$tok")
-    done < <(echo "$body" | tr ',' '\n')
-  fi
-fi
-if [[ ${#HARNESSES_ARR[@]} -eq 0 ]]; then
-  HARNESSES_ARR=("claude")
-fi
+while IFS= read -r _h; do
+  [[ -n "$_h" ]] && HARNESSES_ARR+=("$_h")
+done < <(harness_resolve "$GIT_ROOT/pdeq.json")
 
 # ─── State accumulators ─────────────────────────────────────────────────────
 
