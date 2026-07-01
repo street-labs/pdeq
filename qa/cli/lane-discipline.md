@@ -63,7 +63,7 @@ Layer 1 cases are `[auto]`. Layer 2 cases are `[manual]` (agent-run + human conf
 | AC-lane-discipline-update-seed-idempotent | TC-lane-discipline-update-seed-idempotent | — | auto | Not started |
 | AC-lane-discipline-update-review-no-edit | TC-lane-discipline-update-review-no-edit | — | manual | Not started |
 
-Supporting cases (no direct AC, cover FR/NFR behavior): `TC-lane-discipline-extend-not-replace` (FR-lane-discipline-default-terms), `TC-lane-discipline-literal-escape` (FR-lane-discipline-project-terms precision), `TC-lane-discipline-no-pcre-grep` (NFR-lane-discipline-deterministic-backstop).
+Supporting cases (no direct AC, cover FR/NFR behavior): `TC-lane-discipline-extend-not-replace` (FR-lane-discipline-default-terms), `TC-lane-discipline-literal-escape` (FR-lane-discipline-project-terms precision), `TC-lane-discipline-no-pcre-grep` (NFR-lane-discipline-deterministic-backstop), `TC-lane-discipline-slug-not-flagged` (FR-lane-discipline-lexical-backstop precision — slug identifiers are excluded).
 
 ---
 
@@ -103,6 +103,11 @@ Run `audit-lanes.sh` in an environment whose `grep` is BSD grep (no `-P`). Fixtu
 > Covers `AC-lane-discipline-backstop-exit-status`.
 Fixture `defaults-only/`. Run `audit-lanes.sh` directly (not via the hook).
 - **Expect**: exit status 1, so CI can gate on it.
+
+### TC-lane-discipline-slug-not-flagged
+> Covers `FR-lane-discipline-lexical-backstop` precision (slug identifiers excluded).
+Fixture whose product spec has a requirement line carrying a slug that embeds a red-flag term (e.g. `` `FR-ex-browser-thing` ``) with clean prose. A second fixture line has the same slug **and** the term in prose (`opens in a browser`).
+- **Expect**: the slug-only line is not flagged (the slug token is stripped before matching); the line with the term in prose IS flagged (stripping is surgical — only the slug token is removed). Proves a project's own slug never self-trips while real prose bleed on the same line still catches.
 
 ### TC-lane-discipline-hook-warn-only
 > Covers `AC-lane-discipline-backstop-nonblocking`, `FR-lane-discipline-backstop-at-commit`.

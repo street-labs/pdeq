@@ -108,7 +108,7 @@ These cover the observable outcomes QA will test directly.
 - **Skill files for non-Claude harnesses**: Pi has its own "skill" / "extension" concept; Codex CLI does not. Whether to ever ship harness-specific skill equivalents is deferred. v1 ships the Claude skill only when `claude` is enabled and ships nothing equivalent for other harnesses.
 - **Configurable canonical-content directory name**: The new neutral name for the slash-command source directory inside the submodule (today `.claude/commands/`) is left to engineering. A working assumption is `pdeq-rules/commands/` per the design conversation, but the exact path is an engineering concern as long as it is harness-neutral and stable.
 - **Future harness additions**: Cursor, Goose, Gemini, Copilot, AMP, and Cline are explicitly out of scope for v1. Each has a known file convention (per the `block/ai-rules` mapping table) and would be cheap to add later, but doing so is gated on actual user demand. Track in `roadmap/harness-agnostic.md` if and when a request appears.
-- **Native Pi extension for slash commands**: Pi's slash-command surface is TypeScript-based, not markdown-based. Shipping a native Pi extension that surfaces `/pdeq-*` commands inside Pi is deferred. v1 documents that Pi consumers invoke pdeq workflows in prose. Track in roadmap if Pi adoption justifies the extension work.
+- **Native Pi extension for slash commands**: Pi's slash-command surface is code-based, not markdown-based. Shipping a native Pi extension that surfaces `/pdeq-*` commands inside Pi is deferred. v1 documents that Pi consumers invoke pdeq workflows in prose. Track in roadmap if Pi adoption justifies the extension work.
 
 ## Dependencies
 

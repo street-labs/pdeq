@@ -317,8 +317,8 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-lane-discipline-review-output-shape | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
 | AC-lane-discipline-review-suggests-terms | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
 | FR-lane-discipline-backstop-at-commit | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
-| FR-lane-discipline-default-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:100 |
-| FR-lane-discipline-lexical-backstop | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:100, scripts/audit-lanes.sh:55 |
+| FR-lane-discipline-default-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:105 |
+| FR-lane-discipline-lexical-backstop | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:105, scripts/audit-lanes.sh:55 |
 | FR-lane-discipline-project-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, pdeq.schema.json, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:25 |
 | FR-lane-discipline-review-in-workflow | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | pdeq-rules/commands/pdeq-kickoff.md:161 |
 | FR-lane-discipline-severity | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
@@ -349,3 +349,4 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-lane-discipline-update-review-no-edit | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
 | TC-lane-discipline-update-seed-idempotent | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-update-review-no-edit | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-slug-not-flagged | TC | qa/cli/lane-discipline.md |  |  |
