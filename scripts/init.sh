@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Resolve this script's real directory (following symlinks, portable to bash 3.2 /
+# BSD readlink) and source the shared harness adapter — the single source of
+# truth for harness capabilities.
+_pdeq_self="${BASH_SOURCE[0]}"
+while [ -h "$_pdeq_self" ]; do
+  _pdeq_dir="$(cd -P "$(dirname "$_pdeq_self")" && pwd)"
+  _pdeq_self="$(readlink "$_pdeq_self")"
+  [ "${_pdeq_self#/}" = "$_pdeq_self" ] && _pdeq_self="$_pdeq_dir/$_pdeq_self"
+done
+PDEQ_SCRIPT_DIR="$(cd -P "$(dirname "$_pdeq_self")" && pwd)"
+# shellcheck source=lib/harness.sh
+. "$PDEQ_SCRIPT_DIR/lib/harness.sh"
+
 # PDEQ init script
 # Installs the PDEQ framework into the current directory (or a nested subdirectory).
 #
@@ -103,71 +116,23 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Harness adapter table + materialization helpers
+# Harness adapter + materialization helpers
 # ---------------------------------------------------------------------------
-# The adapter table maps each recognized harness identifier to the per-lane
-# agent-instructions filename that harness reads, plus the relative directory
-# inside the consumer's project where that harness expects markdown-defined
-# slash commands (empty = harness does not support markdown slash commands).
-#
-# Implements: FR-harness-agnostic-v1-harness-set
-# Implements: FR-harness-agnostic-unknown-rejected
-#
-# Adding a new harness in v1.x: add a case branch to each function below and
-# add the identifier to pdeq.schema.json's enum. The install logic itself
-# does not change.
-harness_agent_file() {
-  case "$1" in
-    claude)     echo "CLAUDE.md" ;;
-    codex|pi)   echo "AGENTS.md" ;;
-    *)          return 1 ;;
-  esac
-}
+# The harness adapter (harness_agent_file / harness_commands_dir /
+# harness_agent_style / harness_resolve / PDEQ_KNOWN_HARNESSES) is the single
+# source of truth, defined once in scripts/lib/harness.sh and sourced at the top
+# of this script. Adding a new harness is a one-branch-per-capability edit there
+# plus the pdeq.schema.json enum — the install logic below does not change.
 
-harness_commands_dir() {
-  case "$1" in
-    claude)     echo ".claude/commands" ;;
-    codex|pi)   echo "" ;;  # no markdown slash commands at v1
-    *)          echo "" ;;
-  esac
-}
-
+# Populate the global HARNESSES_ARR from the shared resolver. Precedence:
+# --harnesses CLI flag ($OPT_HARNESSES) > pdeq.json harnesses array > default.
 # Implements: FR-harness-agnostic-config
-# Resolution precedence:
-#   1. --harnesses CLI flag (already in OPT_HARNESSES)
-#   2. existing pdeq.json's harnesses array (when present, supports re-runs
-#      after the consumer edits the field)
-#   3. default ["claude"] (v0.3.x back-compat at the data level)
 resolve_harnesses() {
   HARNESSES_ARR=()
-  if [[ -n "$OPT_HARNESSES" ]]; then
-    IFS=',' read -ra HARNESSES_ARR <<< "$OPT_HARNESSES"
-  elif [[ -f "$INSTALL_DIR/pdeq.json" ]]; then
-    # Cheap JSON parse: extract just the array contents (between [ and ]) so
-    # the field name "harnesses" is not picked up by the token extractor.
-    local raw inner
-    raw=$(tr -d '\n' < "$INSTALL_DIR/pdeq.json" \
-          | grep -oE '"harnesses"[[:space:]]*:[[:space:]]*\[[^]]*\]' \
-          | head -n1)
-    if [[ -n "$raw" ]]; then
-      # Drop everything up to and including the opening bracket, drop the closing bracket.
-      inner="${raw#*\[}"
-      inner="${inner%\]}"
-      local tok
-      while IFS= read -r tok; do
-        [[ -n "$tok" ]] && HARNESSES_ARR+=("$tok")
-      done < <(echo "$inner" | grep -oE '"[a-z][a-z0-9-]*"' | tr -d '"')
-    fi
-  fi
-  # Default fallback
-  if [[ ${#HARNESSES_ARR[@]} -eq 0 ]]; then
-    HARNESSES_ARR=("claude")
-  fi
-  # Trim whitespace from each entry
-  local i
-  for i in "${!HARNESSES_ARR[@]}"; do
-    HARNESSES_ARR[$i]="${HARNESSES_ARR[$i]// /}"
-  done
+  local h
+  while IFS= read -r h; do
+    [[ -n "$h" ]] && HARNESSES_ARR+=("$h")
+  done < <(harness_resolve "$INSTALL_DIR/pdeq.json" "$OPT_HARNESSES")
 }
 
 # Implements: FR-harness-agnostic-unknown-rejected
@@ -178,7 +143,7 @@ validate_harnesses() {
   for h in "${HARNESSES_ARR[@]}"; do
     if ! harness_agent_file "$h" >/dev/null 2>&1; then
       echo "Error: unrecognized harness '$h'." >&2
-      echo "Recognized harnesses: claude, codex, pi" >&2
+      echo "Recognized harnesses: ${PDEQ_KNOWN_HARNESSES// /, }" >&2
       exit 1
     fi
   done
@@ -209,9 +174,9 @@ _materialize_agent_file() {
       SKIPPED=$((SKIPPED + 1))
       continue
     fi
-    if [[ "$h" == "claude" ]]; then
-      # Claude supports @import — emit a one-line wrapper file so the consumer
-      # can append project-specific instructions below the import.
+    if [[ "$(harness_agent_style "$h")" == "import" ]]; then
+      # import-style harness (@import supported) — emit a one-line wrapper file
+      # so the consumer can append project-specific instructions below the import.
       echo "@$claude_import" > "$dest"
     else
       # Other harnesses don't have @import; symlink directly to the canonical.
@@ -265,7 +230,7 @@ _materialize_commands() {
 # CLAUDE.md when claude is dropped — see below). Files claimed by another
 # enabled harness with the same filename are left alone.
 _cleanup_removed_harnesses() {
-  local known_harnesses=(claude codex pi)
+  local known_harnesses=($PDEQ_KNOWN_HARNESSES)
   local lane lane_dir h fname is_enabled needed_filename
   # Build the set of filenames that ARE still needed by enabled harnesses.
   local needed=()
@@ -370,7 +335,7 @@ if [[ "$OPT_INTERACTIVE" == "1" ]]; then
     read -r OPT_PLATFORMS
   fi
   if [[ -z "$OPT_HARNESSES" ]]; then
-    prompt "Coding-agent harnesses (comma-separated, recognized: claude, codex, pi — default 'claude')"
+    prompt "Coding-agent harnesses (comma-separated, recognized: ${PDEQ_KNOWN_HARNESSES// /, } — default 'claude')"
     read -r OPT_HARNESSES
   fi
   if [[ "$IS_NESTED" == "0" && -z "$OPT_NESTED_REPO_ROOT" ]]; then

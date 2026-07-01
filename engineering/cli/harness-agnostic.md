@@ -10,7 +10,7 @@ product-slugs: [AC-harness-agnostic-bootstrap-no-subagent, AC-harness-agnostic-c
 
 Pdeq's installer and submodule layout are being refactored so that the agent-orienting prose, slash-command source files, and consumer-facing skill assets are addressed by harness-neutral paths inside the submodule, and the installer materializes per-harness "views" on top of them in the consumer's project at install time. The submodule's canonical agent-instructions file becomes `AGENTS.md` at every lane; Claude Code consumers continue to get `CLAUDE.md` files via `@import`, and other harnesses get `AGENTS.md` symlinks pointing at the same canonical source. The change ships at pdeq 0.4.0 with a single migration that brings existing 0.3.x consumers from the old layout to the new one in one explicit step.
 
-The approach uses an internal harness adapter table inside `scripts/init.sh` keyed on harness identifiers. Each adapter declares two things: the per-lane agent-file name the harness reads (`CLAUDE.md`, `AGENTS.md`, etc.), and the relative directory inside the consumer's project where that harness expects markdown-defined slash commands (or empty when the harness does not support markdown slash commands). The installer iterates the consumer's `harnesses` list, calls into each adapter to materialize files, and reports per-file what harness drove the action. No new install dependencies are introduced — the adapter table is plain bash arrays and the materialization is `ln -s` and one-line `echo` redirects, mirroring the patterns already in use.
+The approach uses an internal harness adapter defined once in `scripts/lib/harness.sh` and sourced by `scripts/init.sh` (and `scripts/sync-symlinks.sh`), keyed on harness identifiers. Each capability function declares one axis: the per-lane agent-file name the harness reads (`CLAUDE.md`, `AGENTS.md`, etc.), how that file is written (`import` wrapper vs `symlink`), and the relative directory where the harness expects markdown-defined slash commands (or empty when unsupported). The installer iterates the consumer's `harnesses` list, calls into each capability function to materialize files, and reports per-file what harness drove the action. No new install dependencies are introduced — the adapter is plain bash `case` functions (bash 3.2 compatible) and the materialization is `ln -s` and one-line `echo` redirects, mirroring the patterns already in use.
 
 The chosen alternative was to vendor or depend on `block/ai-rules`. That tool covers the same conceptual surface but adds a Rust binary as an install dependency, supports more harnesses than v1 needs, and does not currently support Pi. The bash-internal adapter table is ~60 lines of code, matches the existing project style, and keeps the install-dependency floor at `git + bash`.
 
@@ -31,17 +31,35 @@ No persistent runtime data model. The two state surfaces are:
 - **`pdeq.json` `harnesses` field** — a JSON array of harness identifier strings. Validated by `pdeq.schema.json`. Read by `scripts/init.sh` at install time and by `scripts/migrate.sh` at migration time. Other scripts that need to know harness state (e.g. a future harness-aware audit) read the same field.
 - **Consumer filesystem layout post-install** — see the per-harness materialization table below. The filesystem layout *is* the data model from the consumer's perspective: which files exist at which paths drives which harness can read pdeq prose.
 
-### Harness adapter table
+### Harness adapter — single source of truth
 
-Stored as parallel bash associative arrays in `scripts/init.sh`. Adding a new harness is a two-line edit; the install logic itself does not change.
+The adapter is defined **once**, as small capability functions in `scripts/lib/harness.sh` (bash 3.2 has no associative arrays, so each axis is a `case` function). Every script that needs harness knowledge — `scripts/init.sh`, `scripts/sync-symlinks.sh`, and any future harness-aware tool — sources that lib rather than re-implementing the table. Adding a new harness is a one-branch-per-capability edit in `harness.sh` plus the `pdeq.schema.json` enum; no install/materialization logic changes.
 
-| Harness ID | Agent file name | Commands dir (per-consumer-project root, when supported) | Notes |
+The lib exposes: `PDEQ_KNOWN_HARNESSES` (the roster — the one place the set is enumerated; user-facing strings and cleanup sweeps derive from it), `harness_is_known`, `harness_agent_file`, `harness_commands_dir`, `harness_agent_style`, and `harness_resolve` (the single pdeq.json `harnesses` parser).
+
+| Harness ID | Agent file | Agent-file style | Commands dir (when supported) | Notes |
+|---|---|---|---|---|
+| `claude` | `CLAUDE.md` | `import` | `.claude/commands` | Supports `@import`; installer emits a one-line import wrapper so the consumer can append project prose below it. |
+| `codex` | `AGENTS.md` | `symlink` | _(none — codex CLI has no markdown slash commands at v1)_ | Installer symlinks `AGENTS.md` only; workflows invoked by asking the agent to read the prompt file. |
+| `pi` | `AGENTS.md` | `symlink` | _(none — pi slash commands are TypeScript extensions)_ | Same as codex. |
+
+This is the **harness adapter table** referenced throughout this spec and the glossary — the single point of extension for new harnesses.
+
+### Harness capability matrix
+
+The adapter table models the three axes the **install layer** needs. Other pdeq surfaces depend on additional harness capabilities; those are not install-time concerns, so they are realized in the relevant **prompt-file prose** rather than the shell lib — but they belong to the same capability model and are enumerated here so an implementer adding a harness sees every axis in one place:
+
+| Capability axis | Realized in | claude | codex / pi |
 |---|---|---|---|
-| `claude` | `CLAUDE.md` | `.claude/commands` | Claude supports `@import` syntax; installer emits a one-line import file. |
-| `codex` | `AGENTS.md` | _(none — codex CLI has no markdown slash commands at v1)_ | Installer creates an `AGENTS.md` symlink only. |
-| `pi` | `AGENTS.md` | _(none — pi slash commands are TypeScript extensions)_ | Installer creates an `AGENTS.md` symlink only. |
+| Agent-instructions file | `harness.sh` (`harness_agent_file`) | `CLAUDE.md` | `AGENTS.md` |
+| Agent-file style | `harness.sh` (`harness_agent_style`) | `import` | `symlink` |
+| Markdown slash commands | `harness.sh` (`harness_commands_dir`) | `.claude/commands/` | none (read prompt file directly) |
+| Interactive question | prompt-file prose | `AskUserQuestion` tool | native ask / prose turn |
+| Subagent delegation | prompt-file prose | `Task` tool (optional) | play the role inline |
+| In-session command discovery | prompt-file prose | lazy disk-lookup of `.claude/commands/*.md` | prompt files read on demand from `.pdeq/pdeq-rules/commands/` |
+| Skill / extension surface | Claude-only convention | `.claude/skills/pdeq/` | n/a (`FR-harness-agnostic-skill-claude-only`) |
 
-This table is the **harness adapter table** referenced throughout this spec and in the glossary. It is the single point of extension for new harnesses.
+**Governing principle:** a pdeq surface must degrade to a harness-neutral contract — the neutral behavior is the default, and a harness-specific mechanism (e.g. `AskUserQuestion`, the `Task` tool) is layered on only as an optional shim, never assumed. The install-layer axes live in `harness.sh`; the prose-consumed axes live in the prompt files but resolve to this same matrix.
 
 ### Submodule canonical path map (post-rename)
 
@@ -159,17 +177,17 @@ The migration file's `scope` is `default` (specsRoot + `pdeq.json`) plus an expl
 
 | Slug | Planned location | Status |
 |---|---|---|
-| FR-harness-agnostic-config | pdeq.schema.json | planned |
+| FR-harness-agnostic-config | scripts/lib/harness.sh; pdeq.schema.json | planned |
 | FR-harness-agnostic-v1-harness-set | pdeq.schema.json | planned |
 | FR-harness-agnostic-multiple-per-install | scripts/init.sh | planned |
-| FR-harness-agnostic-unknown-rejected | scripts/init.sh; pdeq.schema.json | planned |
+| FR-harness-agnostic-unknown-rejected | scripts/lib/harness.sh; scripts/init.sh; pdeq.schema.json | planned |
 | FR-harness-agnostic-canonical-agents-file | AGENTS.md; product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | planned |
 | FR-harness-agnostic-content-portable | AGENTS.md; product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | planned |
 | FR-harness-agnostic-no-import-in-canonical | AGENTS.md; product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | planned |
 | FR-harness-agnostic-per-harness-install | scripts/init.sh | planned |
-| FR-harness-agnostic-claude-import | scripts/init.sh | planned |
-| FR-harness-agnostic-symlink-include | scripts/init.sh | planned |
-| FR-harness-agnostic-commands-per-harness | scripts/init.sh | planned |
+| FR-harness-agnostic-claude-import | scripts/lib/harness.sh; scripts/init.sh | planned |
+| FR-harness-agnostic-symlink-include | scripts/lib/harness.sh; scripts/init.sh | planned |
+| FR-harness-agnostic-commands-per-harness | scripts/lib/harness.sh; scripts/init.sh | planned |
 | FR-harness-agnostic-commands-source-path | pdeq-rules/commands/pdeq-bootstrap.md; pdeq-rules/commands/pdeq-impact.md; pdeq-rules/commands/pdeq-kickoff.md; pdeq-rules/commands/pdeq-migrate.md; pdeq-rules/commands/pdeq-status.md; pdeq-rules/commands/pdeq-visualize.md | planned |
 | FR-harness-agnostic-bootstrap-inline | pdeq-rules/commands/pdeq-bootstrap.md | planned |
 | FR-harness-agnostic-no-subagent-files | — | planned |
