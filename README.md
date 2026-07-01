@@ -1,5 +1,9 @@
 # PDEQ
 
+[![CI](https://github.com/street-labs/pdeq/actions/workflows/ci.yml/badge.svg)](https://github.com/street-labs/pdeq/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/street-labs/pdeq)](https://github.com/street-labs/pdeq/releases)
+
 A coding-agent framework for structured software development across four lanes: **P**roduct, **D**esign, **E**ngineering, **Q**A.
 
 PDEQ works with multiple coding-agent harnesses. v1 supports **Claude Code**, **Codex CLI**, and **Pi**. The canonical agent-instructions file is `AGENTS.md` (the cross-harness convention); `CLAUDE.md` wrappers are emitted automatically for Claude users when `claude` is in the harness list.
@@ -12,7 +16,7 @@ Specs drive code. Requirements are fully traceable from definition to test. Each
 
 ```bash
 # From your project root — defaults to harnesses: ["claude"]
-git submodule add git@github.com:ldstreet/pdeq.git .pdeq
+git submodule add git@github.com:street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh
 ```
 
@@ -82,7 +86,7 @@ your-project/
 
 ```bash
 cd your-project
-git submodule add git@github.com:ldstreet/pdeq.git .pdeq
+git submodule add git@github.com:street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh
 ```
 
@@ -92,7 +96,7 @@ bash .pdeq/scripts/init.sh
 
 ```bash
 cd your-project
-git submodule add git@github.com:ldstreet/pdeq.git .pdeq
+git submodule add git@github.com:street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh --code-root src --platforms web --interactive
 ```
 
@@ -103,7 +107,7 @@ Then run `/pdeq-bootstrap` (or, in harnesses without markdown slash commands, as
 ```bash
 cd packages/my-service
 bash /path/to/pdeq/scripts/init.sh \
-  --pdeq-url git@github.com:ldstreet/pdeq.git \
+  --pdeq-url git@github.com:street-labs/pdeq.git \
   --nested ../.. \
   --label my-service \
   --code-root src \
@@ -211,3 +215,11 @@ Full schema: [`pdeq.schema.json`](pdeq.schema.json)
 | `scripts/merge-decisions.sh` | Merges `decisions-pending.md` into `decisions.md` at commit time |
 | `scripts/init.sh` | Installs PDEQ into a project (submodule + `@` imports + symlinks + pdeq.json) |
 | `scripts/bootstrap.sh` | Validates bootstrap preconditions and resolves paths before `/pdeq-bootstrap` runs |
+
+## Contributing
+
+pdeq is spec-driven (markdown → code) and accepts contributions **via pull request only — the issue tracker is disabled**. Found a bug? Open a PR with a test that reproduces it. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, the local checks, and the conventions. All participants agree to the [Code of Conduct](CODE_OF_CONDUCT.md); security reports go through [SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE).
