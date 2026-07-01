@@ -630,9 +630,12 @@ scripts/sync-symlinks.sh
 
 Satisfies `FR-migrations-update-in-session` (mechanism part).
 
-#### 2. Harness re-reads commands from disk lazily
+#### 2. In-session command availability is harness-specific
 
-Claude Code's harness (this assistant) reads slash command definitions from `.claude/commands/*.md` **at session start** to populate the autocomplete menu, but reads the file **content** lazily — only when the command is actually invoked. This means:
+What "in-session availability" means depends on the harness capability model (see `harness-agnostic.md` §Harness capability matrix), but the neutral guarantee is the same everywhere: a command whose *source* (`pdeq-rules/commands/*.md`) was added, changed, or removed by the bump takes effect without restarting the session.
+
+- **Codex / Pi (no markdown slash-command surface)**: there is no symlink layer. The agent invokes a pdeq workflow by reading its prompt file from `.pdeq/pdeq-rules/commands/` on demand, so the bumped source is picked up on the next invocation automatically — nothing to reconcile.
+- **Claude Code**: the harness reads slash-command definitions from `.claude/commands/*.md` **at session start** to populate the autocomplete menu, but reads the file **content** lazily — only when the command is actually invoked. This means:
 
 - A command file that **already existed** at session start and is **modified** by the bump (its symlink target now points to new content): invocable in the same session with the new behavior. The user does not need to restart.
 - A command file that **did not exist** at session start and is **created** by the symlink sync: the autocomplete menu does not show it for the rest of the current session, **but invoking it by literal slash-name (`/foo`)** triggers fresh disk lookup and works. The harness does not maintain a deny-list of "commands that didn't exist at startup"; absence is checked on-demand via filesystem read.
@@ -665,7 +668,7 @@ Inside the pdeq repo itself, `/pdeq-update` behaves differently from a consumer 
   ✗ /pdeq-update is disabled inside the pdeq repository.
 
     The pdeq repo's .pdeq/ submodule is intentionally pinned to a previous-stable
-    version for the bootstrap chain — see CLAUDE.md §Bootstrap chain.
+    version for the bootstrap chain — see AGENTS.md §Bootstrap chain.
 
     Maintainer flow:
       1. Cut a release: bump VERSION, author migrations/<version>.md, tag.
