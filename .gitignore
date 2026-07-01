@@ -1,8 +1,12 @@
 decisions-pending.md
 .DS_Store
 
-# Fiberplane local issue tracking
+# Fiberplane local issue tracking (maintainer tool — not part of pdeq)
 .fp/
+FP_CLAUDE.md
+.claude/skills/fp-implement/
+.claude/skills/fp-plan/
+.claude/skills/fp-review/
 
 # /visualize throwaway HTML previews
 .pdeq/viz/
