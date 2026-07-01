@@ -9,7 +9,7 @@ description: Add the PDEQ spec-driven development framework to the current proje
 
 PDEQ is a multi-harness coding-agent framework that gives a project four structured lanes — Product, Design, Engineering, QA — with traceable requirements, lane discipline, and a spec-first workflow. v1 supports Claude Code, Codex CLI, and Pi. This skill is the Claude Code surface for setup; consumers using other harnesses install via `scripts/init.sh` directly with the `--harnesses` flag.
 
-Local PDEQ repo: `/Users/ldstreet/Development/pdeq`
+PDEQ repository: `https://github.com/street-labs/pdeq`
 
 ---
 
@@ -47,7 +47,7 @@ Based on the first answer, proceed to the matching path below. Pass the harness 
 ## Path A: Greenfield Project
 
 ```bash
-git submodule add /Users/ldstreet/Development/pdeq .pdeq
+git submodule add https://github.com/street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh --harnesses <list>
 ```
 
@@ -68,7 +68,7 @@ Ask:
 Then run:
 
 ```bash
-git submodule add /Users/ldstreet/Development/pdeq .pdeq
+git submodule add https://github.com/street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh --code-root <answer-1> --platforms <answer-2> --harnesses <harness-list>
 ```
 
@@ -91,8 +91,8 @@ Ask:
 Then run:
 
 ```bash
-bash /Users/ldstreet/Development/pdeq/scripts/init.sh \
-  --pdeq-url /Users/ldstreet/Development/pdeq \
+bash /path/to/pdeq/scripts/init.sh \
+  --pdeq-url https://github.com/street-labs/pdeq.git \
   --nested <answer-1> \
   --label <answer-2> \
   --code-root <answer-3> \

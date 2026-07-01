@@ -16,7 +16,7 @@ Specs drive code. Requirements are fully traceable from definition to test. Each
 
 ```bash
 # From your project root — defaults to harnesses: ["claude"]
-git submodule add git@github.com:street-labs/pdeq.git .pdeq
+git submodule add https://github.com/street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh
 ```
 
@@ -86,7 +86,7 @@ your-project/
 
 ```bash
 cd your-project
-git submodule add git@github.com:street-labs/pdeq.git .pdeq
+git submodule add https://github.com/street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh
 ```
 
@@ -96,7 +96,7 @@ bash .pdeq/scripts/init.sh
 
 ```bash
 cd your-project
-git submodule add git@github.com:street-labs/pdeq.git .pdeq
+git submodule add https://github.com/street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh --code-root src --platforms web --interactive
 ```
 
@@ -107,7 +107,7 @@ Then run `/pdeq-bootstrap` (or, in harnesses without markdown slash commands, as
 ```bash
 cd packages/my-service
 bash /path/to/pdeq/scripts/init.sh \
-  --pdeq-url git@github.com:street-labs/pdeq.git \
+  --pdeq-url https://github.com/street-labs/pdeq.git \
   --nested ../.. \
   --label my-service \
   --code-root src \
