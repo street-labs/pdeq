@@ -1,5 +1,5 @@
 ---
-product-hash: 7e42c8798456b4865d3587297815795edd1881abf503cac093811f6011b752a7
+product-hash: d810b089ab8e3446078548f3898ccbc91cfe13b5014dbdb36c0c64ce11468462
 product-slugs: [AC-migrations-absent-reported, AC-migrations-dry-run-accurate, AC-migrations-gate-allows-nonbreaking, AC-migrations-gate-blocks, AC-migrations-idempotent-rerun, AC-migrations-lineage-refused, AC-migrations-missing-file-refused, AC-migrations-no-bump-on-failure, AC-migrations-nonbreaking-advance, AC-migrations-noop-when-current, AC-migrations-ordered-apply, AC-migrations-scope-respected, AC-migrations-self-migration-runs, AC-migrations-semantic-context, AC-migrations-update-bump-failure, AC-migrations-update-dry-run, AC-migrations-update-end-to-end, AC-migrations-update-in-session, AC-migrations-update-noop, FR-migrations-absent-version, FR-migrations-atomic-bump, FR-migrations-author-written, FR-migrations-bootstrap-chain, FR-migrations-breaking-gate, FR-migrations-dry-run, FR-migrations-explicit-run, FR-migrations-failure-report, FR-migrations-idempotent, FR-migrations-lineage-integrity, FR-migrations-mechanical-block, FR-migrations-missing-file-refused, FR-migrations-no-false-positive, FR-migrations-nonbreaking-advance, FR-migrations-noop-when-current, FR-migrations-one-per-version, FR-migrations-order-within, FR-migrations-ordered, FR-migrations-ordered-application, FR-migrations-pending-detection, FR-migrations-recoverable-partial, FR-migrations-scoped-writes, FR-migrations-self-migration, FR-migrations-semantic-block, FR-migrations-unknown-version, FR-migrations-update-bump-failure, FR-migrations-update-bumps-pin, FR-migrations-update-chains, FR-migrations-update-command, FR-migrations-update-dry-run, FR-migrations-update-in-session, FR-migrations-update-noop, FR-migrations-version-bump, FR-migrations-version-field, FR-migrations-version-readable, NFR-migrations-determinism, NFR-migrations-enforcement-precision, NFR-migrations-idempotency, NFR-migrations-scope-minimalism]
 ---
 # Migrations — CLI Design Spec
@@ -31,6 +31,7 @@ The CLI platform has no screens in the GUI sense. Instead, the "surfaces" are:
 12. **Update happy-path output** — bump + chained migration in a single run.
 13. **Update dry-run output** — preview of the would-be bump and its consequent pending migrations.
 14. **Update bump-failure output** — the underlying bump step failed; nothing else ran.
+15. **Update declined-chain output** — the bump succeeded but the consumer answered `n` to the chain prompt.
 
 Each is defined below.
 
@@ -597,12 +598,12 @@ The chosen name is **`/pdeq-update`**. Justification:
 ### Argument surface
 
 ```
-/pdeq-update                  apply the upgrade end-to-end: bump the pin, then run /pdeq-migrate.
+/pdeq-update                  bump the pin, then prompt to chain into /pdeq-migrate.
 /pdeq-update --dry-run        preview the bump target and the migrations a real /pdeq-update would queue.
-                         No writes, no pin change, no migration runs.
+                         No writes, no pin change, no migration runs, no prompt.
 ```
 
-No `--from` flag (that's a `/pdeq-migrate` recovery affordance for resuming after a failed migration; `/pdeq-update` always starts from the current pin). No `--yes` / `--no-prompt` flag — the chained migration is auto-run on the happy path (see "Migration handoff" below), so there is nothing to confirm.
+No `--from` flag (that's a `/pdeq-migrate` recovery affordance for resuming after a failed migration; `/pdeq-update` always starts from the current pin). No `--yes` flag — the chain prompt is the design's review checkpoint, and `/pdeq-update` is invoked from an interactive agent session where a one-key answer is cheap. Headless/CI flows should drive the underlying shell helpers directly rather than `/pdeq-update`. The prompt is skipped automatically when there are zero migration files in the pending window (a pure non-breaking advance is mechanical-free and needs no review checkpoint — the chain runs through unprompted and emits Surface 3b inside the indented `▸ Migrating` region).
 
 ### Status line
 
@@ -641,17 +642,20 @@ pdeq: pinned 0.4.0 → available 0.4.0
 
 > Implements: `FR-migrations-update-noop`. Satisfies `AC-migrations-update-noop`.
 
-### Surface 12. Update happy-path output (bump + chained migration)
+### Surface 12. Update happy-path output (bump + chain-prompt + chained migration)
 
-One sentence: the user ran `/pdeq-update`, the pin advanced cleanly, and the chained `/pdeq-migrate` applied the resulting pending migrations.
+One sentence: the user ran `/pdeq-update`, the pin advanced cleanly, the chain prompt fired, the user accepted, and the chained `/pdeq-migrate` applied the resulting pending migrations.
 
-The output is composed of three regions, separated by blank lines: the bump region, the chained `/pdeq-migrate` region (visually identical to Surface 3, indented under an `▸ Migrating` lead-in so the user sees the handoff), and the final summary.
+The output is composed of four regions, separated by blank lines: the bump region, the pending-summary + chain prompt, the chained `/pdeq-migrate` region (visually identical to Surface 3, indented under an `▸ Migrating` lead-in so the user sees the handoff), and the final summary.
 
 ```
 pdeq: pinned 0.2.1 → available 0.4.0
 
 ▸ Bumping pinned pdeq reference
   ✓ pinned pdeq advanced 0.2.1 → 0.4.0
+
+  3 migrations pending: 0.3.0, 0.3.2, 0.4.0
+? Apply pending migrations now? [Y/n]: y
 
 ▸ Migrating
   pdeq: recorded 0.2.1 → pinned 0.4.0
@@ -686,7 +690,7 @@ Layout rules:
 
 - **Two top-level `▸` lead-ins** — `Bumping pinned pdeq reference` and `Migrating` — bracket the two phases. The bump phase is one or two lines; the migrate phase is the unmodified Surface 3 output, indented two spaces to make the nesting visible.
 - **The final `✓ pdeq: updated to <version>` summary** is the user-visible confirmation that the whole `/pdeq-update` flow succeeded. It is distinct from the inner Surface 3 `✓ pdeq: recorded X → Y` line (which only confirms the recorded-version bump).
-- **Migration handoff is auto-run, not prompted.** Once the pin has advanced, the chained `/pdeq-migrate` runs immediately without confirmation. Rationale: the consumer already opted in by running `/pdeq-update`; introducing a confirmation step here would split the upgrade into two decisions when the user has already made one. Recovery from a mid-migration failure is the same as for a bare `/pdeq-migrate` — Surface 5 fires, the user fixes the cause, and re-runs `/pdeq-update` (or `/pdeq-migrate` directly; the runner resumes from the last fully-applied migration).
+- **Migration handoff is prompted, not auto-run.** After the bump succeeds, the runner prints the one-line pending summary (`N migrations pending: <versions>`) and then a single cyan `?` prompt: `? Apply pending migrations now? [Y/n]:`. Default is yes — a bare Enter, `y`, or `yes` advances into Surface 12 chained Migrating; `n` or `no` exits cleanly via Surface 15 (declined-chain). Rationale: the bump is a non-trivial mutation (submodule pointer advanced, symlinks reconciled) and the consumer may legitimately want to inspect `git diff` before applying mechanical/semantic edits on top. The prompt is the design's review checkpoint between the two distinct mutation classes; cost is one keystroke. The bump itself is a single decision, but the chain is a *second* class of mutation (filesystem edits driven by mechanical scripts and an agent prompt) that the consumer may want to stage independently — most often when reviewing what a release ships before deciding to run it. The prompt is **not** issued when the pending set is empty (pure non-breaking advance): the chain runs through unprompted and emits Surface 3b inside the indented `▸ Migrating` region, because there is no mechanical or semantic edit to gate behind a review checkpoint.
 - **On chained-migration failure, the runner breaks out of the indented region before printing Surface 5.** The successful `▸ <version>` migration headers and `✓` / `~` block lines remain indented two spaces under `▸ Migrating` (matching the rest of the chained region). When a migration fails: print the failing block's `✗` line at the same two-space indentation (so the failing-block context stays visually attached to its migration header), then print one blank line, then **drop indentation entirely** and print Surface 5's `✗ Migration X.Y.Z failed at the <block> step.` summary block plus the `pdeq: recorded …` / `Pinned pdeq version: …` / `Remaining: …` / `What to do:` recovery text left-aligned (no indent). The final `✓ pdeq: updated to …` summary is **not** printed — the run failed. The transition from indented to left-aligned is intentional: Surface 5's recovery block has its own column-aligned shape that does not survive nesting, and the user reads it as the authoritative "what to do next" signal regardless of which entrypoint launched the migration. Engineering: this means the chained-migrate inline reuse strips its indent prefix before emitting Surface 5's summary block.
 - **In-session command availability is reported on the final summary line.** When the bumped pdeq version introduces, modifies, or removes slash commands, `/pdeq-update` lists them under `New commands available:`, `Updated commands:`, and `Removed commands:` so the consumer sees, in one glance, what changed. The three lines print in that fixed order — `New` → `Updated` → `Removed` — directly under the `✓ pdeq: updated to <version>` summary. Each line is omitted independently when its set is empty; if all three are empty (a release that adds, modifies, and removes no commands), the summary collapses to just `✓ pdeq: updated to 0.4.0` and the diff-reminder line. The `Removed commands:` line names commands whose backing files no longer exist in the new pdeq version — engineering's `scripts/sync-symlinks.sh --json` reports these in its `deleted` array when their dangling symlinks are pruned. Engineering owns *how* in-session availability is achieved (the harness's command-discovery mechanism is out of design's lane); this surface specifies only what the consumer sees and the contract that any command listed under `New` or `Updated` can be immediately invoked, and any command listed under `Removed` is no longer invocable.
 - Exits 0.
@@ -798,6 +802,43 @@ Design rules for update bump-failure:
 
 > Implements: `FR-migrations-update-bump-failure`. Satisfies `AC-migrations-update-bump-failure`.
 
+### Surface 15. Update declined-chain output
+
+One sentence: the bump succeeded and pending migrations were detected, but the consumer answered `n` (or anything other than `y` / `yes` / Enter) at the chain prompt.
+
+```
+pdeq: pinned 0.2.1 → available 0.4.0
+
+▸ Bumping pinned pdeq reference
+  ✓ pinned pdeq advanced 0.2.1 → 0.4.0
+
+  3 migrations pending: 0.3.0, 0.3.2, 0.4.0
+? Apply pending migrations now? [Y/n]: n
+
+~ pdeq: bumped to 0.4.0; migrations not applied.
+  Recorded pdeq version: 0.2.1  (unchanged)
+  Pinned pdeq version:   0.4.0  (advanced)
+  Pending:               0.3.0, 0.3.2, 0.4.0
+
+  New commands available: /foo, /bar
+  Updated commands: /pdeq-kickoff
+  Removed commands: /old-thing
+
+  Run /pdeq-migrate when ready to apply the pending migrations.
+  Review the bump (.pdeq, .gitmodules, symlinks under scripts/ and the harness command dir) with `git diff` before committing.
+```
+
+Design rules for declined-chain:
+- **Yellow `~` on the summary line**, not green `✓` — work is incomplete (no migrations ran), but it is not a failure (the consumer made a deliberate choice).
+- **Both versions reported with explicit annotations** so the consumer sees the asymmetry: recorded did not move, pinned did. This is the load-bearing visual cue that the project is now in a temporary mid-state — the same state a consumer would have reached by bumping the submodule manually without running `/pdeq-migrate`.
+- **Pending list is printed**, naming exactly which migrations a later `/pdeq-migrate` will apply.
+- **New / Updated / Removed commands listing is still printed.** The symlink reconciliation happened in the bump phase, so newly-shipped commands are already invocable mid-session even though no migration ran. Omit each line when its set is empty, matching Surface 12 rules.
+- **Run hint names the exact next command.** Both `git diff` (to review the bump itself) and `/pdeq-migrate` (to apply the remaining work) are spelled out, so the consumer does not need to guess what's available to inspect or what's available to do next.
+- The pin advance is **not** rolled back on decline. The consumer chose to inspect before migrating, not to abort the upgrade entirely. A separate "undo the bump" affordance is not part of this surface; recovery from a regretted bump is a manual `git submodule update` operation outside `/pdeq-update`'s scope.
+- Exits 0.
+
+> Implements: `FR-migrations-update-command`, `FR-migrations-update-bumps-pin`, `FR-migrations-update-chains`. Satisfies `AC-migrations-update-end-to-end` (the chain *option* was surfaced, even though the user declined it — `FR-migrations-update-chains` requires the runner to apply *or offer* the pending migrations, and offering-then-declining is the offer path).
+
 ---
 
 ## Interaction Flows
@@ -808,12 +849,26 @@ The consumer is a pdeq project maintainer who wants to pick up new pdeq features
 
 1. Consumer runs `/pdeq-update --dry-run` → sees Surface 13 output: target version `0.4.0`, three migrations that would become pending.
 2. Consumer reviews the preview, decides it looks right.
-3. Consumer runs `/pdeq-update` → sees Surface 12 output: bump phase advances the pin 0.2.1 → 0.4.0, chained `/pdeq-migrate` applies the three pending migrations, final summary lists newly-available commands.
-4. Consumer immediately invokes one of the listed new commands in the same session (no restart required).
-5. Consumer runs `git diff` → inspects the changes.
-6. Consumer commits with whatever message they like. No pdeq-specific commit rule here — the gate is pdeq-repo only.
+3. Consumer runs `/pdeq-update` → sees Surface 12 output begin: bump phase advances the pin 0.2.1 → 0.4.0, runner prints the pending list, prompt fires `? Apply pending migrations now? [Y/n]:`.
+4. Consumer presses Enter (or `y`) → chained `/pdeq-migrate` applies the three pending migrations, final summary lists newly-available commands.
+5. Consumer immediately invokes one of the listed new commands in the same session (no restart required).
+6. Consumer runs `git diff` → inspects the changes.
+7. Consumer commits with whatever message they like. No pdeq-specific commit rule here — the gate is pdeq-repo only.
 
 Satisfies `AC-migrations-update-end-to-end`, `AC-migrations-update-dry-run`, `AC-migrations-update-in-session`.
+
+### Flow A1 — Consumer declines the chain to inspect the bump first
+
+Variant of Flow A where the consumer wants to review the submodule advance before applying mechanical/semantic edits on top.
+
+1. Consumer runs `/pdeq-update` → bump succeeds, chain prompt fires.
+2. Consumer answers `n` → Surface 15 prints: bumped to 0.4.0, migrations not applied, pending list named, `git diff` hint given.
+3. Consumer runs `git diff .pdeq .gitmodules scripts/ .claude/commands/` → inspects exactly what the bump changed.
+4. Consumer (later, in the same or a fresh session) runs `/pdeq-migrate` → Surface 3 applies the three pending migrations against the already-bumped pin.
+5. Consumer runs `git diff` again → inspects the migration-driven changes separately from the bump.
+6. Consumer commits the bump and the migrations either as one commit or two — pdeq does not constrain the commit grouping.
+
+Satisfies `FR-migrations-update-chains` (offer path), and demonstrates the decoupling the prompt provides.
 
 ### Flow A2 — Consumer upgrades manually via `/pdeq-migrate` (legacy / recovery path)
 
@@ -1011,7 +1066,7 @@ Every product requirement is addressed somewhere in this design spec, either as 
 | `AC-migrations-missing-file-refused` | Surface 6 missing-migration-file sub-case. |
 | `FR-migrations-update-command` | Surfaces 10–14; command-name decision in "Upgrade Entrypoint UX". |
 | `FR-migrations-update-bumps-pin` | Surface 12 bump phase; status-line `pinned → available` comparison. |
-| `FR-migrations-update-chains` | Surface 12 chained `/pdeq-migrate` region; auto-run handoff (no prompt). |
+| `FR-migrations-update-chains` | Surface 12 chained `/pdeq-migrate` region after the consumer accepts the chain prompt; Surface 15 covers the offer-then-decline path (the FR text reads "applies or offers", and the prompt is the explicit offer). |
 | `FR-migrations-update-in-session` | Surface 12 final summary `New commands available:` / `Updated commands:` listing. Engineering owns the mechanism. |
 | `FR-migrations-update-noop` | Surface 11. |
 | `FR-migrations-update-bump-failure` | Surface 14; both versions reported unchanged. |
@@ -1032,7 +1087,7 @@ Every product requirement is addressed somewhere in this design spec, either as 
 - **Exact non-breaking override trailer text.** The spec proposes `pdeq-migration: none-required` as the commit-message trailer. If engineering prefers a different convention (a git notes entry, a file marker, etc.), Surface 8 option C needs updating. The design assumption is "something lightweight in the commit message itself" so the decision is auditable via `git log`.
 - **Migration file path context-awareness.** Resolved: authored at `migrations/<ver>.md` in the pdeq repo, exposed to consumers at `.pdeq/migrations/<ver>.md` via submodule. Surface 8 (commit-msg gate, pdeq-repo-only) prints `migrations/`; consumer-side runner prints `.pdeq/migrations/`. Engineering owns context detection.
 - **`/pdeq-update` command name.** Resolved: the command is `/pdeq-update` (not the bare-verb `/update`, not `/pdeq-migrate --bump`). Justification in "Upgrade Entrypoint UX → Command name decision".
-- **Auto-run vs. prompt for chained migration.** Resolved: auto-run. Once the consumer has typed `/pdeq-update`, they have already opted in to the upgrade; a confirmation prompt would split one decision into two. Recovery on mid-migration failure goes through Surface 5 unchanged.
+- **Auto-run vs. prompt for chained migration.** Resolved: prompt. The bump is a non-trivial mutation (submodule pointer + symlink reconciliation) that the consumer may legitimately want to inspect via `git diff` before applying mechanical/semantic edits on top. A single cyan `?` prompt with a default-yes answer (a bare Enter accepts) costs one keystroke on the happy path and gives the consumer the option to stage the bump and the migration commits separately on the inspect path (Flow A1). The prompt is skipped when the pending set is empty — a pure non-breaking advance has no mechanical or semantic edit to gate behind a review checkpoint. Mid-migration failure recovery on the accepted path is Surface 5 unchanged; declining the prompt is its own surface (Surface 15) and exits 0.
 - **In-session command availability — engineering handoff.** Surface 12 specifies what the consumer sees after a successful `/pdeq-update`: a final summary line listing `New commands available:` and/or `Updated commands:`, plus the contract that any command listed is immediately invokable in the same session. The mechanism by which the harness discovers and exposes commands shipped by the newly-pinned pdeq version mid-session is **out of design's lane and explicitly handed off to engineering**. Engineering must ensure the listed commands are usable when the user reads the summary line; how that is achieved (process re-exec, command-table refresh, on-demand resolution, etc.) is engineering's call.
 
 ---

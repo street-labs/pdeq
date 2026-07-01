@@ -1,5 +1,5 @@
 ---
-product-hash: 7e42c8798456b4865d3587297815795edd1881abf503cac093811f6011b752a7
+product-hash: d810b089ab8e3446078548f3898ccbc91cfe13b5014dbdb36c0c64ce11468462
 product-slugs: [AC-migrations-absent-reported, AC-migrations-dry-run-accurate, AC-migrations-gate-allows-nonbreaking, AC-migrations-gate-blocks, AC-migrations-idempotent-rerun, AC-migrations-lineage-refused, AC-migrations-missing-file-refused, AC-migrations-no-bump-on-failure, AC-migrations-nonbreaking-advance, AC-migrations-noop-when-current, AC-migrations-ordered-apply, AC-migrations-scope-respected, AC-migrations-self-migration-runs, AC-migrations-semantic-context, AC-migrations-update-bump-failure, AC-migrations-update-dry-run, AC-migrations-update-end-to-end, AC-migrations-update-in-session, AC-migrations-update-noop, FR-migrations-absent-version, FR-migrations-atomic-bump, FR-migrations-author-written, FR-migrations-bootstrap-chain, FR-migrations-breaking-gate, FR-migrations-dry-run, FR-migrations-explicit-run, FR-migrations-failure-report, FR-migrations-idempotent, FR-migrations-lineage-integrity, FR-migrations-mechanical-block, FR-migrations-missing-file-refused, FR-migrations-no-false-positive, FR-migrations-nonbreaking-advance, FR-migrations-noop-when-current, FR-migrations-one-per-version, FR-migrations-order-within, FR-migrations-ordered, FR-migrations-ordered-application, FR-migrations-pending-detection, FR-migrations-recoverable-partial, FR-migrations-scoped-writes, FR-migrations-self-migration, FR-migrations-semantic-block, FR-migrations-unknown-version, FR-migrations-update-bump-failure, FR-migrations-update-bumps-pin, FR-migrations-update-chains, FR-migrations-update-command, FR-migrations-update-dry-run, FR-migrations-update-in-session, FR-migrations-update-noop, FR-migrations-version-bump, FR-migrations-version-field, FR-migrations-version-readable, NFR-migrations-determinism, NFR-migrations-enforcement-precision, NFR-migrations-idempotency, NFR-migrations-scope-minimalism]
 ---
 # Migrations — CLI Test Plan
@@ -137,8 +137,8 @@ Stored in `tests/fixtures/agents/`:
 | `AC-migrations-missing-file-refused` | `TC-migrations-missing-file-refused` | Not started |
 | `FR-migrations-update-command` | `TC-migrations-update-happy`, `TC-migrations-update-noop-current`, `TC-migrations-update-self-host-refuses` | Not started |
 | `FR-migrations-update-bumps-pin` | `TC-migrations-update-happy`, `TC-migrations-update-nonbreaking-only` | Not started |
-| `FR-migrations-update-chains` | `TC-migrations-update-happy`, `TC-migrations-update-nonbreaking-only` | Not started |
-| `FR-migrations-update-in-session` | `TC-migrations-update-in-session-new-command`, `TC-migrations-update-symlink-prune` | Not started |
+| `FR-migrations-update-chains` | `TC-migrations-update-happy` (accept path), `TC-migrations-update-decline-chain` (offer-then-decline path), `TC-migrations-update-nonbreaking-only` (prompt-skipped no-pending path) | Not started |
+| `FR-migrations-update-in-session` | `TC-migrations-update-in-session-new-command`, `TC-migrations-update-symlink-prune` | In progress |
 | `FR-migrations-update-noop` | `TC-migrations-update-noop-current` | Not started |
 | `FR-migrations-update-bump-failure` | `TC-migrations-update-bump-failure-network` | Not started |
 | `FR-migrations-update-dry-run` | `TC-migrations-update-dry-run` | Not started |
@@ -745,16 +745,37 @@ Verifies the `/pdeq-update` slash command end-to-end: bump-then-migrate happy pa
   The bare remote backing `.pdeq/` carries breaking versions `0.3.0`, `0.3.2`, and `0.4.0` (with matching mechanical-only migration files at `migrations/0.3.0.md`, `migrations/0.3.2.md`, `migrations/0.4.0.md`) on the path from the pinned commit to the available tip. `/pdeq-update` must advance pinned to match available, then advance recorded to match the new pinned.
 - **Steps**:
   1. Snapshot pre-run: `git -C .pdeq rev-parse HEAD` → `PRE_PIN_SHA`; `pdeq.json`'s `pdeqVersion` (= `0.2.1`); `.pdeq/VERSION` content (= `0.2.1`); specs root file-tree hash; `.pdeq/migrations/` listing (the migration files for `0.3.0`, `0.3.2`, `0.4.0` are not yet visible because the submodule is still on `0.2.1`).
-  2. Run `/pdeq-update` from inside an agent session whose cwd is the fixture root. (For automated CI, drive via the `pdeq-update.md` orchestrator's underlying shell calls in sequence: `git submodule update --remote --force .pdeq`, then `scripts/sync-symlinks.sh --prune --json`, then `scripts/migrate.sh list-pending`, then iterate the migration loop with `parse` + `bump`. This bypasses the agent prompt but exercises every shell helper `/pdeq-update` invokes.)
+  2. Run `/pdeq-update` from inside an agent session whose cwd is the fixture root. When the chain prompt fires (`? Apply pending migrations now? [Y/n]:`), answer `y` (or accept the default by pressing Enter). (For automated CI, drive via the `pdeq-update.md` orchestrator's underlying shell calls in sequence: `git submodule update --remote --force .pdeq`, then `scripts/sync-symlinks.sh --prune --json`, then `scripts/migrate.sh list-pending`, then iterate the migration loop with `parse` + `bump`. This bypasses the agent prompt but exercises every shell helper `/pdeq-update` invokes — the prompt is the orchestrator's responsibility and is exercised separately by `TC-migrations-update-decline-chain`.)
   3. After the run: re-read `git -C .pdeq rev-parse HEAD` → `POST_PIN_SHA`; `pdeqVersion`; `.pdeq/VERSION`; output capture.
 - **Expected Result**:
   - **Post-bump pinned**: `POST_PIN_SHA != PRE_PIN_SHA` and resolves to the `0.4.0` tag; `.pdeq/VERSION` reads `0.4.0`.
   - **Post-bump recorded**: `pdeqVersion` in `pdeq.json` is `0.4.0`.
   - **Post-bump available**: unchanged at `0.4.0` (origin/HEAD did not move during the test).
   - All three migration files (`0.3.0.md`, `0.3.2.md`, `0.4.0.md`) ran exactly once each in version order (assert via per-migration sentinel files written by their mechanical blocks, ordered by mtime).
-  - Captured output contains, in order: `pdeq: pinned 0.2.1 → available 0.4.0` (the pre-bump status line, comparing pre-bump pinned to available), `▸ Bumping pinned pdeq reference`, `✓ pinned pdeq advanced 0.2.1 → 0.4.0`, `▸ Migrating`, the inner status line `pdeq: recorded 0.2.1 → pinned 0.4.0` (now comparing pre-bump recorded to post-bump pinned), three nested `▸ 0.3.0`/`▸ 0.3.2`/`▸ 0.4.0` migration headers, `✓ pdeq: recorded 0.2.1 → 0.4.0`, and the final `✓ pdeq: updated to 0.4.0` summary line.
+  - Captured output contains, in order: `pdeq: pinned 0.2.1 → available 0.4.0` (the pre-bump status line), `▸ Bumping pinned pdeq reference`, `✓ pinned pdeq advanced 0.2.1 → 0.4.0`, `3 migrations pending: 0.3.0, 0.3.2, 0.4.0`, `? Apply pending migrations now? [Y/n]:` followed by the accept answer, `▸ Migrating`, the inner status line `pdeq: recorded 0.2.1 → pinned 0.4.0`, three nested `▸ 0.3.0`/`▸ 0.3.2`/`▸ 0.4.0` migration headers, `✓ pdeq: recorded 0.2.1 → 0.4.0`, and the final `✓ pdeq: updated to 0.4.0` summary line.
   - Exit 0.
-- **Notes**: The `[semi-auto]` tag reflects that the surface-output assertions are tied to the prompt orchestrator. A pure-shell variant (covering all state assertions but skipping the rendered-output regex) is `[auto]` and should run on every CI build; the surface-text regex assertions run as a manual companion at least once per release.
+- **Notes**: The `[semi-auto]` tag reflects that the chain prompt and surface-output assertions are tied to the prompt orchestrator. A pure-shell variant (covering all state assertions but skipping the prompt and rendered-output regex) is `[auto]` and should run on every CI build; the prompt + surface-text regex assertions run as a manual companion at least once per release.
+
+#### `/pdeq-update` declined chain leaves bump in place `TC-migrations-update-decline-chain` `[semi-auto]`
+
+- **Type**: E2E
+- **Covers**: `FR-migrations-update-chains` (offer-path: the runner *offered* to apply migrations and the consumer declined), `FR-migrations-update-bumps-pin` (bump still committed under decline)
+- **Preconditions**: `update-pin-behind/` fixture, same as `TC-migrations-update-happy`.
+- **Steps**:
+  1. Snapshot pre-run state identical to `TC-migrations-update-happy` step 1.
+  2. Run `/pdeq-update`. When the chain prompt fires, answer `n`.
+  3. After the run: re-read `git -C .pdeq rev-parse HEAD` → `POST_PIN_SHA`; `pdeqVersion`; `.pdeq/VERSION`; output capture; per-migration sentinel files.
+  4. Then run `/pdeq-migrate` (no further interaction needed) and re-snapshot.
+- **Expected Result**:
+  - **After step 3 (declined chain)**:
+    - `POST_PIN_SHA != PRE_PIN_SHA` and resolves to the `0.4.0` tag; `.pdeq/VERSION` reads `0.4.0`. The bump committed.
+    - `pdeqVersion` in `pdeq.json` is **unchanged** at `0.2.1`. The chained migration did not run, so the recorded-version bump that `scripts/migrate.sh bump` would perform did not happen.
+    - No per-migration sentinel file from any of `0.3.0`, `0.3.2`, `0.4.0` exists. No `▸ 0.3.0`/`▸ 0.3.2`/`▸ 0.4.0` migration header appears in the captured output.
+    - Output contains the bump success line, then `3 migrations pending: 0.3.0, 0.3.2, 0.4.0`, then `? Apply pending migrations now? [Y/n]:` followed by the `n` answer, then the yellow `~ pdeq: bumped to 0.4.0; migrations not applied.` summary, the `Recorded pdeq version: 0.2.1  (unchanged)` / `Pinned pdeq version:   0.4.0  (advanced)` / `Pending:               0.3.0, 0.3.2, 0.4.0` block, and the closing hint naming both `git diff` and `/pdeq-migrate`.
+    - Exit 0.
+  - **After step 4 (follow-up `/pdeq-migrate`)**:
+    - Outcome converges to `TC-migrations-update-happy`'s post-state: `pdeqVersion` is `0.4.0`, all three sentinel files exist, output contains `✓ pdeq: recorded 0.2.1 → 0.4.0`. This proves the decline left the project in a clean recoverable state that `/pdeq-migrate` resolves without `--from` or any other recovery flag.
+- **Notes**: The `[semi-auto]` tag has the same shape as `TC-migrations-update-happy` — a pure-shell automated companion skips the prompt entirely (drives the orchestrator's shell helpers in sequence) and asserts on filesystem state only; the prompt-decline path requires the manual companion to verify the orchestrator honors a non-accept answer and emits Surface 15 instead of proceeding into the chained loop.
 
 #### `/pdeq-update` no-op when already current `TC-migrations-update-noop-current` `[auto]`
 
@@ -939,6 +960,32 @@ The migrations feature touches several existing pdeq mechanisms. When implementi
 - **Terminal output style**: the migrations feature introduces the `✗` and `•` glyphs. Ensure other pdeq commands' output style wasn't accidentally changed (sanity-diff `/pdeq-status` output before/after this feature lands).
 
 ---
+
+## Test Execution Results
+
+### Test Execution Results — `/pdeq-update` automated suite (2026-06-30)
+
+Suite: `engineering/apps/cli/tests/migrations/` (run via `run-all.sh`). 11 tests, all passing. This is the `[auto]` shell layer of the upgrade-entrypoint TCs — it drives the real orchestrator sequence end to end: the actual `git submodule update --remote --force .pdeq` bump (against a real `.pdeq` submodule pinned behind a versioned remote), `scripts/sync-symlinks.sh --prune --json`, and the `scripts/migrate.sh list-pending` / `bump` loop, asserting on filesystem + version state. Only the agent-driven chain prompt and the `[manual]` same-session slash-command invocation are out of this layer's scope (see "Remaining" below).
+
+| Area | Test functions | What was verified | Status |
+|---|---|---|---|
+| Symlink reconciliation (`test-sync-symlinks.sh`) | `sync_creates_new_command`, `sync_prune_removes_stale`, `sync_json_mode_completes`, `sync_preserves_consumer_symlinks`, `sync_idempotent` | `--prune --json` creates managed symlinks for newly-shipped commands, prunes dangling pdeq-owned symlinks, leaves consumer-authored (non-`.pdeq`) symlinks untouched, emits well-formed `{"created":[…],"deleted":[…]}`, and is idempotent on re-run. Covers `TC-migrations-update-in-session-new-command` (`[auto]` companion: symlink create + JSON report + resolution) and `TC-migrations-update-symlink-prune` (prune + JSON `deleted` + hand-authored-file preservation). | Pass |
+| Version-math flow (`test-update-flow.sh`) | `update_pending_set_after_bump`, `update_accept_advances_recorded`, `update_decline_leaves_recorded`, `update_noop_when_current` | Given a simulated just-bumped working tree, `migrate.sh list-pending` returns the `(recorded, pinned]` set ascending; the accept path bumps recorded to the pin and empties the pending set; the decline path leaves recorded unmoved with the full pending set intact (recoverable via `/pdeq-migrate`); the no-op path reports nothing pending when recorded == pin. Covers `TC-migrations-update-noop-current` and the filesystem-state half of `TC-migrations-update-happy` / `TC-migrations-update-decline-chain`. | Pass |
+| Real-submodule E2E (`test-update-e2e.sh`) | `update_e2e_happy`, `update_e2e_decline` | Against a real `.pdeq` submodule pinned at 0.2.1 behind a remote whose `main` tip is 0.4.0: `git submodule update --remote --force .pdeq` advances `.pdeq/VERSION` 0.2.1→0.4.0 and the pin SHA; `sync-symlinks --prune --json` then creates the newly-shipped `pdeq-update.md` symlink (resolving to the bumped source), prunes the now-dangling `pdeq-legacy.md`, and preserves the surviving `pdeq-kickoff.md`; `list-pending` returns `0.3.0/0.3.2/0.4.0`; the accept loop advances recorded to the pin; the decline path leaves recorded at 0.2.1 with the pin advanced and the full pending set intact, then a follow-up bump loop converges. Covers the `[auto]` shell layer of `TC-migrations-update-happy`, `TC-migrations-update-decline-chain`, `TC-migrations-update-symlink-prune`, and the gating companion of `TC-migrations-update-in-session-new-command`. | Pass |
+
+**Bugs found and fixed** (in `scripts/sync-symlinks.sh`, surfaced by running the suite under macOS bash 3.2 in `--json` mode — the exact mode `/pdeq-update` invokes):
+
+1. **`set -e` abort in `--json` mode.** The `note_created` / `note_deleted` / `note_skip` helpers ended in `[[ "$OPT_JSON" == "0" ]] && printf …`; with JSON enabled the `[[ … ]]` is false, the function returns 1, and `set -e` aborted the sync on the *first* file touched. Fixed by switching the helpers to `if … then … fi` so they always return 0.
+2. **`set -u` crash on empty arrays.** The JSON emission expanded `"${CREATED_FILES[@]}"` / `"${DELETED_FILES[@]}"`, which under `set -u` is an unbound-variable error in bash 3.2 (macOS default) when the array is empty — and an empty `deleted` set is the common `/pdeq-update` case. Fixed with the `${arr[@]+"${arr[@]}"}` guard.
+
+Both would have broken `/pdeq-update` on macOS at the symlink-reconciliation step.
+
+**Remaining for full TC closure** (the `[semi-auto]` / `[manual]` portions, still `Not started`):
+
+- The agent chain-prompt orchestration — the runner printing `? Apply pending migrations now? [Y/n]:` and branching on accept/decline — and the surface-output regex assertions for Surfaces 12 and 15 (`[semi-auto]`; the prompt is the orchestrator's responsibility and is not reachable from a pure-shell test).
+- The `[manual]` same-session slash-command invocability step of `TC-migrations-update-in-session-new-command` (verifying the harness's lazy disk-lookup of a newly-symlinked command), which automation cannot reach.
+
+The `git submodule update --remote --force .pdeq` bump and the chained migrate loop **are** now exercised by `test-update-e2e.sh` against a real submodule. The `FR-migrations-update-in-session` matrix row stays `In progress`: every `[auto]` gate (including the real bump) is green, but the `[manual]` release-time harness-invocation step of `TC-migrations-update-in-session-new-command` has not been run.
 
 ## Gaps and Flags for Upstream
 
