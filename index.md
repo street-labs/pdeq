@@ -350,3 +350,8 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-lane-discipline-update-seed-idempotent | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-update-review-no-edit | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-slug-not-flagged | TC | qa/cli/lane-discipline.md |  |  |
+| FR-migrations-advisory-class | FR | product/migrations.md | engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
+| AC-migrations-advisory-applied | AC | product/migrations.md | engineering/cli/migrations.md, qa/cli/migrations.md |  |
+| AC-migrations-advisory-conformant | AC | product/migrations.md | engineering/cli/migrations.md, qa/cli/migrations.md |  |
+| TC-migrations-advisory-applied | TC | qa/cli/migrations.md |  |  |
+| TC-migrations-advisory-conformant | TC | qa/cli/migrations.md |  |  |

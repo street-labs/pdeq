@@ -1,6 +1,6 @@
 ---
-product-hash: d810b089ab8e3446078548f3898ccbc91cfe13b5014dbdb36c0c64ce11468462
-product-slugs: [AC-migrations-absent-reported, AC-migrations-dry-run-accurate, AC-migrations-gate-allows-nonbreaking, AC-migrations-gate-blocks, AC-migrations-idempotent-rerun, AC-migrations-lineage-refused, AC-migrations-missing-file-refused, AC-migrations-no-bump-on-failure, AC-migrations-nonbreaking-advance, AC-migrations-noop-when-current, AC-migrations-ordered-apply, AC-migrations-scope-respected, AC-migrations-self-migration-runs, AC-migrations-semantic-context, AC-migrations-update-bump-failure, AC-migrations-update-dry-run, AC-migrations-update-end-to-end, AC-migrations-update-in-session, AC-migrations-update-noop, FR-migrations-absent-version, FR-migrations-atomic-bump, FR-migrations-author-written, FR-migrations-bootstrap-chain, FR-migrations-breaking-gate, FR-migrations-dry-run, FR-migrations-explicit-run, FR-migrations-failure-report, FR-migrations-idempotent, FR-migrations-lineage-integrity, FR-migrations-mechanical-block, FR-migrations-missing-file-refused, FR-migrations-no-false-positive, FR-migrations-nonbreaking-advance, FR-migrations-noop-when-current, FR-migrations-one-per-version, FR-migrations-order-within, FR-migrations-ordered, FR-migrations-ordered-application, FR-migrations-pending-detection, FR-migrations-recoverable-partial, FR-migrations-scoped-writes, FR-migrations-self-migration, FR-migrations-semantic-block, FR-migrations-unknown-version, FR-migrations-update-bump-failure, FR-migrations-update-bumps-pin, FR-migrations-update-chains, FR-migrations-update-command, FR-migrations-update-dry-run, FR-migrations-update-in-session, FR-migrations-update-noop, FR-migrations-version-bump, FR-migrations-version-field, FR-migrations-version-readable, NFR-migrations-determinism, NFR-migrations-enforcement-precision, NFR-migrations-idempotency, NFR-migrations-scope-minimalism]
+product-hash: a8d803138f2e0a124301b0c4515667cefea713111e7670562a5b7b84575b0549
+product-slugs: [AC-migrations-absent-reported, AC-migrations-advisory-applied, AC-migrations-advisory-conformant, AC-migrations-dry-run-accurate, AC-migrations-gate-allows-nonbreaking, AC-migrations-gate-blocks, AC-migrations-idempotent-rerun, AC-migrations-lineage-refused, AC-migrations-missing-file-refused, AC-migrations-no-bump-on-failure, AC-migrations-nonbreaking-advance, AC-migrations-noop-when-current, AC-migrations-ordered-apply, AC-migrations-scope-respected, AC-migrations-self-migration-runs, AC-migrations-semantic-context, AC-migrations-update-bump-failure, AC-migrations-update-dry-run, AC-migrations-update-end-to-end, AC-migrations-update-in-session, AC-migrations-update-noop, FR-migrations-absent-version, FR-migrations-advisory-class, FR-migrations-atomic-bump, FR-migrations-author-written, FR-migrations-bootstrap-chain, FR-migrations-breaking-gate, FR-migrations-dry-run, FR-migrations-explicit-run, FR-migrations-failure-report, FR-migrations-idempotent, FR-migrations-lineage-integrity, FR-migrations-mechanical-block, FR-migrations-missing-file-refused, FR-migrations-no-false-positive, FR-migrations-nonbreaking-advance, FR-migrations-noop-when-current, FR-migrations-one-per-version, FR-migrations-order-within, FR-migrations-ordered, FR-migrations-ordered-application, FR-migrations-pending-detection, FR-migrations-recoverable-partial, FR-migrations-scoped-writes, FR-migrations-self-migration, FR-migrations-semantic-block, FR-migrations-unknown-version, FR-migrations-update-bump-failure, FR-migrations-update-bumps-pin, FR-migrations-update-chains, FR-migrations-update-command, FR-migrations-update-dry-run, FR-migrations-update-in-session, FR-migrations-update-noop, FR-migrations-version-bump, FR-migrations-version-field, FR-migrations-version-readable, NFR-migrations-determinism, NFR-migrations-enforcement-precision, NFR-migrations-idempotency, NFR-migrations-scope-minimalism]
 ---
 # Migrations — CLI Test Plan
 
@@ -133,6 +133,9 @@ Stored in `tests/fixtures/agents/`:
 | `AC-migrations-self-migration-runs` | `TC-migrations-self-migration-advances-version` | Not started |
 | `FR-migrations-nonbreaking-advance` | `TC-migrations-nonbreaking-advance` | Not started |
 | `AC-migrations-nonbreaking-advance` | `TC-migrations-nonbreaking-advance` | Not started |
+| `FR-migrations-advisory-class` | `TC-migrations-advisory-applied`, `TC-migrations-advisory-conformant` | Not started |
+| `AC-migrations-advisory-applied` | `TC-migrations-advisory-applied` | Not started |
+| `AC-migrations-advisory-conformant` | `TC-migrations-advisory-conformant` | Not started |
 | `FR-migrations-missing-file-refused` | `TC-migrations-missing-file-refused` | Not started |
 | `AC-migrations-missing-file-refused` | `TC-migrations-missing-file-refused` | Not started |
 | `FR-migrations-update-command` | `TC-migrations-update-happy`, `TC-migrations-update-noop-current`, `TC-migrations-update-self-host-refuses` | In progress |
@@ -243,6 +246,26 @@ Verifies the `/pdeq-migrate` command's reading of and response to the four versi
   - Final line: `✓ pdeq: recorded 0.3.0 → 0.3.2` followed by `No migrations ran.`
   - `pdeqVersion` in `pdeq.json` is now `0.3.2`.
   - No `.md` file in the specs tree was modified (hash compare).
+
+#### Advisory migration applied like any other `TC-migrations-advisory-applied` `[auto]`
+
+- **Type**: Integration
+- **Covers**: `FR-migrations-advisory-class`, `AC-migrations-advisory-applied`
+- **Preconditions**: Fixture recorded `0.4.0`, pinned `0.5.0` (a MINOR bump → lineage-breaking). A migration file exists for `0.5.0` with `breaking: false` frontmatter and an idempotent mechanical block.
+- **Steps**: Run `/pdeq-migrate`.
+- **Expected Result**:
+  - Exit 0. The `0.5.0` migration is listed as pending and applied in order (the `breaking: false` flag does not cause it to be skipped or to trip missing-file refusal — the file is present for the lineage-breaking version).
+  - `pdeqVersion` advances to `0.5.0`.
+  - The mechanical block's effect is present after the run.
+
+#### Advisory migration preserves conformance `TC-migrations-advisory-conformant` `[auto]`
+
+- **Type**: Integration
+- **Covers**: `FR-migrations-advisory-class`, `AC-migrations-advisory-conformant`
+- **Preconditions**: Same advisory `0.5.0` migration. Two sub-cases: (a) apply it via `/pdeq-migrate`; (b) run its mechanical block twice.
+- **Expected Result**:
+  - (a) After applying, the project is conformant — no audit (traceability / lane) reports a new failure attributable to the migration; a report-only semantic block reports `updated 0` and edits no spec file (checksum compare).
+  - (b) The second mechanical run makes no further change (idempotent) — the config seed is not duplicated and an already-populated config is untouched.
 
 #### Missing migration file for breaking pinned version refused `TC-migrations-missing-file-refused` `[auto]`
 

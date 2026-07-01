@@ -1,4 +1,4 @@
-<!-- Implements: FR-migrations-explicit-run, FR-migrations-ordered-application, FR-migrations-order-within, FR-migrations-dry-run, FR-migrations-failure-report, FR-migrations-self-migration -->
+<!-- Implements: FR-migrations-explicit-run, FR-migrations-ordered-application, FR-migrations-order-within, FR-migrations-dry-run, FR-migrations-failure-report, FR-migrations-self-migration, FR-migrations-advisory-class -->
 # Pdeq Migrate: $ARGUMENTS
 
 Apply pending pdeq migrations from the pinned `.pdeq` submodule to this project. You are the migration runner. Shell helpers in `scripts/migrate.sh` do version math and file discovery; you drive the loop, read migration files, and execute semantic prompts inline.
