@@ -12,7 +12,9 @@ This file defines shared vocabulary for the project. All agents must use consist
 
 **Bootstrap chain** — The arrangement by which the pdeq repository manages its own specs using a pinned previous-stable pdeq version rather than the in-development version. Lets pdeq evolve itself using its own tooling without chicken-and-egg risk.
 
-**Breaking change** — A change to pdeq that requires consumer projects to run a migration to stay in conformance. Additive or internal-only changes are not breaking; changes to slug formats, required config keys, required file layouts, or other consumer-visible contracts are.
+**Breaking change** — A change to pdeq that requires consumer projects to run a migration to stay in conformance. Additive or internal-only changes are not breaking; changes to slug formats, required config keys, required file layouts, or other consumer-visible contracts are. Two operational senses coexist: **lineage-breaking** (a MINOR/MAJOR version bump — what the migration runner and the enforcement gate act on) and **consumer-breaking** (the consumer must run the migration to stay conformant — recorded in a migration's `breaking:` frontmatter). They usually coincide; when a lineage-breaking release is not consumer-breaking, it ships an [advisory migration].
+
+**Advisory migration** — A migration whose frontmatter declares `breaking: false`. It rides a lineage-breaking (MINOR/MAJOR) release that is not consumer-breaking: its transforms are optional and idempotent (e.g. seeding an optional config scaffold, or a report-only conformance review), so a consumer who skips it — or whose semantic block only reports — stays conformant. The runner applies it exactly like any other pending migration; the flag is human-facing documentation, not a control signal. `migrations/0.5.0.md` (lane-discipline) is the first advisory migration.
 
 **Code Map** — The section in a platform-specific engineering spec that lists planned code locations for every requirement slug the spec covers. Captures implementation intent at planning time and is kept current as files move, split, or merge during implementation.
 
