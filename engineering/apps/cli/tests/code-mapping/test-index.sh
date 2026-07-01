@@ -35,10 +35,14 @@ test_deterministic_two_runs() {
   seed_index "$f" "FR-x-one" "FR-x-two"
   seed_marker "$f" "src/a.ts" "FR-x-one"
   seed_marker "$f" "src/b.ts" "FR-x-two"
+  # Warm-up: the first run fills the (empty) Code column and reports
+  # "Code column updated" — a one-time write. Determinism is about the
+  # steady state, so compare two runs AFTER the column is populated.
+  run_audit "$f" > /dev/null
   local run1 run2
   run1=$(run_audit "$f")
   cp "$f/index.md" "$f/index.md.run1"
   run2=$(run_audit "$f")
   diff -q "$f/index.md" "$f/index.md.run1" > /dev/null
-  assert_eq "$run1" "$run2" "stderr byte-identical across two runs"
+  assert_eq "$run1" "$run2" "stderr byte-identical across two steady-state runs"
 }

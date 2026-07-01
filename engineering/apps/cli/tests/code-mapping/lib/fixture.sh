@@ -31,7 +31,7 @@
 make_fixture() {
   local dir
   dir=$(mktemp -d 2>/dev/null || mktemp -d -t code-mapping-fixture)
-  mkdir -p "$dir/product" "$dir/engineering" "$dir/engineering/cli"
+  mkdir -p "$dir/product" "$dir/engineering" "$dir/engineering/cli" "$dir/src"
   cat > "$dir/pdeq.json" << 'JSON'
 {
   "pdeqVersion": "0.2.0",
