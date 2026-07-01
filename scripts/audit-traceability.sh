@@ -17,6 +17,8 @@
 #   PDEQ_ALLOW_DRIFT=1                  Demote all blocks to warnings; rewrite index regardless.
 #   PDEQ_CODE_MAPPING_GRACE=<int>       Grace period for uncovered FRs (default: 5).
 #   PDEQ_CODE_MAPPING_SKIP_INDEX_REWRITE=1  Short-circuit phase 9 entirely.
+#   PDEQ_FORCE_GREP=1                   Force the grep marker-scan fallback even
+#                                       when ripgrep is present (test seam).
 #
 # Can be run standalone (./scripts/audit-traceability.sh) or as a git pre-commit hook.
 
@@ -179,13 +181,18 @@ scan_markers() {
   hits_file=$(mktemp)
   trap "rm -f '$hits_file'" RETURN
 
-  if command -v rg >/dev/null 2>&1; then
+  if command -v rg >/dev/null 2>&1 && [ -z "${PDEQ_FORCE_GREP:-}" ]; then
     local rg_args=()
     while IFS= read -r a; do rg_args+=("$a"); done < <(build_exclude_args_rg)
     rg --pcre2 --hidden --with-filename --line-number --no-heading --sort path \
        "${rg_args[@]}" "$MARKER_REGEX" "$ROOT" 2>/dev/null > "$hits_file" || true
   else
-    warnf "ripgrep not found; using grep fallback — audit may be slower than 2s target"
+    # scan_markers writes its marker TSV to stdout (captured by the caller), so
+    # this diagnostic MUST go to stderr — otherwise the warning line is parsed as
+    # a marker row (empty file/line) and reported as a bogus "orphan marker at ::".
+    # (grep -P requires GNU grep; on a BSD-grep host with no rg the fallback finds
+    # nothing rather than erroring — install ripgrep for full coverage there.)
+    warnf "ripgrep not found; using grep fallback — audit may be slower than 2s target" >&2
     local grep_args=()
     while IFS= read -r a; do grep_args+=("$a"); done < <(build_exclude_args_grep)
     grep -rnP "${grep_args[@]}" "$MARKER_REGEX" "$ROOT" 2>/dev/null \

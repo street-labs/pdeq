@@ -189,7 +189,7 @@ Index header gains one column: `Code`. Existing rows gain an empty last cell on 
 
 | Function | Purpose |
 |---|---|
-| `scan_markers` | Runs the ripgrep-or-grep marker scan and emits `(slug\tfile\tline)` tuples on stdout. |
+| `scan_markers` | Runs the ripgrep-or-grep marker scan and emits `(slug\tfile\tline)` tuples on stdout. Its stdout is captured as the marker TSV, so it emits **only data there** — the `ripgrep not found` fallback diagnostic goes to **stderr**, never stdout (otherwise the warning line is parsed as a marker row and reported as a bogus `orphan marker at ::`). Forcing the fallback for tests: `PDEQ_FORCE_GREP=1`. |
 | `check_scope_rule` | Reads `scan_markers` output. For each marker in a function-capable file, finds the first named-unit declaration line and warns iff the marker is more than one line above it. Warning only. |
 | `parse_code_map <engineering-spec>` | Emits `(slug\tpath\tstatus)` tuples for one engineering spec's Code Map section. |
 | `check_orphan_markers` | Reads `scan_markers` output, compares against `$PRODUCT_SLUGS`, reports orphans. |
