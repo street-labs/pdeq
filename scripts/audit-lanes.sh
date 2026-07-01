@@ -13,8 +13,64 @@ set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || dirname "$(dirname "$0")")"
 PRODUCT_DIR="$ROOT/product"
+PDEQ_CONFIG_PATH="${PDEQ_CONFIG_PATH:-$ROOT/pdeq.json}"
 
 violations=()
+
+# ─── Project-tunable red-flag terms (from pdeq.json) ───────────────────────
+# Reads laneAudit.{vendors,protocols,platforms,libraries} and prints them as a
+# regex-escaped, `|`-joined alternation body to append to the built-in default
+# term list. Extends the defaults — never replaces them (back-compat). No jq
+# dependency; inline python3 matches the convention in audit-traceability.sh.
+# Implements: FR-lane-discipline-project-terms
+read_lane_terms() {
+  if [ ! -f "$PDEQ_CONFIG_PATH" ]; then return; fi
+  python3 -c "
+import json, re
+try:
+    with open('$PDEQ_CONFIG_PATH') as f:
+        data = json.load(f)
+    la = data.get('laneAudit') or {}
+    terms = []
+    for key in ('vendors', 'protocols', 'platforms', 'libraries'):
+        terms.extend(la.get(key) or [])
+    seen = set(); out = []
+    for t in terms:
+        if not t or t in seen:
+            continue
+        seen.add(t)
+        out.append(re.escape(t))
+    print('|'.join(out))
+except Exception:
+    pass
+" 2>/dev/null || true
+}
+
+# ─── Portable line scanner (python3 re, not grep -P) ───────────────────────
+# Prints "<lineno>:<line>" for every line of $2 matching python regex $1.
+# Optional $3 containing "i" enables case-insensitive matching.
+# Uses python3 (already a hard pdeq dependency) instead of `grep -P`, which is
+# unsupported by macOS BSD grep — where the pre-commit hook actually runs — and
+# would otherwise make this audit silently no-op. Deterministic across platforms.
+# Implements: FR-lane-discipline-lexical-backstop
+pcre_scan() {
+  python3 -c "
+import sys, re
+pat, path = sys.argv[1], sys.argv[2]
+flags = re.I if (len(sys.argv) > 3 and 'i' in sys.argv[3]) else 0
+try:
+    rx = re.compile(pat, flags)
+except re.error:
+    sys.exit(0)
+try:
+    with open(path, encoding='utf-8', errors='replace') as f:
+        for i, line in enumerate(f, 1):
+            if rx.search(line):
+                sys.stdout.write('%d:%s\n' % (i, line.rstrip('\n')))
+except OSError:
+    pass
+" "$1" "$2" ${3:+"$3"}
+}
 
 warn() {
   violations+=("$1")
@@ -38,13 +94,19 @@ if [ -z "$product_files" ]; then
 fi
 
 # ─── Technology names (engineering bleed) ──────────────────────────────────
-echo "[1/4] Checking for technology name references..."
-# Update this list to match the technologies used in your project.
+echo "[1/4] Checking for technology, vendor, protocol, and platform references..."
+# Built-in default term list. Extended (never replaced) by laneAudit terms from
+# pdeq.json so a project can flag its own vendors/protocols/platforms/libraries.
+# Implements: FR-lane-discipline-lexical-backstop, FR-lane-discipline-default-terms
 tech_terms="React|TypeScript|Shiki|Vite|SwiftUI|AppKit|tree-sitter|Zustand|Tailwind|pnpm|npm|Prism\.js|CodeMirror|webpack|DOMPurify|rehype|remark|markdown-it"
+extra_terms=$(read_lane_terms)
+if [ -n "$extra_terms" ]; then
+  tech_terms="$tech_terms|$extra_terms"
+fi
 
 while IFS= read -r file; do
   relpath="${file#$ROOT/}"
-  matches=$(grep -nP "\b($tech_terms)\b" "$file" 2>/dev/null || true)
+  matches=$(pcre_scan "\b($tech_terms)\b" "$file" || true)
   if [ -n "$matches" ]; then
     while IFS= read -r match; do
       warn "$relpath:$match"
@@ -60,7 +122,7 @@ css_terms="[0-9]+px|[0-9]+rem|font-family|monospace|sans-serif|background-color|
 
 while IFS= read -r file; do
   relpath="${file#$ROOT/}"
-  matches=$(grep -nP "($css_terms)" "$file" 2>/dev/null || true)
+  matches=$(pcre_scan "($css_terms)" "$file" || true)
   if [ -n "$matches" ]; then
     while IFS= read -r match; do
       # Skip lines that are in code blocks (start with spaces/tabs + backtick context)
@@ -76,7 +138,7 @@ api_patterns='(GET|POST|PUT|DELETE|PATCH)\s+/api/|`/api/'
 
 while IFS= read -r file; do
   relpath="${file#$ROOT/}"
-  matches=$(grep -nP "$api_patterns" "$file" 2>/dev/null || true)
+  matches=$(pcre_scan "$api_patterns" "$file" || true)
   if [ -n "$matches" ]; then
     while IFS= read -r match; do
       warn "$relpath:$match"
@@ -95,7 +157,7 @@ base_files=$(find "$PRODUCT_DIR" -maxdepth 1 -name "*.md" -not -name "CLAUDE.md"
 if [ -n "$base_files" ]; then
   while IFS= read -r file; do
     relpath="${file#$ROOT/}"
-    matches=$(grep -nPi "\b($web_terms)" "$file" 2>/dev/null || true)
+    matches=$(pcre_scan "\b($web_terms)" "$file" "i" || true)
     if [ -n "$matches" ]; then
       while IFS= read -r match; do
         warn "$relpath:$match"

@@ -26,7 +26,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-mechanical-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-semantic-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-order-within | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-explicit-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
 | FR-migrations-pending-detection | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-ordered-application | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
@@ -34,7 +34,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-nonbreaking-advance | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:301 |
 | FR-migrations-noop-when-current | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-dry-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-scoped-writes | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:354 |
 | FR-migrations-breaking-gate | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
 | FR-migrations-no-false-positive | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
@@ -307,3 +307,45 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-harness-agnostic-remove-harness-preserves-authored | TC | qa/cli/harness-agnostic.md |  |  |
 | TC-harness-agnostic-installer-names-harness-per-line | TC | qa/cli/harness-agnostic.md |  |  |
 | TC-harness-agnostic-self-host-migrate-clean | TC | qa/cli/harness-agnostic.md |  |  |
+| AC-lane-discipline-backstop-exit-status | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-backstop-nonblocking | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-default-catches-known | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-no-config-no-break | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-project-terms-applied | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-review-allows-legit | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-review-flags-structural | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-review-output-shape | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-review-suggests-terms | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| FR-lane-discipline-backstop-at-commit | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| FR-lane-discipline-default-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:100 |
+| FR-lane-discipline-lexical-backstop | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:100, scripts/audit-lanes.sh:55 |
+| FR-lane-discipline-project-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, pdeq.schema.json, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:25 |
+| FR-lane-discipline-review-in-workflow | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | pdeq-rules/commands/pdeq-kickoff.md:161 |
+| FR-lane-discipline-severity | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
+| FR-lane-discipline-structural-review | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
+| FR-lane-discipline-structured-output | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
+| FR-lane-discipline-taxonomy | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
+| FR-lane-discipline-term-suggestions | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
+| FR-lane-discipline-two-layer | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | pdeq-rules/commands/pdeq-kickoff.md:161 |
+| NFR-lane-discipline-advisory-review | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| NFR-lane-discipline-backcompat | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| NFR-lane-discipline-deterministic-backstop | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| NFR-lane-discipline-nonblocking-backstop | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| TC-lane-discipline-defaults-fire | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-extend-not-replace | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-hook-warn-only | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-literal-escape | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-no-config-clean | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-no-pcre-grep | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-project-terms-fire | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-review-allows | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-review-structural | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-review-suggests | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-review-table | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-standalone-exit1 | TC | qa/cli/lane-discipline.md |  |  |
+| FR-lane-discipline-update-seeds-config | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | migrations/0.5.0.md:8 |
+| FR-lane-discipline-update-reviews-specs | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | migrations/0.5.0.md:8 |
+| AC-lane-discipline-update-seed-idempotent | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-update-review-no-edit | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| TC-lane-discipline-update-seed-idempotent | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-update-review-no-edit | TC | qa/cli/lane-discipline.md |  |  |

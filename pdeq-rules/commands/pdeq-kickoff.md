@@ -157,7 +157,10 @@ These post-processing steps are independent — order among them does not matter
 
 5. **Consistency pass** — Check that terminology is consistent across all artifacts and matches `glossary.md`.
 
-6. **Graduate roadmap items** — If this kickoff consumed any roadmap entry (per Step 0 B.1), remove the graduated item(s) from `roadmap/<feature>.md`. Delete the file entirely if no items remain.
+6. **Lane review (product specs only)** — If this kickoff created or updated any **product** spec, run the **Lane Reviewer** over it (see root `AGENTS.md` §"Quality Subagents" → Lane Reviewer for the full contract). Reason about design/engineering/platform bleed *structurally*, not just by keyword — flag implementation-shaped or host-as-product phrasing even when it names no obvious tech term. Classify each finding by category and severity (`violation` vs `allowed: overview context` / `allowed: per-host NFR constraint`), and report findings as the structured table (File · Line · Flagged text · Category · Severity · Suggested rewording). If you spot a concrete vendor/protocol/library word the deterministic `scripts/audit-lanes.sh` would miss, suggest the `laneAudit` term addition for `pdeq.json`. This pass is advisory; it complements — and does not replace — the deterministic backstop, which runs warn-only at commit time.
+   <!-- Implements: FR-lane-discipline-review-in-workflow, FR-lane-discipline-two-layer -->
+
+7. **Graduate roadmap items** — If this kickoff consumed any roadmap entry (per Step 0 B.1), remove the graduated item(s) from `roadmap/<feature>.md`. Delete the file entirely if no items remain.
 
 ### After the parallel batch completes:
 

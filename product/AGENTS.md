@@ -156,6 +156,16 @@ Product specs describe **what** the application does and **why**, never **how** 
 | "using the OS dark mode API" | "detects the OS color scheme preference" |
 | "stored in localStorage" | "persisted using local storage appropriate to the platform" |
 
+### How lane discipline is enforced: two layers
+
+Staying in-lane is checked by two complementary mechanisms — see `../product/lane-discipline.md` for the requirements and `../engineering/cli/lane-discipline.md` for the contract.
+
+1. **Lexical backstop** (`scripts/audit-lanes.sh`) — a deterministic keyword scan that flags configured red-flag terms (technology names, and a project's own vendors/protocols/platforms/libraries listed under `laneAudit` in `pdeq.json`). It runs on demand, in CI, and **warn-only** at commit time. It is cheap and catches obvious lexical leaks, but it only catches *words*: it cannot see structural bleed, and a clean run does **not** mean the spec is in-lane.
+
+2. **Lane review** (the agent-run **Lane Reviewer**, root `AGENTS.md` §"Quality Subagents") — reasons about the *meaning and structure* of the text, so it flags implementation-shaped or host-as-product phrasing that names no listed keyword ("authorization code exchange" without the word OAuth; "subsequent invocations" treating one host as the product). It classifies each finding by category and severity (distinguishing a true `violation` from an `allowed` contextual mention) and suggests rewordings. This is the real principle enforcement; it runs in `/pdeq-kickoff` Step 4 and any standalone product-spec review.
+
+Write to satisfy the **principle**, not just to pass the grep. If the lexical backstop is silent but a requirement still reads as *how it's built* or *which host it runs on*, it is still bleed — reword it.
+
 ## Requirement Format: Before/After
 
 This shows the same requirement written in the old format vs. the preferred format.

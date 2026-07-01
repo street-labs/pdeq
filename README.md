@@ -207,7 +207,7 @@ Full schema: [`pdeq.schema.json`](pdeq.schema.json)
 | Script | What it does |
 |---|---|
 | `scripts/audit-traceability.sh` | Verifies every slug in `product/` is in `index.md`, every downstream reference resolves, and every path in `index.md` exists |
-| `scripts/audit-lanes.sh` | Checks product specs for design/engineering bleed (pixel values, library names, etc.) |
+| `scripts/audit-lanes.sh` | Deterministic lexical backstop: scans product specs for design/engineering/platform bleed using built-in defaults plus a project's own `laneAudit` terms in `pdeq.json`. Runs warn-only at commit time. The structural half — the agent-run Lane Reviewer (see `AGENTS.md` §Quality Subagents) — is what enforces the lane *principle*. |
 | `scripts/merge-decisions.sh` | Merges `decisions-pending.md` into `decisions.md` at commit time |
 | `scripts/init.sh` | Installs PDEQ into a project (submodule + `@` imports + symlinks + pdeq.json) |
 | `scripts/bootstrap.sh` | Validates bootstrap preconditions and resolves paths before `/pdeq-bootstrap` runs |
