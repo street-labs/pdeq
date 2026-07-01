@@ -80,3 +80,42 @@ test_update_e2e_decline() {
 
   rm -rf "$(dirname "$fx")"
 }
+
+# Non-breaking-only path: the pin advances (0.2.1 → 0.2.2) but the advance window
+# contains no migration files, so list-pending is empty and /pdeq-update skips
+# the chain prompt entirely (Surface 3b runs unprompted inside the chained region).
+# TC-migrations-update-nonbreaking-only
+test_update_e2e_nonbreaking_only() {
+  local fx; fx=$(make_submodule_fixture_nonbreaking)
+  local pre; pre=$(git -C "$fx/.pdeq" rev-parse HEAD)
+  git_sub "$fx" submodule update --remote --force .pdeq >/dev/null 2>&1
+  assert_eq "0.2.2" "$(cat "$fx/.pdeq/VERSION")" "pin advanced to non-breaking version"
+  if [ "$pre" = "$(git -C "$fx/.pdeq" rev-parse HEAD)" ]; then
+    echo "  FAIL: pin did not advance" >&2; rm -rf "$(dirname "$fx")"; return 1
+  fi
+  # Empty pending set => the orchestrator skips the prompt.
+  assert_eq "" "$(run_migrate "$fx" list-pending)" "no migrations pending on a non-breaking advance"
+  rm -rf "$(dirname "$fx")"
+}
+
+# Bump-failure path: if `git submodule update --remote` cannot reach the remote,
+# the bump fails and leaves the project untouched — pin and recorded both stay at
+# 0.2.1, so a re-run after fixing the remote is a clean retry (no partial state).
+# TC-migrations-update-bump-failure-network
+test_update_e2e_bump_failure() {
+  local fx; fx=$(make_submodule_fixture)
+  local pre_v pre_pin; pre_v=$(cat "$fx/.pdeq/VERSION"); pre_pin=$(git -C "$fx/.pdeq" rev-parse HEAD)
+  # Make the submodule origin unreachable (simulates a network/remote failure).
+  mv "$(dirname "$fx")/pdeq-remote" "$(dirname "$fx")/pdeq-remote.gone"
+  local rc; set +e
+  git_sub "$fx" submodule update --remote --force .pdeq >/dev/null 2>&1; rc=$?
+  set -e
+  if [ "$rc" -eq 0 ]; then
+    echo "  FAIL: bump unexpectedly succeeded against an unreachable remote" >&2
+    mv "$(dirname "$fx")/pdeq-remote.gone" "$(dirname "$fx")/pdeq-remote"; rm -rf "$(dirname "$fx")"; return 1
+  fi
+  assert_eq "$pre_v" "$(cat "$fx/.pdeq/VERSION")" "pinned VERSION unchanged after failed bump"
+  assert_eq "$pre_pin" "$(git -C "$fx/.pdeq" rev-parse HEAD)" "pin SHA unchanged after failed bump"
+  assert_eq "0.2.1" "$(run_migrate "$fx" recorded)" "recorded unchanged after failed bump"
+  rm -rf "$(dirname "$fx")"
+}

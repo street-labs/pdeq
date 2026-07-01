@@ -147,3 +147,32 @@ git_sub() {
   local fixture="$1"; shift
   git -C "$fixture" -c protocol.file.allow=always "$@"
 }
+
+# make_submodule_fixture_nonbreaking
+#   Like make_submodule_fixture but the remote advances v0.2.1 → v0.2.2 with NO
+#   migration files (a pure non-breaking advance). After the bump the pin moves
+#   but list-pending is empty, so /pdeq-update skips the chain prompt. Echoes the
+#   consumer path; caller cleans `rm -rf "$(dirname "$fixture")"`.
+make_submodule_fixture_nonbreaking() {
+  local root remote consumer pin021
+  root=$(mktemp -d 2>/dev/null || mktemp -d -t migrations-nb)
+  remote="$root/pdeq-remote"; consumer="$root/consumer"
+  git init -q -b main "$remote"
+  git -C "$remote" config user.email test@pdeq; git -C "$remote" config user.name test
+  mkdir -p "$remote/scripts" "$remote/pdeq-rules/commands" "$remote/migrations"
+  echo "0.2.1" > "$remote/VERSION"
+  printf '# kickoff\n' > "$remote/pdeq-rules/commands/pdeq-kickoff.md"
+  git -C "$remote" add -A; git -C "$remote" commit -qm v0.2.1
+  pin021=$(git -C "$remote" rev-parse HEAD)
+  echo "0.2.2" > "$remote/VERSION"    # non-breaking advance, no migration file
+  git -C "$remote" add -A; git -C "$remote" commit -qm v0.2.2
+  git init -q -b main "$consumer"
+  git -C "$consumer" config user.email test@pdeq; git -C "$consumer" config user.name test
+  git -C "$consumer" -c protocol.file.allow=always submodule add -q -b main "$remote" .pdeq
+  git -C "$consumer/.pdeq" checkout -q "$pin021"
+  cat > "$consumer/pdeq.json" << 'JSON'
+{ "pdeqVersion": "0.2.1", "specsRoot": ".", "codeRoot": ".", "platforms": ["cli"], "harnesses": ["claude"], "selfHost": false }
+JSON
+  git -C "$consumer" add -A; git -C "$consumer" commit -qm "consumer@0.2.1"
+  echo "$consumer"
+}
