@@ -4,39 +4,35 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/street-labs/pdeq)](https://github.com/street-labs/pdeq/releases)
 
-A coding-agent framework for structured software development across four lanes: **P**roduct, **D**esign, **E**ngineering, **Q**A.
+PDEQ is a spec-driven workflow for coding agents. It gives any project four structured lanes — **P**roduct, **D**esign, **E**ngineering, **Q**A — where markdown specs are the source of truth and code is derived from them. Every requirement is traceable from its product spec to the test that verifies it, and a pre-commit hook keeps specs and code in sync.
 
-PDEQ works with multiple coding-agent harnesses. v1 supports **Claude Code**, **Codex CLI**, and **Pi**. The canonical agent-instructions file is `AGENTS.md` (the cross-harness convention); `CLAUDE.md` wrappers are emitted automatically for Claude users when `claude` is in the harness list.
-
-Specs drive code. Requirements are fully traceable from definition to test. Each functional area stays in its lane.
+You drive it through your agent — **Claude Code**, **Codex CLI**, or **Pi** — with slash commands like `/pdeq-kickoff`. PDEQ takes a feature from *what* it should do → *how it looks* → *how it's built* → *how it's verified*, one lane at a time, never skipping ahead.
 
 ---
 
-## Quick Install
+## Quick start
+
+**Prerequisites:** an existing **git repository**, plus `bash`, `git`, and `python3` (already present on macOS and Linux). `ripgrep` is recommended but optional.
+
+From your project's root, add PDEQ as a submodule and run the installer:
 
 ```bash
-# From your project root — defaults to harnesses: ["claude"]
 git submodule add https://github.com/street-labs/pdeq.git .pdeq
 bash .pdeq/scripts/init.sh
 ```
 
-Specify additional harnesses with `--harnesses`:
+That's the whole install — you now have the four lanes, the traceability index, the `/pdeq-*` commands, and a pre-commit hook. Start your first feature by telling your agent what you want:
 
-```bash
-bash .pdeq/scripts/init.sh --harnesses claude,codex     # Claude + Codex
-bash .pdeq/scripts/init.sh --harnesses codex             # Codex only
-bash .pdeq/scripts/init.sh --harnesses pi                # Pi only
+```text
+/pdeq-kickoff add user login with email and password
 ```
 
-Or, if you already have PDEQ cloned locally:
+(In Codex CLI or Pi — which don't have markdown slash commands — just ask your agent: "do a pdeq kickoff for user login.")
 
-```bash
-bash /path/to/pdeq/scripts/init.sh --pdeq-url /path/to/pdeq
-```
-
-Then invoke `/pdeq-kickoff` (or, in harnesses without markdown slash commands, ask your agent to "kickoff a feature for X") to start your first feature.
-
-**Adding PDEQ to an existing codebase?** See [docs/bootstrap.md](docs/bootstrap.md) or invoke `/pdeq-bootstrap`.
+> - **Not in a git repo yet?** Run `git init` first — PDEQ installs as a git submodule, which requires one.
+> - **Using Claude Code?** Skip the commands above and just say **"add pdeq"** — the bundled skill runs the install for you.
+> - **Adding to an existing codebase?** After installing, run `/pdeq-bootstrap` to generate draft specs from your current code — see [docs/bootstrap.md](docs/bootstrap.md).
+> - **Other harnesses / options:** `bash .pdeq/scripts/init.sh --harnesses claude,codex,pi` selects harnesses; see [Getting Started](#getting-started) for existing-project, monorepo, and update flows.
 
 ---
 
@@ -84,13 +80,7 @@ your-project/
 
 ### New project (greenfield)
 
-```bash
-cd your-project
-git submodule add https://github.com/street-labs/pdeq.git .pdeq
-bash .pdeq/scripts/init.sh
-```
-
-`init.sh` creates the folder structure, materializes the right agent-instructions file per enabled harness (Claude gets `CLAUDE.md` `@import` wrappers; other harnesses get `AGENTS.md` symlinks), and symlinks the slash commands and scripts where the harness expects them. It's idempotent — safe to run again, and re-running after editing `harnesses` in `pdeq.json` reconciles the filesystem to match.
+The two-command install under [Quick start](#quick-start) is all you need. Under the hood, `init.sh` creates the folder structure, materializes the right agent-instructions file per enabled harness (Claude gets `CLAUDE.md` `@import` wrappers; other harnesses get `AGENTS.md` symlinks), and symlinks the slash commands and scripts where the harness expects them. It's idempotent — safe to re-run, and re-running after editing `harnesses` in `pdeq.json` reconciles the filesystem to match.
 
 ### Existing project
 
