@@ -2,7 +2,9 @@
 
 The user has described what they want: **$ARGUMENTS**
 
-Follow this sequence exactly. Steps are sequential unless noted otherwise. **Maximize parallelism** — launch independent tasks simultaneously wherever the dependency graph allows.
+Follow this sequence exactly. Steps are sequential unless noted otherwise; steps marked independent may run concurrently.
+
+**Delegation model (harness-neutral).** Each step names a functional *role* (product, design, engineering, QA) and the lane folder it works in. You take on that role inline, following the lane's `AGENTS.md`. A harness that supports spawning named subagents may delegate a role to one and run independent roles in parallel; a harness without subagents does the same work inline. The result is identical either way — the workflow does not depend on any subagent mechanism.
 
 ---
 
@@ -66,13 +68,13 @@ Announce your triage decision to the user before proceeding:
 
 **Only if triage determined product work is needed.**
 
-Delegate to the product agent (operating in `product/`). Be explicit about whether this is a **new spec**, an **update to an existing spec**, or a **platform-specific variant**:
+Take on the product role, working in `product/` (per `product/AGENTS.md`). Be explicit about whether this is a **new spec**, an **update to an existing spec**, or a **platform-specific variant**:
 
 - **Updating an existing spec**: Tell the agent which file to update, what sections need changes, and what to add/modify. The agent should read the existing file first and make targeted edits — not rewrite the whole file.
 - **New spec**: Have it create a new PRD markdown file following the template in `product/AGENTS.md`.
 - **Platform-specific variant**: Tell the agent which base spec to reference and have it create a platform-specific variant file (following the naming convention in AGENTS.md) that covers only platform-specific requirements and divergences. The variant must reference the base spec and not duplicate shared requirements.
 
-For cross-platform work, always do the base spec first, then platform variants **in parallel** (e.g., launch platform-A and platform-B variant agents simultaneously — they don't depend on each other).
+For cross-platform work, always do the base spec first, then each platform variant. The variants are independent of each other, so a subagent-capable harness may do them concurrently.
 
 Ensure all requirement slugs follow the format: `FR-<feature>-<slug>`, `NFR-<feature>-<slug>`, `AC-<feature>-<slug>`
 
@@ -86,13 +88,13 @@ Before moving on, read back the product spec and verify it's complete. If the us
 
 **Only if triage determined design work is needed. Wait for Step 1 to complete first.**
 
-Read the product spec from Step 1 (or the existing product spec if Step 1 was skipped). Delegate to the design agent (operating in `design/`):
+Read the product spec from Step 1 (or the existing product spec if Step 1 was skipped). Take on the design role, working in `design/` (per `design/AGENTS.md`):
 
 - **Updating an existing spec**: Tell the agent which file to update and what changed in the product spec. The agent should make targeted updates — not rewrite.
 - **New spec**: Have it create a design spec following `design/AGENTS.md`.
 - **Platform-specific variant**: Tell the agent which base design spec to reference and have it create a platform-specific variant. The variant covers platform-specific UI/UX (e.g., native controls, platform conventions) and references the base spec for shared behavior.
 
-For cross-platform work, do the base design spec first, then platform variants **in parallel**.
+For cross-platform work, do the base design spec first, then each platform variant (independent — may run concurrently on a subagent-capable harness).
 
 The design spec must address every requirement and user story. Reference specific requirement slugs.
 
@@ -108,7 +110,7 @@ These two can run **in parallel** because both depend on the same upstream input
 
 ### Engineering Spec
 
-Read the product spec and design spec (whichever exist). Delegate to the engineering agent (operating in `engineering/`):
+Read the product spec and design spec (whichever exist). Take on the engineering role, working in `engineering/` (per `engineering/AGENTS.md`):
 
 - **Updating an existing spec**: Tell the agent which file to update, what changed upstream, and what technical approach needs revisiting.
 - **New spec**: Have it create a technical spec following `engineering/AGENTS.md`.
@@ -125,7 +127,7 @@ Do NOT write code at this stage — only the technical spec.
 
 **Only if triage determined QA work is needed.**
 
-Read the product spec and design spec. Delegate to the QA agent (operating in `qa/`):
+Read the product spec and design spec. Take on the QA role, working in `qa/` (per `qa/AGENTS.md`):
 
 - **Updating an existing test plan**: Tell the agent which file to update, what changed, and which test cases need adding/modifying.
 - **New test plan**: Have it create a test plan following `qa/AGENTS.md`.
@@ -137,13 +139,13 @@ Test cases must cover every acceptance criterion. Reference specific slugs.
 
 ---
 
-## Step 4: Post-Processing + Quality Checks (parallel)
+## Step 4: Post-Processing + Quality Checks (independent)
 
 **Wait for Step 3 to complete.**
 
-Maximize parallelism here — launch all independent tasks simultaneously using multiple Task calls in one message:
+These post-processing steps are independent — order among them does not matter. A subagent-capable harness may run them concurrently; otherwise do them inline in any order:
 
-### Parallel batch — launch ALL of these at the same time:
+### Independent steps (any order; may run concurrently):
 
 1. **Update traceability index** — Update `index.md` at the project root. For any new slugs, add entries linking to all referencing files. For modified slugs, update the references.
 
