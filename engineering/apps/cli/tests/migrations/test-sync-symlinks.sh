@@ -86,3 +86,30 @@ test_sync_idempotent() {
   assert_contains "$out" '{"created":[],"deleted":[]}' "second sync is a no-op"
   rm -rf "$fx"
 }
+
+# Harness parity: a symlink-less harness (codex/pi) gets NO command symlinks —
+# harness_commands_dir is empty, so the per-harness commands loop skips it — but
+# scripts/ is still synced unconditionally. The command source is picked up by
+# the agent reading the prompt file directly, so no .claude/commands is created.
+_assert_no_command_symlinks() {
+  local harness="$1"
+  local fx; fx=$(make_consumer_fixture "$harness")
+  add_pdeq_command "$fx" "pdeq-update.md"
+  printf 'echo hi\n' > "$fx/.pdeq/scripts/helper.sh"
+  local out; out=$(run_sync "$fx" --prune --json)
+  # scripts still synced...
+  assert_contains "$out" '"scripts/helper.sh"' "$harness: scripts synced"
+  # ...but no command symlink surface.
+  assert_not_contains "$out" '.claude/commands' "$harness: no command symlink in report"
+  if [ -e "$fx/.claude/commands/pdeq-update.md" ]; then
+    echo "  FAIL: $harness got a .claude/commands symlink it should not have" >&2
+    rm -rf "$fx"; return 1
+  fi
+  rm -rf "$fx"
+}
+
+# TC-migrations-update-in-session-new-command
+test_sync_codex_no_command_symlinks() { _assert_no_command_symlinks codex; }
+
+# TC-migrations-update-in-session-new-command
+test_sync_pi_no_command_symlinks() { _assert_no_command_symlinks pi; }
