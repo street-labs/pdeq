@@ -445,11 +445,13 @@ Probes the core marker-detection logic in isolation from the rest of the audit.
 #### Grep fallback produces identical results `TC-code-mapping-grep-fallback-correctness`
 - **Type**: Integration
 - **Covers**: `FR-code-mapping-audit-scan` (grep-fallback path)
-- **Fixture**: `every-syntax-kind/` — run twice: once with `rg` on `PATH`, once with `rg` shadowed (`PATH=/tmp/empty` or `alias rg=false`).
+- **Automated**: `engineering/apps/cli/tests/code-mapping/test-marker-scan.sh::test_grep_fallback_no_orphan_pollution`. The fallback is forced deterministically via the `PDEQ_FORCE_GREP=1` seam (no `PATH` shadowing needed, so the test is host-independent).
 - **Steps**:
-  1. Run the audit with `rg` available, capture `index.md` and stderr.
-  2. Run the audit with `rg` unavailable, capture same.
-- **Expected Result**: Both runs produce byte-identical `index.md`. Both stderr outputs contain the same orphan/coverage messages modulo the additional `ripgrep not found` warning in the second run.
+  1. On an otherwise-valid fixture (product FR + a marker citing it), run the audit with `PDEQ_FORCE_GREP=1`.
+  2. Capture the combined stream and the stdout-only stream separately.
+- **Expected Result**:
+  - **No bogus orphan.** The output contains no `orphan marker` for the valid fixture. (Regression: the `ripgrep not found` diagnostic used to be printed to stdout — the same stream that carries the marker TSV — so it was parsed as a marker row with empty file/line and reported as `orphan marker at ::`, which would block commits for any consumer without `rg`.)
+  - **Diagnostic on stderr only.** The `ripgrep not found` warning appears on stderr, never on the captured stdout data stream.
 
 #### Two runs produce identical output `TC-code-mapping-deterministic-two-runs`
 - **Type**: Integration
