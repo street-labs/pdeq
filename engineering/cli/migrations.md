@@ -883,19 +883,19 @@ Every product slug is addressed by some piece of this engineering approach.
 
 ### New
 
-- `/Users/ldstreet/Development/pdeq/VERSION`
-- `/Users/ldstreet/Development/pdeq/scripts/migrate.sh`
-- `/Users/ldstreet/Development/pdeq/scripts/audit-migrations.sh`
-- `/Users/ldstreet/Development/pdeq/scripts/sync-symlinks.sh` (planned)
-- `/Users/ldstreet/Development/pdeq/.claude/commands/pdeq-migrate.md`
-- `/Users/ldstreet/Development/pdeq/.claude/commands/pdeq-update.md` (planned)
-- `/Users/ldstreet/Development/pdeq/migrations/` (directory)
-- `/Users/ldstreet/Development/pdeq/migrations/0.2.0.md` (first authored migration)
+- `VERSION`
+- `scripts/migrate.sh`
+- `scripts/audit-migrations.sh`
+- `scripts/sync-symlinks.sh` (planned)
+- `.claude/commands/pdeq-migrate.md`
+- `.claude/commands/pdeq-update.md` (planned)
+- `migrations/` (directory)
+- `migrations/0.2.0.md` (first authored migration)
 
 ### Modified
 
-- `/Users/ldstreet/Development/pdeq/pdeq.schema.json` — add `pdeqVersion` field **(schema change)**
-- `/Users/ldstreet/Development/pdeq/scripts/init.sh` — always emit `pdeq.json`, populate `pdeqVersion`; refactor Steps 5–6 to call `scripts/sync-symlinks.sh`
+- `pdeq.schema.json` — add `pdeqVersion` field **(schema change)**
+- `scripts/init.sh` — always emit `pdeq.json`, populate `pdeqVersion`; refactor Steps 5–6 to call `scripts/sync-symlinks.sh`
 
 ## Code Map
 
