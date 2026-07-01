@@ -19,8 +19,6 @@
 #   pdeq-migration: none-required
 # bypasses the gate after logging a one-line note. Use only when the version
 # bump is consciously non-breaking despite framework-file changes.
-#
-# Implements: FR-migrations-breaking-gate, FR-migrations-no-false-positive
 
 set -euo pipefail
 
@@ -44,6 +42,7 @@ fi
 #
 # Framework files trigger the gate's preconditions. Anything staged outside
 # this set is invisible to the gate (docs, specs, tests, fixtures).
+# Implements: FR-migrations-breaking-gate, FR-migrations-no-false-positive
 framework_changes=$(git diff --cached --name-only -- \
   'AGENTS.md' '*/AGENTS.md' 'CLAUDE.md' '*/CLAUDE.md' \
   'scripts/*.sh' 'pdeq-rules/commands/*.md' '.claude/commands/*.md' 'pdeq.schema.json' \
