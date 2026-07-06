@@ -1,6 +1,6 @@
 ---
-product-hash: 706c2012bb704d83f3d876741f09e9e1d8bd152afd9020413aca8948aa78ea5d
-product-slugs: [AC-harness-agnostic-bootstrap-no-subagent, AC-harness-agnostic-codex-install, AC-harness-agnostic-codex-no-commands, AC-harness-agnostic-default-claude, AC-harness-agnostic-installer-output, AC-harness-agnostic-migration-end-to-end, AC-harness-agnostic-migration-idempotent, AC-harness-agnostic-migration-warns-customized, AC-harness-agnostic-multi-install, AC-harness-agnostic-no-new-deps, AC-harness-agnostic-pi-install, AC-harness-agnostic-pi-no-commands, AC-harness-agnostic-remove-harness, AC-harness-agnostic-self-host-migrates, AC-harness-agnostic-unknown-init, AC-harness-agnostic-unknown-schema, FR-harness-agnostic-bootstrap-inline, FR-harness-agnostic-canonical-agents-file, FR-harness-agnostic-claude-import, FR-harness-agnostic-commands-per-harness, FR-harness-agnostic-commands-source-path, FR-harness-agnostic-config, FR-harness-agnostic-content-portable, FR-harness-agnostic-hard-cutover, FR-harness-agnostic-harness-change-reinstall, FR-harness-agnostic-migration, FR-harness-agnostic-migration-default-harness, FR-harness-agnostic-migration-idempotent, FR-harness-agnostic-migration-removes-subagents, FR-harness-agnostic-multiple-per-install, FR-harness-agnostic-no-import-in-canonical, FR-harness-agnostic-no-subagent-files, FR-harness-agnostic-per-harness-install, FR-harness-agnostic-removed-harness-cleaned, FR-harness-agnostic-skill-claude-only, FR-harness-agnostic-symlink-include, FR-harness-agnostic-unknown-rejected, FR-harness-agnostic-v1-harness-set, NFR-harness-agnostic-docs-multi-harness, NFR-harness-agnostic-installer-reporting, NFR-harness-agnostic-no-new-deps, NFR-harness-agnostic-symlink-portability, NFR-migrations-idempotency]
+product-hash: 76f8f31e7f393051579d0ef2df0769c099f8f109de21bcfeedefc0071f66aae6
+product-slugs: [AC-harness-agnostic-bootstrap-no-subagent, AC-harness-agnostic-codex-install, AC-harness-agnostic-codex-no-commands, AC-harness-agnostic-default-claude, AC-harness-agnostic-installer-output, AC-harness-agnostic-migration-end-to-end, AC-harness-agnostic-migration-idempotent, AC-harness-agnostic-migration-warns-customized, AC-harness-agnostic-multi-install, AC-harness-agnostic-no-new-deps, AC-harness-agnostic-pi-commands, AC-harness-agnostic-pi-install, AC-harness-agnostic-pi-skill, AC-harness-agnostic-remove-harness, AC-harness-agnostic-self-host-migrates, AC-harness-agnostic-unknown-init, AC-harness-agnostic-unknown-schema, FR-harness-agnostic-bootstrap-inline, FR-harness-agnostic-canonical-agents-file, FR-harness-agnostic-claude-import, FR-harness-agnostic-commands-per-harness, FR-harness-agnostic-commands-source-path, FR-harness-agnostic-config, FR-harness-agnostic-content-portable, FR-harness-agnostic-hard-cutover, FR-harness-agnostic-harness-change-reinstall, FR-harness-agnostic-migration, FR-harness-agnostic-migration-default-harness, FR-harness-agnostic-migration-idempotent, FR-harness-agnostic-migration-removes-subagents, FR-harness-agnostic-multiple-per-install, FR-harness-agnostic-no-import-in-canonical, FR-harness-agnostic-no-subagent-files, FR-harness-agnostic-per-harness-install, FR-harness-agnostic-removed-harness-cleaned, FR-harness-agnostic-skill-claude-pi, FR-harness-agnostic-symlink-include, FR-harness-agnostic-unknown-rejected, FR-harness-agnostic-v1-harness-set, NFR-harness-agnostic-docs-multi-harness, NFR-harness-agnostic-installer-reporting, NFR-harness-agnostic-no-new-deps, NFR-harness-agnostic-symlink-portability, NFR-migrations-idempotency]
 ---
 # Harness-Agnostic Install — Technical Spec
 
@@ -41,7 +41,7 @@ The lib exposes: `PDEQ_KNOWN_HARNESSES` (the roster — the one place the set is
 |---|---|---|---|---|
 | `claude` | `CLAUDE.md` | `import` | `.claude/commands` | Supports `@import`; installer emits a one-line import wrapper so the consumer can append project prose below it. |
 | `codex` | `AGENTS.md` | `symlink` | _(none — codex CLI has no markdown slash commands at v1)_ | Installer symlinks `AGENTS.md` only; workflows invoked by asking the agent to read the prompt file. |
-| `pi` | `AGENTS.md` | `symlink` | _(none — pi slash commands are TypeScript extensions)_ | Same as codex. |
+| `pi` | `AGENTS.md` | `symlink` | `.pi/prompts` | Pi prompt templates are markdown files (`$ARGUMENTS`/`$1` expansion), the same shape as pdeq's command sources — installer symlinks `pdeq-*.md` into `.pi/prompts/`, giving Pi a native `/pdeq-*` palette. |
 
 This is the **harness adapter table** referenced throughout this spec and the glossary — the single point of extension for new harnesses.
 
@@ -49,15 +49,15 @@ This is the **harness adapter table** referenced throughout this spec and the gl
 
 The adapter table models the three axes the **install layer** needs. Other pdeq surfaces depend on additional harness capabilities; those are not install-time concerns, so they are realized in the relevant **prompt-file prose** rather than the shell lib — but they belong to the same capability model and are enumerated here so an implementer adding a harness sees every axis in one place:
 
-| Capability axis | Realized in | claude | codex / pi |
-|---|---|---|---|
-| Agent-instructions file | `harness.sh` (`harness_agent_file`) | `CLAUDE.md` | `AGENTS.md` |
-| Agent-file style | `harness.sh` (`harness_agent_style`) | `import` | `symlink` |
-| Markdown slash commands | `harness.sh` (`harness_commands_dir`) | `.claude/commands/` | none (read prompt file directly) |
-| Interactive question | prompt-file prose | `AskUserQuestion` tool | native ask / prose turn |
-| Subagent delegation | prompt-file prose | `Task` tool (optional) | play the role inline |
-| In-session command discovery | prompt-file prose | lazy disk-lookup of `.claude/commands/*.md` | prompt files read on demand from `.pdeq/pdeq-rules/commands/` |
-| Skill / extension surface | Claude-only convention | `.claude/skills/pdeq/` | n/a (`FR-harness-agnostic-skill-claude-only`) |
+| Capability axis | Realized in | claude | codex | pi |
+|---|---|---|---|---|
+| Agent-instructions file | `harness.sh` (`harness_agent_file`) | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` |
+| Agent-file style | `harness.sh` (`harness_agent_style`) | `import` | `symlink` | `symlink` |
+| Markdown slash commands | `harness.sh` (`harness_commands_dir`) | `.claude/commands/` | none (read prompt file directly) | `.pi/prompts/` |
+| Interactive question | prompt-file prose | `AskUserQuestion` tool | native ask / prose turn | native ask / prose turn |
+| Subagent delegation | prompt-file prose | `Task` tool (optional) | play the role inline | play the role inline |
+| In-session command discovery | prompt-file prose | lazy disk-lookup of `.claude/commands/*.md` | prompt files read on demand from `.pdeq/pdeq-rules/commands/` | native palette from `.pi/prompts/*.md` |
+| Skill surface | Agent Skills `SKILL.md` | `.claude/skills/pdeq/` | n/a (no skill concept) | `.pi/skills/pdeq/` (`FR-harness-agnostic-skill-claude-pi`) |
 
 **Governing principle:** a pdeq surface must degrade to a harness-neutral contract — the neutral behavior is the default, and a harness-specific mechanism (e.g. `AskUserQuestion`, the `Task` tool) is layered on only as an optional shim, never assumed. The install-layer axes live in `harness.sh`; the prose-consumed axes live in the prompt files but resolve to this same matrix.
 
@@ -74,9 +74,9 @@ The adapter table models the three axes the **install layer** needs. Other pdeq 
 | `.claude/commands/pdeq-*.md` | `pdeq-rules/commands/pdeq-*.md` | Same |
 | `.claude/agents/bootstrap-analyzer/*` | _(deleted — folded into `pdeq-rules/commands/pdeq-bootstrap.md`)_ | Same |
 | `.claude/agents/bootstrap-generator/*` | _(deleted — folded into `pdeq-rules/commands/pdeq-bootstrap.md`)_ | Same |
-| `.claude/skills/pdeq/SKILL.md` | _(unchanged — Claude-specific surface, not part of the canonical content)_ | Same |
+| `.claude/skills/pdeq/SKILL.md` | _(unchanged — canonical `SKILL.md`; the Pi surface at `.pi/skills/pdeq/SKILL.md` symlinks to it)_ | Same |
 
-Note: `.claude/skills/pdeq/SKILL.md` stays at its existing path because Claude is the only harness with this concept at v1 (per `FR-harness-agnostic-skill-claude-only`). Pdeq does not need to introduce a neutral path for an asset that has no non-Claude consumers.
+Note: The pdeq setup skill uses the Agent Skills `SKILL.md` format, which both Claude Code and Pi consume. `.claude/skills/pdeq/SKILL.md` remains the single canonical copy; the Pi surface at `.pi/skills/pdeq/SKILL.md` is a relative symlink to it (per `FR-harness-agnostic-skill-claude-pi`), so both harness views share one authored file. Codex CLI has no skill concept and receives nothing. A neutral `pdeq-rules/skills/` source plus per-harness materialization was considered but is unnecessary at v1: while only two harnesses consume the format, one relative symlink keeps them in sync at zero installer cost (the "lightweight" option chosen for 0.8.0).
 
 ## API / Interface Design
 
@@ -155,7 +155,7 @@ Ordered so each step is independently reviewable and each builds on the previous
 
 1. **Schema first** — add the `harnesses` field to `pdeq.schema.json` with the v1 enum. No behavioral change yet, but downstream code can begin to assume the field's shape and editors get autocomplete immediately. Implements `FR-harness-agnostic-config`, `FR-harness-agnostic-v1-harness-set`.
 2. **Submodule layout rename** — rename `CLAUDE.md` → `AGENTS.md` at the root and every lane; move `.claude/commands/pdeq-*.md` → `pdeq-rules/commands/pdeq-*.md`; delete `.claude/agents/bootstrap-analyzer/` and `.claude/agents/bootstrap-generator/`; fold their prompts into `pdeq-rules/commands/pdeq-bootstrap.md`; update internal cross-references inside the prose so no `CLAUDE.md` or `.claude/commands/` references remain. This is the bulk of the diff and lives entirely in the pdeq repo. Implements `FR-harness-agnostic-canonical-agents-file`, `FR-harness-agnostic-content-portable`, `FR-harness-agnostic-no-import-in-canonical`, `FR-harness-agnostic-bootstrap-inline`, `FR-harness-agnostic-no-subagent-files`, `FR-harness-agnostic-commands-source-path`.
-3. **Installer adapter table + helpers** — add the harness adapter table, the two `_materialize_*` helpers, and the `--harnesses` flag to `scripts/init.sh`. Rewrite Steps 3, 4, and 6 of `init.sh` to call the helpers per-enabled-harness. Read `harnesses` from `pdeq.json` when present, fall back to flag value, fall back to `["claude"]`. Implements `FR-harness-agnostic-per-harness-install`, `FR-harness-agnostic-claude-import`, `FR-harness-agnostic-symlink-include`, `FR-harness-agnostic-commands-per-harness`, `FR-harness-agnostic-multiple-per-install`, `FR-harness-agnostic-unknown-rejected`, `FR-harness-agnostic-harness-change-reinstall`, `FR-harness-agnostic-removed-harness-cleaned`, `FR-harness-agnostic-skill-claude-only`, `NFR-harness-agnostic-installer-reporting`, `NFR-harness-agnostic-symlink-portability`.
+3. **Installer adapter table + helpers** — add the harness adapter table, the two `_materialize_*` helpers, and the `--harnesses` flag to `scripts/init.sh`. Rewrite Steps 3, 4, and 6 of `init.sh` to call the helpers per-enabled-harness. Read `harnesses` from `pdeq.json` when present, fall back to flag value, fall back to `["claude"]`. Implements `FR-harness-agnostic-per-harness-install`, `FR-harness-agnostic-claude-import`, `FR-harness-agnostic-symlink-include`, `FR-harness-agnostic-commands-per-harness`, `FR-harness-agnostic-multiple-per-install`, `FR-harness-agnostic-unknown-rejected`, `FR-harness-agnostic-harness-change-reinstall`, `FR-harness-agnostic-removed-harness-cleaned`, `FR-harness-agnostic-skill-claude-pi`, `NFR-harness-agnostic-installer-reporting`, `NFR-harness-agnostic-symlink-portability`.
 4. **Migration file** — author `migrations/0.4.0.md` (see "Migration mechanical transform" below). Bump `VERSION` to `0.4.0`. The pre-commit migrations gate (`scripts/audit-migrations.sh`) enforces that a breaking version bump ships with its migration file. Implements `FR-harness-agnostic-migration`, `FR-harness-agnostic-hard-cutover`, `FR-harness-agnostic-migration-default-harness`, `FR-harness-agnostic-migration-idempotent`, `FR-harness-agnostic-migration-removes-subagents`.
 5. **Docs + self-host update** — update `README.md` and `.claude/skills/pdeq/SKILL.md` to describe pdeq as multi-harness and to list the v1 supported harnesses. Update pdeq's own `pdeq.json` to declare `harnesses: ["claude", "codex"]` so the self-host is itself the first multi-harness install. Implements `NFR-harness-agnostic-docs-multi-harness`.
 
@@ -172,6 +172,16 @@ The migration's mechanical block operates entirely on the consumer's git root. I
 5. **Write `harnesses` to `pdeq.json`** when the field is absent, defaulting to `["claude"]`. The pdeq.json mutation goes through the same minimal-edit path the existing migrations use.
 
 The migration file's `scope` is `default` (specsRoot + `pdeq.json`) plus an explicit declaration of `.claude/commands/**` and `.claude/agents/**` per `FR-migrations-scoped-writes`, since those paths sit at the git root rather than under `specsRoot`.
+
+## 0.8.0 Increment — Pi Slash Commands and Skill
+
+The 0.4.0 design modeled Pi as command-less (a twin of Codex) on the mistaken premise that Pi's slash-command surface was code-based. It is in fact markdown: Pi reads prompt templates from `.pi/prompts/*.md`, where the filename is the command name and `$ARGUMENTS`/`$1` expand — identical to pdeq's command source files. 0.8.0 corrects this with the minimum of new code:
+
+- **Adapter (one line).** `harness_commands_dir pi` returns `.pi/prompts` instead of empty. Because both `scripts/init.sh` (`_materialize_commands`) and `scripts/sync-symlinks.sh` already loop every enabled harness and materialize whatever the adapter returns, this single change gives Pi the full `/pdeq-*` palette at install *and* on `/pdeq-update` — no installer-body changes. Implements `FR-harness-agnostic-commands-per-harness` (capability data updated; requirement unchanged), satisfies `AC-harness-agnostic-pi-commands`.
+- **Removed-harness cleanup.** The existing cleanup sweep special-cased only `.claude/commands`. It is generalized so that dropping *any* command-supporting harness (now including `pi`) prunes that harness's pdeq-managed command symlinks, preserving `FR-harness-agnostic-removed-harness-cleaned` for Pi.
+- **Skill (lightweight).** A relative symlink `.pi/skills/pdeq/SKILL.md → .claude/skills/pdeq/SKILL.md` exposes the existing Agent Skills `SKILL.md` at Pi's discovery path. The skill is a repo/global asset (not installer-materialized for consumers, unchanged from 0.4.0), so no `harness_skills_dir` adapter axis is introduced. Implements `FR-harness-agnostic-skill-claude-pi`, satisfies `AC-harness-agnostic-pi-skill`.
+
+**Migration (`migrations/0.8.0.md`).** Non-breaking / advisory, in the class of `migrations/0.7.0.md`: it authors no file changes. Existing Pi consumers pick up the new capability through the symlinked `scripts/lib/harness.sh` on pin-bump, and the next `/pdeq-update` sync materializes their `.pi/prompts/` palette automatically. The migration exists for the version contract and to make the new Pi surface discoverable. `breaking: false`.
 
 ## Code Map
 
@@ -191,7 +201,7 @@ The migration file's `scope` is `default` (specsRoot + `pdeq.json`) plus an expl
 | FR-harness-agnostic-commands-source-path | pdeq-rules/commands/pdeq-bootstrap.md; pdeq-rules/commands/pdeq-impact.md; pdeq-rules/commands/pdeq-kickoff.md; pdeq-rules/commands/pdeq-migrate.md; pdeq-rules/commands/pdeq-status.md; pdeq-rules/commands/pdeq-visualize.md | planned |
 | FR-harness-agnostic-bootstrap-inline | pdeq-rules/commands/pdeq-bootstrap.md | planned |
 | FR-harness-agnostic-no-subagent-files | — | planned |
-| FR-harness-agnostic-skill-claude-only | scripts/init.sh | planned |
+| FR-harness-agnostic-skill-claude-pi | .claude/skills/pdeq/SKILL.md; .pi/skills/pdeq/SKILL.md | planned |
 | FR-harness-agnostic-migration | migrations/0.4.0.md | planned |
 | FR-harness-agnostic-hard-cutover | migrations/0.4.0.md | planned |
 | FR-harness-agnostic-migration-default-harness | migrations/0.4.0.md | planned |

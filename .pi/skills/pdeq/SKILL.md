@@ -1,0 +1,1 @@
+../../../.claude/skills/pdeq/SKILL.md

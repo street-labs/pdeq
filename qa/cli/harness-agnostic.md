@@ -1,6 +1,6 @@
 ---
-product-hash: 706c2012bb704d83f3d876741f09e9e1d8bd152afd9020413aca8948aa78ea5d
-product-slugs: [AC-harness-agnostic-bootstrap-no-subagent, AC-harness-agnostic-codex-install, AC-harness-agnostic-codex-no-commands, AC-harness-agnostic-default-claude, AC-harness-agnostic-installer-output, AC-harness-agnostic-migration-end-to-end, AC-harness-agnostic-migration-idempotent, AC-harness-agnostic-migration-warns-customized, AC-harness-agnostic-multi-install, AC-harness-agnostic-no-new-deps, AC-harness-agnostic-pi-install, AC-harness-agnostic-pi-no-commands, AC-harness-agnostic-remove-harness, AC-harness-agnostic-self-host-migrates, AC-harness-agnostic-unknown-init, AC-harness-agnostic-unknown-schema, FR-harness-agnostic-bootstrap-inline, FR-harness-agnostic-canonical-agents-file, FR-harness-agnostic-claude-import, FR-harness-agnostic-commands-per-harness, FR-harness-agnostic-commands-source-path, FR-harness-agnostic-config, FR-harness-agnostic-content-portable, FR-harness-agnostic-hard-cutover, FR-harness-agnostic-harness-change-reinstall, FR-harness-agnostic-migration, FR-harness-agnostic-migration-default-harness, FR-harness-agnostic-migration-idempotent, FR-harness-agnostic-migration-removes-subagents, FR-harness-agnostic-multiple-per-install, FR-harness-agnostic-no-import-in-canonical, FR-harness-agnostic-no-subagent-files, FR-harness-agnostic-per-harness-install, FR-harness-agnostic-removed-harness-cleaned, FR-harness-agnostic-skill-claude-only, FR-harness-agnostic-symlink-include, FR-harness-agnostic-unknown-rejected, FR-harness-agnostic-v1-harness-set, NFR-harness-agnostic-docs-multi-harness, NFR-harness-agnostic-installer-reporting, NFR-harness-agnostic-no-new-deps, NFR-harness-agnostic-symlink-portability, NFR-migrations-idempotency]
+product-hash: 76f8f31e7f393051579d0ef2df0769c099f8f109de21bcfeedefc0071f66aae6
+product-slugs: [AC-harness-agnostic-bootstrap-no-subagent, AC-harness-agnostic-codex-install, AC-harness-agnostic-codex-no-commands, AC-harness-agnostic-default-claude, AC-harness-agnostic-installer-output, AC-harness-agnostic-migration-end-to-end, AC-harness-agnostic-migration-idempotent, AC-harness-agnostic-migration-warns-customized, AC-harness-agnostic-multi-install, AC-harness-agnostic-no-new-deps, AC-harness-agnostic-pi-commands, AC-harness-agnostic-pi-install, AC-harness-agnostic-pi-skill, AC-harness-agnostic-remove-harness, AC-harness-agnostic-self-host-migrates, AC-harness-agnostic-unknown-init, AC-harness-agnostic-unknown-schema, FR-harness-agnostic-bootstrap-inline, FR-harness-agnostic-canonical-agents-file, FR-harness-agnostic-claude-import, FR-harness-agnostic-commands-per-harness, FR-harness-agnostic-commands-source-path, FR-harness-agnostic-config, FR-harness-agnostic-content-portable, FR-harness-agnostic-hard-cutover, FR-harness-agnostic-harness-change-reinstall, FR-harness-agnostic-migration, FR-harness-agnostic-migration-default-harness, FR-harness-agnostic-migration-idempotent, FR-harness-agnostic-migration-removes-subagents, FR-harness-agnostic-multiple-per-install, FR-harness-agnostic-no-import-in-canonical, FR-harness-agnostic-no-subagent-files, FR-harness-agnostic-per-harness-install, FR-harness-agnostic-removed-harness-cleaned, FR-harness-agnostic-skill-claude-pi, FR-harness-agnostic-symlink-include, FR-harness-agnostic-unknown-rejected, FR-harness-agnostic-v1-harness-set, NFR-harness-agnostic-docs-multi-harness, NFR-harness-agnostic-installer-reporting, NFR-harness-agnostic-no-new-deps, NFR-harness-agnostic-symlink-portability, NFR-migrations-idempotency]
 ---
 # Harness-Agnostic Install — Test Plan
 
@@ -13,7 +13,7 @@ The 0.4.0 transition of pdeq from a Claude-Code-only install to a multi-harness 
 
 ## Coverage Matrix
 
-Status reflects the most recent run of `scripts/test-harness-agnostic.sh` (the authoritative runner for this test plan). 20 cases Pass, 2 Skip with explicit justifications; no failures.
+Status reflects the most recent run of `scripts/test-harness-agnostic.sh` (the authoritative runner for this test plan). 21 cases Pass, 2 Skip with explicit justifications; no failures.
 
 | Requirement | Test Cases | Status |
 |---|---|---|
@@ -24,7 +24,8 @@ Status reflects the most recent run of `scripts/test-harness-agnostic.sh` (the a
 | `AC-harness-agnostic-unknown-init` | `TC-harness-agnostic-init-unknown-rejected` | Pass |
 | `AC-harness-agnostic-unknown-schema` | `TC-harness-agnostic-schema-unknown-rejected` | Pass |
 | `AC-harness-agnostic-codex-no-commands` | `TC-harness-agnostic-codex-no-commands-dir` | Pass |
-| `AC-harness-agnostic-pi-no-commands` | `TC-harness-agnostic-pi-no-commands-dir` | Pass |
+| `AC-harness-agnostic-pi-commands` | `TC-harness-agnostic-pi-commands-dir` | Pass |
+| `AC-harness-agnostic-pi-skill` | `TC-harness-agnostic-pi-skill` | Pass |
 | `AC-harness-agnostic-bootstrap-no-subagent` | `TC-harness-agnostic-bootstrap-no-subagent-files`, `TC-harness-agnostic-bootstrap-prompts-inlined` | Pass |
 | `AC-harness-agnostic-migration-end-to-end` | `TC-harness-agnostic-migrate-cutover` (Pass), `TC-harness-agnostic-migrate-bumps-version` (Skip — version bump is `scripts/migrate.sh`'s responsibility, covered by `TC-migrations-version-bump-success` in `qa/cli/migrations.md`) | Pass / Skip |
 | `AC-harness-agnostic-migration-idempotent` | `TC-harness-agnostic-migrate-rerun-noop` | Pass |
@@ -145,12 +146,25 @@ Verifies a consumer who initializes with only `codex` gets a working Codex CLI i
   2. Check for `.claude/commands/`, `.codex/commands/`, or any other commands directory created by pdeq.
 - **Expected Result**: No commands directory was created by pdeq for the codex harness. (`.claude/commands/` may exist if it was already present in the consumer project for unrelated reasons, but pdeq did not create it.)
 
-#### Pi install does not create a commands directory `TC-harness-agnostic-pi-no-commands-dir`
+#### Pi install materializes a native commands directory `TC-harness-agnostic-pi-commands-dir`
 - **Type**: Integration
-- **Covers**: `AC-harness-agnostic-pi-no-commands`, `FR-harness-agnostic-commands-per-harness`
+- **Covers**: `AC-harness-agnostic-pi-commands`, `FR-harness-agnostic-commands-per-harness`, `FR-harness-agnostic-per-harness-install`
 - **Preconditions**: Fresh temporary directory.
-- **Steps**: Same shape as `TC-harness-agnostic-codex-no-commands-dir`, with `--harnesses pi`.
-- **Expected Result**: No commands directory created by pdeq for the pi harness.
+- **Steps**:
+  1. Run `init.sh --harnesses pi`.
+  2. List `.pi/prompts/` and check for a `pdeq-<name>.md` entry per pdeq command source.
+  3. Check that `.claude/commands/` was not created (claude is not enabled).
+- **Expected Result**: `.pi/prompts/` exists and contains a symlink `pdeq-<name>.md` for every file in `pdeq-rules/commands/`, each resolving into the `.pdeq/` submodule. No pdeq-created `.claude/commands/`. Pi's palette now tab-completes `/pdeq-*`.
+
+#### Pi exposes the setup skill `TC-harness-agnostic-pi-skill`
+- **Type**: Unit
+- **Covers**: `AC-harness-agnostic-pi-skill`, `FR-harness-agnostic-skill-claude-pi`
+- **Preconditions**: Pdeq checkout with `pi` among its harnesses.
+- **Steps**:
+  1. Confirm `.pi/skills/pdeq/SKILL.md` exists.
+  2. Confirm `.claude/skills/pdeq/SKILL.md` exists.
+  3. Compare their resolved content.
+- **Expected Result**: Both paths resolve to byte-identical `SKILL.md` content (the Pi path is a relative symlink to the canonical Claude copy). A `codex`-only install has no skill file.
 
 ### Bootstrap Without Subagent Files
 

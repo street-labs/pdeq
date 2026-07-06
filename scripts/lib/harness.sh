@@ -42,14 +42,17 @@ harness_agent_file() {
 
 # Directory (relative to git root) where the harness expects markdown-defined
 # slash commands. Empty means the harness has no markdown slash-command surface
-# (codex, pi at v1) — the consumer invokes pdeq workflows by asking the agent in
-# prose to read the prompt file directly.
+# (codex at v1) — the consumer invokes pdeq workflows by asking the agent in
+# prose to read the prompt file directly. Pi reads markdown prompt templates
+# from .pi/prompts/*.md ($ARGUMENTS/$1 expansion), the same shape as pdeq's
+# command sources, so it gets a native /pdeq-* palette like claude.
 #
 # Implements: FR-harness-agnostic-commands-per-harness
 harness_commands_dir() {
   case "$1" in
     claude)     echo ".claude/commands" ;;
-    codex|pi)   echo "" ;;
+    pi)         echo ".pi/prompts" ;;
+    codex)      echo "" ;;
     *)          echo "" ;;
   esac
 }
