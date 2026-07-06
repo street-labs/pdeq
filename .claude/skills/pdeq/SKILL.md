@@ -7,7 +7,7 @@ description: Add the PDEQ spec-driven development framework to the current proje
 
 **Add PDEQ to the current project.**
 
-PDEQ is a multi-harness coding-agent framework that gives a project four structured lanes — Product, Design, Engineering, QA — with traceable requirements, lane discipline, and a spec-first workflow. v1 supports Claude Code, Codex CLI, and Pi. This skill is the Claude Code surface for setup; consumers using other harnesses install via `scripts/init.sh` directly with the `--harnesses` flag.
+PDEQ is a multi-harness coding-agent framework that gives a project four structured lanes — Product, Design, Engineering, QA — with traceable requirements, lane discipline, and a spec-first workflow. v1 supports Claude Code, Codex CLI, and Pi. This same skill is surfaced to both Claude Code (`.claude/skills/`) and Pi (`.pi/skills/`); Codex consumers install via `scripts/init.sh` directly with the `--harnesses` flag.
 
 PDEQ repository: `https://github.com/street-labs/pdeq`
 

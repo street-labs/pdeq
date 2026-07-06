@@ -276,24 +276,35 @@ _cleanup_removed_harnesses() {
       fi
     done
   done
-  # Also remove .claude/commands/ symlinks if claude is disabled.
-  if [[ ! " ${HARNESSES_ARR[*]} " =~ " claude " ]]; then
-    local claude_cmd_dir="$GIT_ROOT/.claude/commands"
-    if [[ -d "$claude_cmd_dir" ]]; then
-      local f
-      for f in "$claude_cmd_dir"/pdeq-*.md; do
-        [[ ! -L "$f" ]] && continue
-        # Confirm symlink target points at pdeq before removing
-        local link_target
-        link_target=$(readlink "$f")
-        if [[ "$link_target" == *"$PDEQ_DIR/pdeq-rules/commands/"* ]]; then
-          rm "$f"
-          green "Removed stale $(basename "$f") (harness 'claude' no longer enabled)"
-          CREATED=$((CREATED + 1))
-        fi
-      done
-    fi
-  fi
+  # Remove the slash-command symlinks of any disabled command-supporting harness
+  # (e.g. .claude/commands/ for claude, .pi/prompts/ for pi). Driven by the
+  # adapter so a new command-supporting harness is cleaned up without editing
+  # this loop.
+  # Implements: FR-harness-agnostic-removed-harness-cleaned
+  for kh in "${known_harnesses[@]}"; do
+    is_enabled=0
+    for h in "${HARNESSES_ARR[@]}"; do
+      [[ "$kh" == "$h" ]] && is_enabled=1 && break
+    done
+    [[ "$is_enabled" == "1" ]] && continue
+    local cmd_dir
+    cmd_dir=$(harness_commands_dir "$kh")
+    [[ -z "$cmd_dir" ]] && continue
+    local cmd_path="$GIT_ROOT/$cmd_dir"
+    [[ ! -d "$cmd_path" ]] && continue
+    local f
+    for f in "$cmd_path"/pdeq-*.md; do
+      [[ ! -L "$f" ]] && continue
+      # Confirm symlink target points at pdeq before removing
+      local link_target
+      link_target=$(readlink "$f")
+      if [[ "$link_target" == *"$PDEQ_DIR/pdeq-rules/commands/"* ]]; then
+        rm "$f"
+        green "Removed stale $cmd_dir/$(basename "$f") (harness '$kh' no longer enabled)"
+        CREATED=$((CREATED + 1))
+      fi
+    done
+  done
   return 0
 }
 

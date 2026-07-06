@@ -243,13 +243,35 @@ else
   record_fail "TC-harness-agnostic-codex-no-commands-dir" "pdeq created .claude/commands/ for codex"
 fi
 
-# TC-harness-agnostic-pi-no-commands-dir
+# TC-harness-agnostic-pi-commands-dir
 mkfixture
 bash "$INIT" --skip-hooks --harnesses pi > /dev/null 2>&1
-if [ ! -d .claude/commands ] || [ -z "$(ls .claude/commands 2>/dev/null)" ]; then
-  record_pass "TC-harness-agnostic-pi-no-commands-dir"
+# Pi gets a native /pdeq-* palette: .pi/prompts/pdeq-*.md symlinks mirroring
+# every pdeq command source. No .claude/commands/ (claude not enabled).
+pi_ok=1
+[ -d .pi/prompts ] || pi_ok=0
+for src in "$PDEQ_REPO"/pdeq-rules/commands/*.md; do
+  name="$(basename "$src")"
+  [ -L ".pi/prompts/$name" ] || pi_ok=0
+done
+# claude's dir must NOT be created for a pi-only install
+if [ -d .claude/commands ] && [ -n "$(ls .claude/commands 2>/dev/null)" ]; then pi_ok=0; fi
+[ "$pi_ok" = "1" ] \
+  && record_pass "TC-harness-agnostic-pi-commands-dir" \
+  || record_fail "TC-harness-agnostic-pi-commands-dir" "expected .pi/prompts/pdeq-*.md symlinks for every command, and no .claude/commands/"
+
+header "Skill surface"
+
+# TC-harness-agnostic-pi-skill
+# The pdeq setup skill is exposed at Pi's discovery path as a symlink to the
+# single canonical Claude copy, so both harness views share one authored file.
+pi_skill="$PDEQ_REPO/.pi/skills/pdeq/SKILL.md"
+claude_skill="$PDEQ_REPO/.claude/skills/pdeq/SKILL.md"
+if [ -f "$pi_skill" ] && [ -f "$claude_skill" ] \
+   && diff -q "$pi_skill" "$claude_skill" > /dev/null 2>&1; then
+  record_pass "TC-harness-agnostic-pi-skill"
 else
-  record_fail "TC-harness-agnostic-pi-no-commands-dir" "pdeq created .claude/commands/ for pi"
+  record_fail "TC-harness-agnostic-pi-skill" "expected .pi/skills/pdeq/SKILL.md resolving to the canonical .claude/skills/pdeq/SKILL.md"
 fi
 
 header "Bootstrap without subagent files"
