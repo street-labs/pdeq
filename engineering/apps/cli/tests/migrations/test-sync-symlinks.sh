@@ -87,10 +87,10 @@ test_sync_idempotent() {
   rm -rf "$fx"
 }
 
-# Harness parity: a symlink-less harness (codex/pi) gets NO command symlinks —
+# Harness parity: a command-less harness (codex at v1) gets NO command symlinks —
 # harness_commands_dir is empty, so the per-harness commands loop skips it — but
 # scripts/ is still synced unconditionally. The command source is picked up by
-# the agent reading the prompt file directly, so no .claude/commands is created.
+# the agent reading the prompt file directly, so no commands dir is created.
 _assert_no_command_symlinks() {
   local harness="$1"
   local fx; fx=$(make_consumer_fixture "$harness")
@@ -111,5 +111,19 @@ _assert_no_command_symlinks() {
 # TC-migrations-update-in-session-new-command
 test_sync_codex_no_command_symlinks() { _assert_no_command_symlinks codex; }
 
+# Pi reads markdown prompt templates from .pi/prompts/, so a pi consumer DOES get
+# a command symlink surface — one .pi/prompts/pdeq-*.md per command source.
 # TC-migrations-update-in-session-new-command
-test_sync_pi_no_command_symlinks() { _assert_no_command_symlinks pi; }
+test_sync_pi_command_symlinks() {
+  local fx; fx=$(make_consumer_fixture pi)
+  add_pdeq_command "$fx" "pdeq-update.md"
+  local out; out=$(run_sync "$fx" --prune --json)
+  assert_contains "$out" '.pi/prompts/pdeq-update.md' "pi: command symlink in report"
+  if [ ! -L "$fx/.pi/prompts/pdeq-update.md" ]; then
+    echo "  FAIL: pi did not get its .pi/prompts symlink" >&2
+    rm -rf "$fx"; return 1
+  fi
+  # And nothing leaks into .claude/commands.
+  assert_not_contains "$out" '.claude/commands' "pi: no claude command dir"
+  rm -rf "$fx"
+}

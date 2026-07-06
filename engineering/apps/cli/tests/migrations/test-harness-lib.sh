@@ -27,7 +27,7 @@ test_harness_agent_style() {
 test_harness_commands_dir() {
   assert_eq ".claude/commands" "$(harness_commands_dir claude)" "claude commands dir"
   assert_eq "" "$(harness_commands_dir codex)" "codex has no commands dir"
-  assert_eq "" "$(harness_commands_dir pi)"    "pi has no commands dir"
+  assert_eq ".pi/prompts" "$(harness_commands_dir pi)"    "pi commands dir (markdown prompt templates)"
 }
 
 test_harness_is_known() {
