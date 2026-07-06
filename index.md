@@ -18,7 +18,7 @@ This file maps every requirement slug to all files that define or reference it. 
 
 | Slug | Type | Defined In | Referenced In | Code |
 |------|------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|
-| FR-migrations-version-field | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, pdeq.schema.json, VERSION | scripts/init.sh:538 |
+| FR-migrations-version-field | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, pdeq.schema.json, VERSION | scripts/init.sh:551 |
 | FR-migrations-version-readable | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:82, scripts/migrate.sh:95 |
 | FR-migrations-absent-version | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/migrate.sh:82 |
 | FR-migrations-one-per-version | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
@@ -26,7 +26,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-mechanical-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-semantic-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-order-within | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-explicit-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
 | FR-migrations-pending-detection | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-ordered-application | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
@@ -34,7 +34,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-nonbreaking-advance | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:301 |
 | FR-migrations-noop-when-current | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-dry-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-scoped-writes | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:354 |
 | FR-migrations-breaking-gate | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
 | FR-migrations-no-false-positive | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
@@ -152,7 +152,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-code-mapping-planned-paths-living | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:261 |
 | FR-code-mapping-planned-paths-per-platform | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-acknowledged-unimplemented | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:139, scripts/audit-traceability.sh:178, scripts/init.sh:631 |
+| FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:139, scripts/audit-traceability.sh:178, scripts/init.sh:644 |
 | FR-code-mapping-audit-validates-slug | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:600, scripts/audit-traceability.sh:68 |
 | FR-code-mapping-audit-validates-path | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-audit-coverage | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
@@ -243,17 +243,17 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-cli-naming-listing | AC | product/cli-conventions.md |  |  |
 | AC-cli-naming-no-bare-name | AC | product/cli-conventions.md |  |  |
 | AC-cli-naming-migration-carries | AC | product/cli-conventions.md |  |  |
-| FR-harness-agnostic-config | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:129, scripts/init.sh:596, scripts/lib/harness.sh:77 |
+| FR-harness-agnostic-config | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:129, scripts/init.sh:609, scripts/lib/harness.sh:77 |
 | FR-harness-agnostic-v1-harness-set | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/lib/harness.sh:28 |
 | FR-harness-agnostic-multiple-per-install | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-unknown-rejected | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:138, scripts/lib/harness.sh:28 |
 | FR-harness-agnostic-canonical-agents-file | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-content-portable | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-no-import-in-canonical | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
-| FR-harness-agnostic-per-harness-install | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:152, scripts/init.sh:424, scripts/init.sh:444 |
+| FR-harness-agnostic-per-harness-install | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:152, scripts/init.sh:437, scripts/init.sh:457 |
 | FR-harness-agnostic-claude-import | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | CLAUDE.md:1, scripts/init.sh:153, scripts/lib/harness.sh:65 |
 | FR-harness-agnostic-symlink-include | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:154, scripts/lib/harness.sh:65 |
-| FR-harness-agnostic-commands-per-harness | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:191, scripts/init.sh:494, scripts/lib/harness.sh:50 |
+| FR-harness-agnostic-commands-per-harness | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:191, scripts/init.sh:507, scripts/lib/harness.sh:50 |
 | FR-harness-agnostic-commands-source-path | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-bootstrap-inline | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | pdeq-rules/commands/pdeq-bootstrap.md:3 |
 | FR-harness-agnostic-no-subagent-files | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | pdeq-rules/commands/pdeq-bootstrap.md:3 |
@@ -264,7 +264,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-harness-agnostic-migration-idempotent | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | migrations/0.4.0.md:8 |
 | FR-harness-agnostic-migration-removes-subagents | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | migrations/0.4.0.md:8 |
 | FR-harness-agnostic-harness-change-reinstall | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
-| FR-harness-agnostic-removed-harness-cleaned | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:226, scripts/init.sh:283, scripts/init.sh:500 |
+| FR-harness-agnostic-removed-harness-cleaned | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:226, scripts/init.sh:296, scripts/init.sh:513 |
 | NFR-harness-agnostic-no-new-deps | NFR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | NFR-harness-agnostic-installer-reporting | NFR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:155 |
 | NFR-harness-agnostic-symlink-portability | NFR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:192 |
@@ -307,6 +307,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-harness-agnostic-install-no-extra-toolchain | TC | qa/cli/harness-agnostic.md |  |  |
 | TC-harness-agnostic-remove-harness-cleanup | TC | qa/cli/harness-agnostic.md |  |  |
 | TC-harness-agnostic-remove-harness-preserves-authored | TC | qa/cli/harness-agnostic.md |  |  |
+| TC-harness-agnostic-remove-claude-preserves-instructions | TC | qa/cli/harness-agnostic.md |  |  |
 | TC-harness-agnostic-installer-names-harness-per-line | TC | qa/cli/harness-agnostic.md |  |  |
 | TC-harness-agnostic-self-host-migrate-clean | TC | qa/cli/harness-agnostic.md |  |  |
 | AC-lane-discipline-backstop-exit-status | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
@@ -412,3 +413,46 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-lane-discipline-exclude-passes | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-exclude-surgical | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-exclude-optional | TC | qa/cli/lane-discipline.md |  |  |
+| FR-conformance-actionable | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:64 |
+| FR-conformance-advisory | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:110 |
+| FR-conformance-complements | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:110 |
+| FR-conformance-evidence | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:40 |
+| FR-conformance-four-quadrant | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:48 |
+| FR-conformance-fulfilled | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
+| FR-conformance-incorrect | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
+| FR-conformance-per-platform | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:17 |
+| FR-conformance-requirement-scope | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:28 |
+| FR-conformance-seeded | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:28 |
+| FR-conformance-single-verdict | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:48 |
+| FR-conformance-summary | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:64 |
+| FR-conformance-undocumented | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
+| FR-conformance-unfulfilled | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
+| NFR-conformance-precision | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| NFR-conformance-uncertainty | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| NFR-conformance-verifiable | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-evidence-cited | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-exhaustive | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-incorrect-detected | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-no-plumbing | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-non-blocking | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-platform-isolation | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-report-shape | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-uncertainty-marked | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-undocumented-detected | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-unfulfilled-behavioral | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| TC-conformance-actionable | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-complements-deterministic | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-evidence-cited | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-exhaustive | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-fulfilled-genuine | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-incorrect-detected | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-no-plumbing | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-non-blocking | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-platform-isolation | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-report-shape | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-scope-single-feature | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-seeded | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-summary | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-uncertainty-marked | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-undocumented-detected | TC | qa/cli/conformance.md |  |  |
+| TC-conformance-unfulfilled-behavioral | TC | qa/cli/conformance.md |  |  |
