@@ -53,10 +53,10 @@ except Exception:
 # matches. Uses python3 (a hard pdeq dependency) instead of `grep -P`, which
 # BSD grep (macOS, where the pre-commit hook runs) rejects — that silent no-op
 # is exactly the bug this avoids.
-# Implements: FR-lane-discipline-lexical-backstop, FR-lane-discipline-content-class-precision
+# Implements: FR-lane-discipline-lexical-backstop, FR-lane-discipline-content-class-precision, FR-lane-discipline-exclude-terms
 pcre_scan() {
   python3 -c "
-import sys, re
+import sys, re, os
 pat, path = sys.argv[1], sys.argv[2]
 flagstr = sys.argv[3] if len(sys.argv) > 3 else ''
 skip_fence = (len(sys.argv) > 4 and sys.argv[4] == 'fence')
@@ -66,6 +66,11 @@ try:
 except re.error:
     sys.exit(0)
 slug_rx = re.compile(r'(?:FR|NFR|AC|TC)-[a-z0-9-]+')
+# Project-declared domain-legitimate terms (laneAudit.exclude) are stripped from
+# each line before matching — surgically, so a non-excluded flagged term on the
+# same line still matches. Passed via env so every caller honors it unchanged.
+excl_body = os.environ.get('PDEQ_EXCLUDE_RX', '')
+excl_rx = re.compile(r'\b(?:%s)\b' % excl_body, re.I) if excl_body else None
 fence_rx = re.compile(r'^\s*\`\`\`')
 indent_rx = re.compile(r'^(?: {4,}|\t)')
 in_fence = False
@@ -78,7 +83,10 @@ try:
                     continue
                 if in_fence or indent_rx.match(line):
                     continue
-            if rx.search(slug_rx.sub('', line)):
+            probe = slug_rx.sub('', line)
+            if excl_rx is not None:
+                probe = excl_rx.sub('', probe)
+            if rx.search(probe):
                 sys.stdout.write('%d:%s\n' % (i, line.rstrip('\n')))
 except OSError:
     pass

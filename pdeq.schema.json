@@ -101,6 +101,12 @@
           "description": "Library or framework names that are engineering decisions, not product requirements.",
           "items": { "type": "string" },
           "examples": [["Vapor", "argument-parser"]]
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Default red-flag terms this project has judged domain-legitimate (a platform it must run on, a language it supports, a first-class domain noun). The deterministic checks — both the warn-only backstop and the blocking structural/downstream checks — strip these terms before matching, so they neither warn nor block. Stripping is surgical: a non-excluded flagged term on the same line still flags. Does not affect the advisory lane review. Realizes FR-lane-discipline-exclude-terms.",
+          "items": { "type": "string" },
+          "examples": [["macOS", "Linux", "Windows", "TypeScript", "Python"]]
         }
       }
     },

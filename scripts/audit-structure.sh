@@ -33,6 +33,11 @@ PDEQ_LIB_DIR="$(cd "$(dirname "$0")" && pwd)/lib"
 # shellcheck source=lib/lane-scan.sh
 . "$PDEQ_LIB_DIR/lane-scan.sh"
 
+# Domain-legitimate terms this project has judged in-lane (laneAudit.exclude) are
+# stripped from every line before matching, so they neither block nor warn.
+PDEQ_EXCLUDE_RX="$(read_lane_terms "exclude")"
+export PDEQ_EXCLUDE_RX
+
 violations=()
 suppressed=()
 
