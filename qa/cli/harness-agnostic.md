@@ -13,7 +13,7 @@ The 0.4.0 transition of pdeq from a Claude-Code-only install to a multi-harness 
 
 ## Coverage Matrix
 
-Status reflects the most recent run of `scripts/test-harness-agnostic.sh` (the authoritative runner for this test plan). 21 cases Pass, 2 Skip with explicit justifications; no failures.
+Status reflects the most recent run of `scripts/test-harness-agnostic.sh` (the authoritative runner for this test plan). 22 cases Pass, 2 Skip with explicit justifications; no failures.
 
 | Requirement | Test Cases | Status |
 |---|---|---|
@@ -31,7 +31,7 @@ Status reflects the most recent run of `scripts/test-harness-agnostic.sh` (the a
 | `AC-harness-agnostic-migration-idempotent` | `TC-harness-agnostic-migrate-rerun-noop` | Pass |
 | `AC-harness-agnostic-migration-warns-customized` | `TC-harness-agnostic-migrate-customized-subagent-warn` | Pass |
 | `AC-harness-agnostic-no-new-deps` | `TC-harness-agnostic-install-no-extra-toolchain` | Pass |
-| `AC-harness-agnostic-remove-harness` | `TC-harness-agnostic-remove-harness-cleanup`, `TC-harness-agnostic-remove-harness-preserves-authored` | Pass |
+| `AC-harness-agnostic-remove-harness` | `TC-harness-agnostic-remove-harness-cleanup`, `TC-harness-agnostic-remove-harness-preserves-authored`, `TC-harness-agnostic-remove-claude-preserves-instructions` | Pass |
 | `AC-harness-agnostic-installer-output` | `TC-harness-agnostic-installer-names-harness-per-line` | Pass |
 | `AC-harness-agnostic-self-host-migrates` | `TC-harness-agnostic-self-host-migrate-clean` | Skip — release-tag-time operational step; running `/pdeq-migrate` against pdeq's own checkout would mutate the live source tree and is out of scope for the smoke runner. The pdeq maintainer executes this step manually before tagging 0.4.0. |
 
@@ -258,6 +258,17 @@ Verifies a consumer who initializes with only `codex` gets a working Codex CLI i
   3. Re-run the installer's harness-materialization step.
   4. Re-read the consumer-authored file; re-hash.
 - **Expected Result**: The consumer-authored file is preserved (hash unchanged). The installer leaves regular files alone, just as it does at first-install time. The other pdeq-managed `AGENTS.md` symlinks at lanes the consumer did not author are removed.
+
+#### Dropping claude preserves project-specific instructions in the root wrapper `TC-harness-agnostic-remove-claude-preserves-instructions`
+- **Type**: Integration
+- **Covers**: `AC-harness-agnostic-remove-harness`, `FR-harness-agnostic-removed-harness-cleaned`
+- **Preconditions**: A consumer project installed with `harnesses: ["claude", "codex"]`. The root `CLAUDE.md` is the pdeq-generated wrapper — a `@import` line followed by the `## Project-Specific Instructions` scaffold — and the consumer has appended their own instructions below the import.
+- **Steps**:
+  1. Capture the root `CLAUDE.md` content hash.
+  2. Edit `pdeq.json` to set `harnesses: ["codex"]` (claude dropped).
+  3. Re-run the installer's harness-materialization step.
+  4. Re-read the root `CLAUDE.md`; re-hash.
+- **Expected Result**: The root `CLAUDE.md` is **not** deleted — its content (including the consumer's appended instructions) is preserved byte-for-byte (hash unchanged), and the installer prints a one-line warning that it preserved a wrapper with content below the import. Cleanup auto-removes only genuine one-line import wrappers (the lane `CLAUDE.md` files), never a wrapper carrying consumer content. *(Regression guard for the divergence surfaced by `/pdeq-conform cli harness-agnostic`.)*
 
 ### Installer Output
 

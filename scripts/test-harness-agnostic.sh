@@ -426,6 +426,37 @@ else
   record_fail "TC-harness-agnostic-remove-harness-preserves-authored" "consumer file altered or pdeq files not cleaned"
 fi
 
+# TC-harness-agnostic-remove-claude-preserves-instructions
+# Dropping claude must NOT delete a root CLAUDE.md that carries consumer
+# instructions below the @import scaffold; one-line lane wrappers still go.
+mkfixture
+bash "$INIT" --skip-hooks --harnesses claude,codex > /dev/null 2>&1
+printf '\nMy project rule: always foo before bar.\n' >> CLAUDE.md   # consumer edit below the import
+hash_before=$(shasum -a 256 CLAUDE.md | awk '{print $1}')
+cat > pdeq.json << 'EOF'
+{
+  "pdeqVersion": "0.3.0",
+  "specsRoot": ".",
+  "codeRoot": ".",
+  "platforms": [],
+  "harnesses": ["codex"]
+}
+EOF
+out=$(bash "$INIT" --skip-hooks 2>&1)
+hash_after=$(shasum -a 256 CLAUDE.md 2>/dev/null | awk '{print $1}')
+root_ok=0; [ -f CLAUDE.md ] && [ "$hash_before" = "$hash_after" ] && root_ok=1
+warn_ok=0; echo "$out" | grep -qi "Preserved CLAUDE.md" && warn_ok=1
+lane_removed=1
+for f in product/CLAUDE.md design/CLAUDE.md engineering/CLAUDE.md qa/CLAUDE.md roadmap/CLAUDE.md; do
+  [ -e "$f" ] && { lane_removed=0; break; }
+done
+if [ "$root_ok" = "1" ] && [ "$warn_ok" = "1" ] && [ "$lane_removed" = "1" ]; then
+  record_pass "TC-harness-agnostic-remove-claude-preserves-instructions"
+else
+  record_fail "TC-harness-agnostic-remove-claude-preserves-instructions" \
+    "root wrapper not preserved / no warning / lane wrappers not removed (root_ok=$root_ok warn_ok=$warn_ok lane_removed=$lane_removed)"
+fi
+
 header "Installer output"
 
 # TC-harness-agnostic-installer-names-harness-per-line

@@ -264,13 +264,26 @@ _cleanup_removed_harnesses() {
         green "Removed stale $fname at $lane_dir (harness '$kh' no longer enabled)"
         CREATED=$((CREATED + 1))
       elif [[ -f "$target" ]]; then
-        # Heuristic for claude's CLAUDE.md wrapper: if the file is a one-liner
-        # `@.../AGENTS.md` or `@.../CLAUDE.md`, treat it as pdeq-managed.
+        # A regular file whose first line is the pdeq `@import` is a claude
+        # wrapper. Lane wrappers are genuine one-liners and are safe to remove.
+        # The ROOT wrapper, however, ships a "## Project-Specific Instructions"
+        # scaffold below the import (see Step 4) that the consumer is invited to
+        # extend — so it may hold consumer-authored content. Only auto-remove a
+        # wrapper with nothing below the import; if any non-blank content follows,
+        # preserve it and warn (never delete consumer content — see
+        # FR-harness-agnostic-removed-harness-cleaned).
         if [[ "$kh" == "claude" ]] && head -n 1 "$target" 2>/dev/null \
              | grep -qE '^@.*\.pdeq.*/(AGENTS|CLAUDE)\.md$'; then
-          rm "$target"
-          green "Removed stale $fname at $lane_dir (harness 'claude' no longer enabled)"
-          CREATED=$((CREATED + 1))
+          local extra_content
+          extra_content=$(tail -n +2 "$target" 2>/dev/null | grep -cvE '^[[:space:]]*$' || true)
+          if [[ "$extra_content" -eq 0 ]]; then
+            rm "$target"
+            green "Removed stale $fname at $lane_dir (harness 'claude' no longer enabled)"
+            CREATED=$((CREATED + 1))
+          else
+            skip "Preserved $fname at $lane_dir — has content below the pdeq import (harness 'claude' disabled; remove manually if intended)"
+            SKIPPED=$((SKIPPED + 1))
+          fi
         fi
         # Otherwise consumer-authored — leave alone.
       fi

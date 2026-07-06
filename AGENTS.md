@@ -433,7 +433,7 @@ This is the supported invocation path for non-Claude harnesses until a native ex
 
 ## Quality Subagents
 
-In addition to the four functional agents, three quality-checking roles can be invoked:
+In addition to the four functional agents, four quality-checking roles can be invoked:
 
 ### Reviewer
 
@@ -491,6 +491,37 @@ The lane reviewer reads **product specs** and flags design/engineering/platform 
 An empty table means no findings. After the table, if the reviewer found a concrete vendor/protocol/library word that `audit-lanes.sh`'s current `laneAudit` terms would miss, it appends a short **suggested-additions** note (e.g., `laneAudit.protocols += ["OAuth"]`) so the deterministic net grows smarter over time.
 
 Invoke the lane reviewer as part of `/pdeq-kickoff` (Step 4) and whenever reviewing a product spec on its own. It is **advisory** — never a commit-time gate.
+
+### Conformance Reviewer
+
+<!-- Implements: FR-conformance-four-quadrant, FR-conformance-fulfilled, FR-conformance-unfulfilled, FR-conformance-incorrect, FR-conformance-undocumented, FR-conformance-single-verdict, FR-conformance-evidence, FR-conformance-actionable, FR-conformance-summary, FR-conformance-advisory, FR-conformance-complements -->
+
+The conformance reviewer reads a **platform's source code against that platform's specs** and reports how well the implementation actually conforms to the requirement set. It is the semantic counterpart to the deterministic traceability audit: where `scripts/audit-traceability.sh` asks *does a marker exist and is the slug valid* (lexical, commit-blocking), the conformance reviewer asks *does the code behave the way the requirement says* (judgment-based, **advisory**). Invoked via `/pdeq-conform <platform> [feature]`. See `product/conformance.md` for requirements and `engineering/cli/conformance.md` for the full contract.
+
+**Why it exists.** A marker is a *claim*, never a verification — code carrying a valid `// Implements:` marker can still contradict its requirement, and the deterministic audit passes it. And the deterministic scan is requirement-driven, so behavior no requirement points at is invisible to it. Those two blind spots — *incorrectly fulfilled* and *undocumented* — are exactly what this reviewer covers. It **complements, never replaces** the deterministic audit: it reads that audit's outputs (the `Code` column of `index.md`, the engineering Code Maps) as its starting point, but never modifies them, re-implements marker scanning, or changes the coverage gate.
+
+**What it produces — a four-quadrant conformance report** for one platform. Every requirement in scope receives **exactly one** of three verdicts, judged on *behavior* rather than marker presence:
+
+| Verdict | Meaning |
+|---|---|
+| **Fulfilled** | The code realizes the behavior the requirement specifies. A present marker is necessary evidence, not sufficient justification. |
+| **Unfulfilled** | No realization, or one too incomplete to satisfy the spec — *even if a marker cites the slug*. Sharpens the deterministic coverage check, which a bare marker satisfies. |
+| **Incorrectly fulfilled** | Code attempts the requirement but diverges: inverted condition, missing case, contradicted threshold, or behavior the spec forbids. The drift a valid marker hides from the deterministic audit. |
+
+Plus a fourth, code-side category — **Undocumented behavior**: product-relevant behavior in the code that no in-scope requirement describes, surfaced as a candidate to either specify or remove (reverse traceability, code→requirement).
+
+**Requirements in scope.** Verdicts are exhaustive over the platform's `FR-` slugs (every `FR-` gets a verdict). `NFR-`/`AC-` are best-effort — render a verdict only when the source plainly bears on them, otherwise note *not assessed from source*.
+
+**Every finding carries:**
+- **Evidence** — at least one concrete `file:line` location and the specific requirement or behavior it is judged against, so a reader can confirm or refute without re-deriving.
+- **Recommended action** (for every non-fulfilled finding) — fix the code, correct/clarify the spec, add a missing requirement, or remove dead behavior.
+- **Confidence** — `high` / `medium` / `low`. Reserve `high` for verdicts backed by unambiguous code; down-rank anything resting on inference about intent. A `low`/`medium` finding is a marked suspicion to verify, not a firm assertion.
+
+**Precision — signal over noise.** In the undocumented sweep, do **not** flag incidental plumbing — framework scaffolding, generated files, configuration, build glue, test-support code. Undocumented findings name *product-relevant behavior*, not plumbing. Distinguish genuine divergence from acceptable variation across all four quadrants.
+
+**Output — a per-platform summary (counts per quadrant) followed by four sections** (Fulfilled / Unfulfilled / Incorrectly Fulfilled / Undocumented), each either populated or explicitly empty — never omitted. See `engineering/cli/conformance.md` §Report Format for the exact layout.
+
+It is **advisory — never a commit-time gate**, exactly like the Lane Reviewer. Nothing in the commit path invokes it; acting on a finding is always a human or agent decision. Invoke it via `/pdeq-conform` on demand.
 
 ## Shared Project Files
 
