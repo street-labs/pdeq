@@ -28,6 +28,16 @@ This file defines shared vocabulary for the project. All agents must use consist
 
 **Structural bleed** — Design/engineering/platform detail that appears in a product spec through *phrasing* rather than a recognizable keyword — e.g. a requirement described as a protocol exchange without naming the protocol, or a single host treated as if it were the product. Invisible to the lexical backstop; the target of the lane review.
 
+**Internal consistency vs structural correctness** — Two distinct properties of the spec graph. *Internal consistency* is what the traceability/code-mapping audits verify: every slug resolves, every downstream reference is defined, every requirement has a code location. *Structural correctness* is whether a spec is the right *kind* of spec, in the right lane, and not a duplicate — a shared spec that is genuinely shared, a new spec that is not a re-spec of an existing one, product content that stays out of engineering's lane. Consistency can pass while correctness fails; the structural-validation feature (`product/spec-structure.md`) exists to check the latter.
+
+**Blocking structural check** — The deterministic, higher-precision check (`scripts/audit-structure.sh`) that **blocks** a commit on structural lane bleed — the deliberate counterpart to the warn-only [lexical backstop]. It targets a narrow set of high-confidence [content classes], skips fenced code and permanent slug tokens, extends to the design and engineering lanes, and honors the `PDEQ_ALLOW_DRIFT=1` escape hatch. Introduced in pdeq 0.6.0.
+
+**Content class** — One of the structural categories the blocking structural check flags, defined by *shape* rather than a fixed word list: presentation/interaction detail, technical/construction detail, and platform-as-product framing (in product specs); engineering detail (in design specs); and product-requirement definitions (in engineering specs).
+
+**Platform-as-product** — Framing in a shared (top-level) product spec that specifies behavior treating one platform as if it were the whole product, rather than describing cross-platform behavior. A structural placement error: the content belongs in a platform supplement or the design/engineering lane.
+
+**Structural triage** — The mandatory classification a kickoff makes before authoring: is the request an *update to an existing feature*, a *new presentation of an existing feature* (routed to design/engineering under the existing product spec), or a *genuinely new feature* (only after an overlap check)? The birth gate that prevents mis-shaped and duplicate specs. See `product/spec-structure.md`.
+
 **In-session command availability** — The contract that any new or modified pdeq slash command shipped by a freshly-bumped pdeq version is invocable in the same coding-agent session that ran the upgrade, without requiring a session restart. Realized by the symlink sync step of `/pdeq-update` plus the harness's on-demand command-file lookup.
 
 **Mechanical transform** — The deterministic portion of a migration. Applies the same rule to every applicable file without human judgment — for example, a rename, a move, or a rule-based rewrite. Runs before the semantic transform within a single migration.

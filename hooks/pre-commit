@@ -4,9 +4,10 @@
 #
 # Runs the pdeq pre-commit pipeline: traceability audit (including marker scan
 # + index Code-column rewrite), then the lane-discipline lexical backstop
-# (warn-only), then decision-log merge. Any pdeq-provided script that is missing
-# is silently skipped, so this hook works on partial installs (e.g., before a
-# feature's script lands).
+# (warn-only), then the blocking structural check (blocks on lane bleed), then
+# decision-log merge. Any pdeq-provided script that is missing is silently
+# skipped, so this hook works on partial installs (e.g., before a feature's
+# script lands).
 #
 # Installed by `scripts/init.sh` via `git config core.hooksPath <path>`.
 #
@@ -38,6 +39,15 @@ fi
 # Implements: FR-lane-discipline-backstop-at-commit
 if [ -x "$REPO/scripts/audit-lanes.sh" ]; then
   "$REPO/scripts/audit-lanes.sh" || true
+fi
+
+# Lane-discipline blocking structural check — BLOCKS on violation (note: NO
+# `|| true`, the deliberate inverse of the warn-only line above). Under `set -e`
+# a non-zero exit aborts the commit. PDEQ_ALLOW_DRIFT=1 reaches the script via
+# the environment and its own logic demotes the block to a named warning.
+# Implements: FR-lane-discipline-blocking-at-commit
+if [ -x "$REPO/scripts/audit-structure.sh" ]; then
+  "$REPO/scripts/audit-structure.sh"
 fi
 
 if [ -x "$REPO/scripts/merge-decisions.sh" ]; then

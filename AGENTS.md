@@ -105,6 +105,21 @@ Before starting work on any request, always scan existing specs in `product/` to
 
 **Forward-looking ideas (fast follows, V2, "someday" work) do not belong in specs.** Specs describe the feature as it exists or is actively being built today. Park unscoped future ideas in `roadmap/<feature>.md` — see the Roadmap section below.
 
+## Structural Triage: Right Shape, Right Lane
+
+Before authoring any spec — inside `/pdeq-kickoff` or not — classify the shape of the work. Pdeq's audits verify the spec graph is *internally consistent* (every slug resolves); they do not verify it is *structurally correct* (the spec is the right kind of spec, in the right lane, and not a duplicate). That is your job at authoring time, and it is the cheapest place to catch the error — before any slug is minted and propagates. See `product/spec-structure.md` for the full requirements.
+
+Classify every request as exactly one of:
+
+1. **Update to an existing feature** — changed behavior of an already-specified feature → update the existing product spec in place; never create a new file.
+2. **New presentation of an existing feature** — a new platform, surface, or presentation of a feature whose *behavior* is already specified → route to `design/<platform>/<feature>.md` and `engineering/<platform>/<feature>.md` under the existing product spec (plus a `product/<platform>/<feature>.md` supplement only if the platform adds genuinely new behavior). Do **not** create a new top-level product spec. This is the easy-to-miss case: presentation work looks like a new feature but is not.
+3. **Genuinely new feature** — new behavior belonging to no existing spec → create a new product spec, but only after reading the existing product specs and confirming the proposed requirements do not materially overlap one that already exists (fold into it if they do).
+
+<!-- Implements: FR-spec-structure-shared-neutral -->
+**Placement rule.** A top-level (shared) product spec must describe cross-platform behavior. A shared spec that specifies single-platform behavior — naming concrete screens, gestures, or how it is built — is a **structural placement error**, not merely a style nit: the platform-specific behavior belongs in a platform supplement, and its presentation/technical detail belongs in the design or engineering lane. The deterministic backstop for this rule is the blocking content-class check (`scripts/audit-structure.sh`), owned by the lane-discipline feature; this section states the principle, that script enforces it.
+
+**Prevention, not correction.** These checks exist to catch structural errors *before* identifiers propagate. There is deliberately no tooling to rename or remap established slugs and no provisional-slug state (slug permanence is preserved — see §Slug-Based IDs). A structural error caught after slugs have spread is corrected by the manual retire-and-remint convention, accepting that cost as the price of permanence; the remedy is to catch it at birth.
+
 ## Roadmap: Forward-Looking Ideas
 
 The `roadmap/` folder holds forward-looking notes for features — fast follows, V2 ideas, future directions — that are **not yet scoped** for implementation.

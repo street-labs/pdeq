@@ -1,6 +1,6 @@
 ---
-product-hash: 67efc78b11e1b6bce569905fcbb511645f8bdc127e3476593ed64a1e43c44a08
-product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-default-catches-known, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-default-terms, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-nonblocking-backstop]
+product-hash: 56aaf02a5119b4d66eb9a3705b41b0a44c057be8c71bb64fe20086baa22217eb
+product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-content-clean-passes, AC-lane-discipline-content-construction-blocks, AC-lane-discipline-content-incidental-passes, AC-lane-discipline-content-platform-blocks, AC-lane-discipline-content-presentation-blocks, AC-lane-discipline-default-catches-known, AC-lane-discipline-downstream-design-blocks, AC-lane-discipline-downstream-eng-blocks, AC-lane-discipline-escape-hatch-demotes, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-blocking-at-commit, FR-lane-discipline-blocking-enforcement, FR-lane-discipline-blocking-escape-hatch, FR-lane-discipline-content-class-check, FR-lane-discipline-content-class-precision, FR-lane-discipline-default-terms, FR-lane-discipline-downstream-scan, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-blocking-precision, NFR-lane-discipline-cross-lane-consistency, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-nonblocking-backstop]
 ---
 # Lane Discipline Enforcement — CLI Technical Spec
 
@@ -15,7 +15,11 @@ Two loosely-coupled pieces realize the two-layer model:
 
 2. **Layer 2 — the prompt-guided lane review.** A documented review *contract* — a taxonomy, a severity vocabulary, and an output-table schema — added to the kickoff Step 4 quality batch and to the standalone Lane Reviewer role in the root `AGENTS.md`. It is executed by whichever agent runs the workflow, is non-deterministic, and never runs in the commit-time gate.
 
+3. **Layer 1b — the blocking structural content check.** A new, separate script `scripts/audit-structure.sh` that runs a *high-precision* deterministic scan and, unlike the warn-only lexical backstop, **blocks** the commit on a violation. It checks shared product specs for three named content classes (presentation/interaction, technical/construction, platform-as-product) and extends the same enforcement to the downstream lanes (engineering content in a design spec; product-requirement definitions in an engineering spec). It honors the existing `PDEQ_ALLOW_DRIFT=1` escape hatch, demoting blocks to named warnings. It is wired into `hooks/pre-commit` **without** the `|| true` guard, so it aborts a commit — the deliberate opposite of `audit-lanes.sh`.
+
 The two are deliberately independent. Layer 1 is a lexical net that a project tunes with its own vocabulary; Layer 2 reasons about structure and context and can flag bleed carrying no listed word. Neither is authoritative over the other — a clean Layer 1 run does not imply an in-lane spec, and that is stated in the docs so no one mistakes the grep for the principle.
+
+**Why a separate script for Layer 1b, not a mode of `audit-lanes.sh`.** `audit-lanes.sh` is wired into the pre-commit pipeline as `audit-lanes.sh || true` — its non-zero exit is deliberately swallowed so the open-ended keyword net never blocks. Layer 1b must do the opposite (block), so it needs its own hook step *without* `|| true`. Keeping it a distinct script — mirroring how the blocking `audit-traceability.sh` and the warn-only `audit-lanes.sh` already coexist — keeps the warn-only contract of the lexical backstop byte-for-byte intact and makes the two enforcement strengths legible at the hook level. Shared scanning primitives (`pcre_scan`, `read_lane_terms`) are extracted to `scripts/lib/lane-scan.sh` so both scripts call one implementation.
 
 ## Technical Approach
 
@@ -70,6 +74,56 @@ fi
 The `|| true` makes the step advisory: `audit-lanes.sh` keeps its standalone `exit 1` on violations (so on-demand and CI runs still signal failure per `AC-lane-discipline-backstop-exit-status`), but the hook swallows that non-zero so the commit proceeds (`AC-lane-discipline-backstop-nonblocking`). A missing script skips cleanly, matching the pipeline's partial-install tolerance. Realizes `FR-lane-discipline-backstop-at-commit`.
 
 Note on the `set -e` hook: because the hook runs under `set -e`, the `|| true` is required — without it a non-zero `audit-lanes.sh` would abort the commit. This is the crux of warn-only behavior and is covered by an explicit QA case.
+
+### Layer 1b — blocking structural content check (`scripts/audit-structure.sh`)
+
+A new deterministic script realizes the content-class check (`FR-lane-discipline-content-class-check`), its blocking behavior (`FR-lane-discipline-blocking-enforcement`), the escape hatch (`FR-lane-discipline-blocking-escape-hatch`), incidental-match handling (`FR-lane-discipline-content-class-precision`), and the downstream scan (`FR-lane-discipline-downstream-scan`).
+
+**Shared primitives.** `pcre_scan()` and `read_lane_terms()` move from `audit-lanes.sh` into a new sourced library `scripts/lib/lane-scan.sh` (mirroring how `scripts/lib/harness.sh` is sourced by `init.sh`). `audit-lanes.sh` is refactored to source the lib and call the same functions — its behavior stays byte-for-byte identical (verified by re-running its existing QA cases). `audit-structure.sh` sources the same lib, so the slug-token stripping and code-fence handling live in exactly one place.
+
+**Code-fence handling.** `pcre_scan()` gains an "inside fenced code" state: lines between ```` ``` ```` fences (and lines beginning with 4-space/1-tab indentation, the Markdown indented-code form) are not scanned. This is what makes `AC-lane-discipline-content-incidental-passes` hold — a content-class term shown inside a fenced example does not block. The existing slug-token strip already covers the identifier half of incidental handling.
+
+**Content classes (high-precision defaults, product specs).** The check is deliberately narrower than the warn-only lexical net: it blocks, so it only carries classes with near-zero legitimate use in a platform-neutral product spec. Breadth beyond these defaults comes from the project's own `laneAudit` terms and from the Layer-2 reviewer, not from widening the blocking defaults.
+
+| Content class | Detection (default) | Realizes |
+|---|---|---|
+| Presentation — visual values | the existing `css_terms` (px/rem/font-family/monospace/CSS properties) | `FR-lane-discipline-content-class-check` |
+| Presentation — concrete elements | curated tight noun list: `modal\|dialog box\|sidebar\|dropdown\|tooltip\|scrollbar\|viewport\|breadcrumb\|carousel\|segmented control\|radio button\|checkbox\|thumbnail\|context menu\|nav bar\|status bar` (deliberately **excludes** ambiguous domain nouns like *menu, cart, card, page, list, tab* to avoid false blocks) | " |
+| Interaction — gestures | `\b(tap\|swipe\|pinch\|long-press\|double-tap\|drag-and-drop\|hover)\b` — `click` and `scroll` are **excluded** as too idiom-prone in prose ("click through a mockup", "scroll through the list") for a blocking gate; a project can add them via `laneAudit` | " |
+| Technical/construction | API-endpoint patterns (the existing `api_patterns`) **plus** the project's `laneAudit.{libraries,protocols,vendors}` terms (project-declared ⇒ high-confidence) | " |
+| Platform-as-product | `web_terms` (browser/DOM/localStorage/web app/…) + unambiguous OS/platform names `iOS\|iPadOS\|watchOS\|tvOS\|Android\|macOS\|OS X\|Windows\|Linux`, in top-level specs only, **plus** the project's `laneAudit.platforms` terms. Ambiguous platform words (bare `web`, `Mac` vs "MAC address", `server`) are **not** hardcoded — a project adds them via `laneAudit.platforms` in `pdeq.json` so the blocking default stays false-positive-free | " |
+
+Generic construction words (`class`, `function`, `method`) are intentionally **not** in the blocking defaults — their false-positive rate in prose is too high for a gate; they remain Layer-2's job. This scoping is what `NFR-lane-discipline-blocking-precision` requires and what justifies blocking over warning.
+
+**Downstream scan (`FR-lane-discipline-downstream-scan`).** Two directions, each high-precision:
+
+- **Design → engineering.** Scan `design/**/*.md` for engineering bleed using the `tech_terms` framework list + `laneAudit.libraries` + `api_patterns`. Design specs must not prescribe implementation technology, interface contracts, or algorithms, so a framework name or API pattern in a design spec is a violation. Realizes `AC-lane-discipline-downstream-design-blocks`.
+- **Engineering → product.** Scan `engineering/**/*.md` for product-requirement *definitions* — the signal that an engineering spec is redefining *what* the feature does. The definition form is a bullet carrying a bold label, a back-ticked `FR`/`NFR`/`AC` slug, and a colon: `^\s*[-*]\s+\*\*.*\*\*\s+` `` `(FR|NFR|AC)-[a-z0-9-]+` `` `:`, plus the acceptance-checkbox form `^\s*[-*]\s+\[[ xX]\]\s+.*` `` `AC-[a-z0-9-]+` ``. This distinguishes *definition* (product's job) from *reference* (engineering legitimately cites slugs in prose and in its Code Map table, which use `| FR-x | … |` and inline forms that the definition regex does not match). QA specs are exempt — they own `TC-` definitions. Realizes `AC-lane-discipline-downstream-eng-blocks`.
+
+**Blocking + escape hatch.** `audit-structure.sh` collects violations and, at the end:
+- If any violation and `PDEQ_ALLOW_DRIFT` is unset → print them and `exit 1` (blocks; `FR-lane-discipline-blocking-enforcement`, `AC-lane-discipline-content-*-blocks`).
+- If any violation and `PDEQ_ALLOW_DRIFT=1` → print each as `⚠ (suppressed by PDEQ_ALLOW_DRIFT)`, print a summary naming the suppressed conditions, and `exit 0` (`FR-lane-discipline-blocking-escape-hatch`, `AC-lane-discipline-escape-hatch-demotes`). This mirrors `audit-traceability.sh`'s existing suppression block (lines 53–55, 786–798) exactly, so the escape hatch is one consistent mechanism across all blocking audits.
+- No violations → `✓` and `exit 0` (`AC-lane-discipline-content-clean-passes`).
+
+A `--check` flag is accepted for CI symmetry with `audit-traceability.sh` (same blocking semantics; reserved for future non-writing behavior — this script writes nothing regardless).
+
+### Layer 1b — pre-commit wiring (blocking)
+
+Add an `-x`-guarded step to `hooks/pre-commit`, after `audit-traceability.sh` and after the warn-only `audit-lanes.sh` step, that runs the structural check **without** `|| true`:
+
+```sh
+# Lane-discipline blocking structural check — BLOCKS on violation
+# (FR-lane-discipline-blocking-at-commit). PDEQ_ALLOW_DRIFT=1 demotes to warnings.
+if [ -x "$REPO/scripts/audit-structure.sh" ]; then
+  "$REPO/scripts/audit-structure.sh"
+fi
+```
+
+Under the hook's `set -e`, the absence of `|| true` is what makes a non-zero exit abort the commit — the exact inverse of the `audit-lanes.sh` line directly above it. `PDEQ_ALLOW_DRIFT=1` reaches the script through the environment (the hook does not special-case it), and the script's own suppression logic demotes the block. A missing script skips cleanly (partial-install tolerance). Realizes `FR-lane-discipline-blocking-at-commit`. Because the hook file is extensionless, its `# Implements:` marker is not machine-scanned (same limitation noted for the warn-only step); coverage is proven by QA fixtures, and the Code Map row stays `planned`.
+
+### Config schema additions
+
+No new `pdeq.json` keys are strictly required — `audit-structure.sh` reuses the existing `laneAudit.{vendors,protocols,platforms,libraries}` arrays (now doing double duty: warn-only in `audit-lanes.sh`, blocking in `audit-structure.sh`). The 0.6.0 migration seeds the `laneAudit` scaffold if absent (already seeded by 0.5.0 for most consumers; the guard is idempotent). `pdeq.schema.json` needs no change beyond documentation prose noting the arrays now also feed the blocking check. This keeps the config surface stable and the change non-additive at the schema level.
 
 ### Layer 2 — the review contract
 
@@ -148,6 +202,12 @@ Authoritative planned code locations for every FR defined in `product/lane-disci
 | FR-lane-discipline-backstop-at-commit | hooks/pre-commit | planned |
 | FR-lane-discipline-update-seeds-config | migrations/0.5.0.md | implemented |
 | FR-lane-discipline-update-reviews-specs | migrations/0.5.0.md | implemented |
+| FR-lane-discipline-content-class-check | scripts/audit-structure.sh:scan_class | implemented |
+| FR-lane-discipline-blocking-enforcement | scripts/audit-structure.sh:record | implemented |
+| FR-lane-discipline-blocking-escape-hatch | scripts/audit-structure.sh:record | implemented |
+| FR-lane-discipline-content-class-precision | scripts/lib/lane-scan.sh:pcre_scan | implemented |
+| FR-lane-discipline-downstream-scan | scripts/audit-structure.sh | implemented |
+| FR-lane-discipline-blocking-at-commit | hooks/pre-commit | planned |
 
 Layer-2 rows point at Markdown prompt/agent files; their inline markers use the `<!-- Implements: <slug> -->` form. Layer-1 rows point at shell and use `# Implements: <slug>`.
 

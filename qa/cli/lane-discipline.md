@@ -1,6 +1,6 @@
 ---
-product-hash: 67efc78b11e1b6bce569905fcbb511645f8bdc127e3476593ed64a1e43c44a08
-product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-default-catches-known, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-default-terms, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-nonblocking-backstop]
+product-hash: 56aaf02a5119b4d66eb9a3705b41b0a44c057be8c71bb64fe20086baa22217eb
+product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-content-clean-passes, AC-lane-discipline-content-construction-blocks, AC-lane-discipline-content-incidental-passes, AC-lane-discipline-content-platform-blocks, AC-lane-discipline-content-presentation-blocks, AC-lane-discipline-default-catches-known, AC-lane-discipline-downstream-design-blocks, AC-lane-discipline-downstream-eng-blocks, AC-lane-discipline-escape-hatch-demotes, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-blocking-at-commit, FR-lane-discipline-blocking-enforcement, FR-lane-discipline-blocking-escape-hatch, FR-lane-discipline-content-class-check, FR-lane-discipline-content-class-precision, FR-lane-discipline-default-terms, FR-lane-discipline-downstream-scan, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-blocking-precision, NFR-lane-discipline-cross-lane-consistency, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-nonblocking-backstop]
 ---
 # Lane Discipline Enforcement — CLI Test Plan
 
@@ -44,6 +44,13 @@ Layer 1 cases are `[auto]`. Layer 2 cases are `[manual]` (agent-run + human conf
 | `extend-not-replace/` | Project terms add to, don't shadow, defaults. | `pdeq.json` with `laneAudit.vendors:["Square"]`; `product/x.md` naming both `React` (default) and `Square` (project) on separate lines. |
 | `literal-escape/` | Config terms are literal, not regex. | `laneAudit.libraries:["Prism.js"]`; `product/x.md` containing `PrismXjs` (must NOT match). |
 | `coffee-auth-bleed/` | **Layer 2 regression.** Product spec with vendor/protocol/host bleed. | `product/auth.md` seeded with Square, OAuth, "authorization code exchange", "coffee auth login", "exits non-zero", "subsequent CLI invocations", plus one legitimate overview host mention and one per-host NFR. `pdeq.json` with **no** `laneAudit` (so Layer 1 defaults miss it). |
+| `content-presentation/` | **Layer 1b.** Product spec with presentation/interaction bleed. | `product/x.md` with a `240px` value line, a `dropdown`/`tooltip` element line, and a `swipe`/`tap` gesture line. |
+| `content-construction/` | **Layer 1b.** Product spec with technical/construction bleed. | `product/x.md` with a `GET /api/orders` endpoint line and a line naming a configured `laneAudit.libraries` term. |
+| `content-platform/` | **Layer 1b.** Shared spec with platform-as-product framing. | top-level `product/x.md` with a `browser`/`localStorage` line and a `laneAudit.platforms` term line. |
+| `content-clean/` | **Layer 1b negative.** Behavior-only shared spec. | `product/x.md` written in platform-neutral prose; no content-class terms outside fences. |
+| `content-incidental/` | **Layer 1b negative.** Class terms only in fences/slugs. | `product/x.md` whose only `swipe`/`dropdown` occurrences are inside a fenced code block and inside a `` `FR-ex-swipe-gesture` `` slug token. |
+| `downstream-design-bleed/` | **Layer 1b.** Design spec with engineering bleed. | `design/cli/x.md` naming `React` and a `GET /api/x` contract. |
+| `downstream-eng-bleed/` | **Layer 1b.** Engineering spec defining product requirements. | `engineering/cli/x.md` containing a requirement **definition** line `- **Label** ` `` `FR-ex-x-y`: … `` ` and an `- [ ] **…** ` `` `AC-ex-x-y` `` ` checkbox; plus a legitimate Code-Map reference row and inline slug citation that must NOT trip. |
 
 ---
 
@@ -62,6 +69,14 @@ Layer 1 cases are `[auto]`. Layer 2 cases are `[manual]` (agent-run + human conf
 | AC-lane-discipline-review-suggests-terms | TC-lane-discipline-review-suggests | 2 | manual | Not started |
 | AC-lane-discipline-update-seed-idempotent | TC-lane-discipline-update-seed-idempotent | — | auto | Not started |
 | AC-lane-discipline-update-review-no-edit | TC-lane-discipline-update-review-no-edit | — | manual | Not started |
+| AC-lane-discipline-content-presentation-blocks | TC-lane-discipline-content-presentation | 1b | auto | Not started |
+| AC-lane-discipline-content-construction-blocks | TC-lane-discipline-content-construction | 1b | auto | Not started |
+| AC-lane-discipline-content-platform-blocks | TC-lane-discipline-content-platform | 1b | auto | Not started |
+| AC-lane-discipline-content-clean-passes | TC-lane-discipline-content-clean | 1b | auto | Not started |
+| AC-lane-discipline-content-incidental-passes | TC-lane-discipline-content-incidental | 1b | auto | Not started |
+| AC-lane-discipline-downstream-design-blocks | TC-lane-discipline-downstream-design | 1b | auto | Not started |
+| AC-lane-discipline-downstream-eng-blocks | TC-lane-discipline-downstream-eng | 1b | auto | Not started |
+| AC-lane-discipline-escape-hatch-demotes | TC-lane-discipline-escape-hatch | 1b | auto | Not started |
 
 Supporting cases (no direct AC, cover FR/NFR behavior): `TC-lane-discipline-extend-not-replace` (FR-lane-discipline-default-terms), `TC-lane-discipline-literal-escape` (FR-lane-discipline-project-terms precision), `TC-lane-discipline-no-pcre-grep` (NFR-lane-discipline-deterministic-backstop), `TC-lane-discipline-slug-not-flagged` (FR-lane-discipline-lexical-backstop precision — slug identifiers are excluded).
 
@@ -113,6 +128,57 @@ Fixture whose product spec has a requirement line carrying a slug that embeds a 
 > Covers `AC-lane-discipline-backstop-nonblocking`, `FR-lane-discipline-backstop-at-commit`.
 Fixture with `hooks/pre-commit` installed and a staged product spec containing default bleed. Attempt a commit.
 - **Expect**: the commit **succeeds**; the lane warning is printed; the traceability audit still runs and still blocks on its own failures (verifying the `|| true` is scoped to the lane step only).
+
+---
+
+## Layer 1b Test Cases (blocking structural check — auto)
+
+All Layer 1b cases exercise `scripts/audit-structure.sh` against fixture repos. New assertion helpers: `assert_structure_exit <code>`, `assert_structure_blocks <relpath:lineno>` (asserts a violation line for that location and a non-zero exit), `assert_structure_clean` (✓ + exit 0), `assert_structure_no_flag <term>`.
+
+### TC-lane-discipline-content-presentation
+> Covers `AC-lane-discipline-content-presentation-blocks`.
+Fixture `content-presentation/`. Run `audit-structure.sh`.
+- **Expect**: exit 1; violation lines for the `240px` value, the `dropdown`/`tooltip` element line, and the `swipe`/`tap` gesture line — presentation/interaction content blocks a shared product spec.
+
+### TC-lane-discipline-content-construction
+> Covers `AC-lane-discipline-content-construction-blocks`.
+Fixture `content-construction/`. Run `audit-structure.sh`.
+- **Expect**: exit 1; violation lines for the `GET /api/orders` endpoint and the configured library term — technical/construction content blocks.
+
+### TC-lane-discipline-content-platform
+> Covers `AC-lane-discipline-content-platform-blocks`.
+Fixture `content-platform/`. Run `audit-structure.sh`.
+- **Expect**: exit 1; violation lines for the `browser`/`localStorage` line and the `laneAudit.platforms` term — platform-as-product framing blocks in a top-level shared spec.
+
+### TC-lane-discipline-content-clean
+> Covers `AC-lane-discipline-content-clean-passes`.
+Fixture `content-clean/`. Run `audit-structure.sh`.
+- **Expect**: exit 0; ✓ no-violations line — a behavior-only shared spec is not blocked.
+
+### TC-lane-discipline-content-incidental
+> Covers `AC-lane-discipline-content-incidental-passes`, `FR-lane-discipline-content-class-precision`.
+Fixture `content-incidental/` (class terms only inside a fenced code block and inside a slug token). Run `audit-structure.sh`.
+- **Expect**: exit 0; no violation line — fenced code and permanent slug tokens are not scanned, so legitimate examples and identifiers do not trip the block.
+
+### TC-lane-discipline-downstream-design
+> Covers `AC-lane-discipline-downstream-design-blocks`, `FR-lane-discipline-downstream-scan`.
+Fixture `downstream-design-bleed/`. Run `audit-structure.sh`.
+- **Expect**: exit 1; violation lines for the `React` framework name and the `GET /api/x` contract in the **design** spec — the scan protects the design lane, not only product.
+
+### TC-lane-discipline-downstream-eng
+> Covers `AC-lane-discipline-downstream-eng-blocks`, `FR-lane-discipline-downstream-scan`.
+Fixture `downstream-eng-bleed/`. Run `audit-structure.sh`.
+- **Expect**: exit 1; violation lines for the requirement-**definition** bullet and the `AC-` checkbox in the engineering spec; **no** violation for the Code-Map reference row or the inline slug citation — the check distinguishes defining a requirement (product bleed) from referencing one (legitimate).
+
+### TC-lane-discipline-escape-hatch
+> Covers `AC-lane-discipline-escape-hatch-demotes`, `FR-lane-discipline-blocking-escape-hatch`.
+Fixture `content-presentation/` (would otherwise block). Run `PDEQ_ALLOW_DRIFT=1 audit-structure.sh`.
+- **Expect**: exit 0; each finding printed as `⚠ (suppressed by PDEQ_ALLOW_DRIFT)`; a summary line names the suppressed conditions — the hatch demotes the block to a named warning rather than silently passing.
+
+### TC-lane-discipline-structure-hook-blocks
+> Covers `FR-lane-discipline-blocking-at-commit` (and complements the warn-only `TC-lane-discipline-hook-warn-only`).
+Fixture with `hooks/pre-commit` installed and a staged product spec containing presentation bleed. Attempt a commit.
+- **Expect**: the commit is **aborted** (non-zero) by the `audit-structure.sh` step — proving the blocking step has no `|| true`, the inverse of the `audit-lanes.sh` step. Re-attempt with `PDEQ_ALLOW_DRIFT=1`: the commit succeeds with a suppression warning.
 
 ---
 
