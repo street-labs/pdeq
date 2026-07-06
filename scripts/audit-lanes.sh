@@ -17,65 +17,12 @@ PDEQ_CONFIG_PATH="${PDEQ_CONFIG_PATH:-$ROOT/pdeq.json}"
 
 violations=()
 
-# ─── Project-tunable red-flag terms (from pdeq.json) ───────────────────────
-# Reads laneAudit.{vendors,protocols,platforms,libraries} and prints them as a
-# regex-escaped, `|`-joined alternation body to append to the built-in default
-# term list. Extends the defaults — never replaces them (back-compat). No jq
-# dependency; inline python3 matches the convention in audit-traceability.sh.
-# Implements: FR-lane-discipline-project-terms
-read_lane_terms() {
-  if [ ! -f "$PDEQ_CONFIG_PATH" ]; then return; fi
-  python3 -c "
-import json, re
-try:
-    with open('$PDEQ_CONFIG_PATH') as f:
-        data = json.load(f)
-    la = data.get('laneAudit') or {}
-    terms = []
-    for key in ('vendors', 'protocols', 'platforms', 'libraries'):
-        terms.extend(la.get(key) or [])
-    seen = set(); out = []
-    for t in terms:
-        if not t or t in seen:
-            continue
-        seen.add(t)
-        out.append(re.escape(t))
-    print('|'.join(out))
-except Exception:
-    pass
-" 2>/dev/null || true
-}
-
-# ─── Portable line scanner (python3 re, not grep -P) ───────────────────────
-# Prints "<lineno>:<line>" for every line of $2 matching python regex $1.
-# Optional $3 containing "i" enables case-insensitive matching.
-# Uses python3 (already a hard pdeq dependency) instead of `grep -P`, which is
-# unsupported by macOS BSD grep — where the pre-commit hook actually runs — and
-# would otherwise make this audit silently no-op. Deterministic across platforms.
-# Implements: FR-lane-discipline-lexical-backstop
-pcre_scan() {
-  python3 -c "
-import sys, re
-pat, path = sys.argv[1], sys.argv[2]
-flags = re.I if (len(sys.argv) > 3 and 'i' in sys.argv[3]) else 0
-try:
-    rx = re.compile(pat, flags)
-except re.error:
-    sys.exit(0)
-# Requirement slugs are permanent identifiers, not prose — a term embedded in a
-# slug (e.g. 'browser' in FR-ex-browser-viewable, or a project's own OAuth term in
-# FR-ex-oauth-callback) is not lane bleed. Strip slug tokens before matching so
-# a slug never self-trips; the surrounding prose is still scanned in full.
-slug_rx = re.compile(r'(?:FR|NFR|AC|TC)-[a-z0-9-]+')
-try:
-    with open(path, encoding='utf-8', errors='replace') as f:
-        for i, line in enumerate(f, 1):
-            if rx.search(slug_rx.sub('', line)):
-                sys.stdout.write('%d:%s\n' % (i, line.rstrip('\n')))
-except OSError:
-    pass
-" "$1" "$2" ${3:+"$3"}
-}
+# Shared scanning primitives (read_lane_terms, pcre_scan) live in the sourced
+# lib so this warn-only backstop and the blocking audit-structure.sh share one
+# implementation of slug-stripping, literal-escape, and config reading.
+PDEQ_LIB_DIR="$(cd "$(dirname "$0")" && pwd)/lib"
+# shellcheck source=lib/lane-scan.sh
+. "$PDEQ_LIB_DIR/lane-scan.sh"
 
 warn() {
   violations+=("$1")

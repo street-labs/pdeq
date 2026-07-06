@@ -21,6 +21,8 @@ jobs:
         run: ./scripts/audit-traceability.sh --check
       - name: Lane-discipline lexical backstop
         run: ./scripts/audit-lanes.sh
+      - name: Lane-discipline blocking structural check
+        run: ./scripts/audit-structure.sh
 
   tests:
     name: Test suites
@@ -37,3 +39,5 @@ jobs:
         run: ./engineering/apps/cli/tests/code-mapping/run-all.sh
       - name: Lane-discipline regression
         run: ./engineering/apps/cli/tests/lane-discipline/regression-coffee-auth.sh
+      - name: Lane-discipline structural check (Layer 1b)
+        run: ./engineering/apps/cli/tests/lane-discipline/test-structure.sh

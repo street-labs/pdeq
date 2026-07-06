@@ -21,15 +21,24 @@ Determine the target platform(s) for this request:
 
 If the request doesn't specify a platform, ask the user. For the current project, the active platforms are listed in the "Multi-Platform Support" section of AGENTS.md.
 
-### B) Which existing spec does this belong to?
+### B) Structural triage: what shape of work is this?
 
-Read the files in `product/` (excluding AGENTS.md and CLAUDE.md) to see what specs already exist. Determine whether this request:
-- **Modifies an existing feature** → Update the existing spec file(s). Do NOT create a new file.
-- **Adds a genuinely new feature** → Create a new spec file only if this is truly a distinct feature that doesn't belong in any existing spec.
+<!-- Implements: FR-spec-structure-triage-classification, FR-spec-structure-existing-scan -->
+**First read the existing product specs.** Read the files in `product/` (excluding AGENTS.md and CLAUDE.md) — including platform subfolders — so the classification below is grounded in what already exists, not a guess. This read is mandatory before any new product spec is minted.
 
-Specs are **living documents** that represent the product as it is (or will be). Think of each spec as the single source of truth for that feature area. Modifications, enhancements, and refinements go into the existing spec — they do not spawn new files.
+Then classify the request as **exactly one** of these three shapes. Getting this right is the cheapest place to prevent a mis-shaped or duplicate spec — before any slug is minted:
 
-When porting to a new platform, the base spec already exists — check if a platform-specific variant already exists too.
+1. **Update to an existing feature** — the request changes the *behavior* of a feature that already has a product spec. → **Update the existing spec file in place.** Do NOT create a new file. Specs are living documents: modifications, enhancements, and refinements go into the existing spec.
+
+2. **New presentation of an existing feature** `<!-- Implements: FR-spec-structure-manifestation-routing -->` — the request is a new platform, surface, or presentation of a feature whose *behavior* is already specified (e.g. "build the screens for ordering" when `product/ordering.md` already specifies ordering). This is **not** new behavior, so it does **not** get a new top-level product spec. → Route it to `design/<platform>/<feature>.md` and `engineering/<platform>/<feature>.md` hung off the existing product spec, and add a `product/<platform>/<feature>.md` supplement **only if** the platform introduces genuinely new behavior. This is the classification that is easiest to get wrong — presentation work superficially looks like a new feature. *(The canonical failure: a GUI presentation of an already-specified ordering feature was mis-framed as a new `views` product feature, spawning a duplicate, platform-specific, engineering-leaking product spec that survived a full epic before review caught it.)*
+
+3. **Genuinely new feature** — new behavior that belongs to no existing spec. → Create a new product spec, **but only after the overlap check below.**
+
+**Overlap check (before minting any new product spec)** `<!-- Implements: FR-spec-structure-overlap-check -->`: compare the proposed requirements against the existing product specs you just read. If they materially overlap an existing spec (re-specifying requirements it already owns, even under different names), the work belongs in that spec — fold it in and treat this as an *update*, not a new spec. Proceed to a new spec only after you have explicitly considered overlap and confirmed the work is distinct. Announce the overlap finding in the triage decision (Step C).
+
+**Placement rule** `<!-- Implements: FR-spec-structure-shared-neutral -->`: a top-level (shared) product spec must describe cross-platform behavior. If the work is single-platform in nature, it is **not** a shared product spec — it is a platform supplement plus design/engineering specs. A shared spec that specifies single-platform behavior is a structural placement error, not a style nit.
+
+When porting to a new platform, the base spec already exists — check whether a platform-specific variant already exists too.
 
 ### B.1) Check the roadmap
 
@@ -56,6 +65,7 @@ Not every request requires all four areas. Decide which are relevant:
 **Be honest about what's needed.** A request like "make it launch faster" is primarily an engineering concern. Product might add a brief NFR ("app should launch within Xms"), but it doesn't need a design spec. Don't create artifacts just to check boxes.
 
 Announce your triage decision to the user before proceeding:
+- **The structural classification** (Step B): update to existing / new presentation of an existing feature / genuinely new feature — with a one-line justification, and for a new spec, the overlap finding against existing product specs
 - Which platform(s) are targeted
 - Which spec file(s) will be created or updated (including platform-specific variants)
 - Which functional areas will be involved and why
@@ -68,7 +78,10 @@ Announce your triage decision to the user before proceeding:
 
 **Only if triage determined product work is needed.**
 
-Take on the product role, working in `product/` (per `product/AGENTS.md`). Be explicit about whether this is a **new spec**, an **update to an existing spec**, or a **platform-specific variant**:
+<!-- Implements: FR-spec-structure-lane-context -->
+**Read `product/AGENTS.md` in full before writing anything in this lane.** Do not rely on the harness having surfaced it — some harnesses load only the root agent file, or load per-lane files based on the working directory rather than the file about to be written. Reading it explicitly guarantees the lane's constraints are in your context at the moment you author.
+
+Take on the product role, working in `product/`. Be explicit about whether this is a **new spec**, an **update to an existing spec**, or a **platform-specific variant**:
 
 - **Updating an existing spec**: Tell the agent which file to update, what sections need changes, and what to add/modify. The agent should read the existing file first and make targeted edits — not rewrite the whole file.
 - **New spec**: Have it create a new PRD markdown file following the template in `product/AGENTS.md`.
@@ -88,7 +101,7 @@ Before moving on, read back the product spec and verify it's complete. If the us
 
 **Only if triage determined design work is needed. Wait for Step 1 to complete first.**
 
-Read the product spec from Step 1 (or the existing product spec if Step 1 was skipped). Take on the design role, working in `design/` (per `design/AGENTS.md`):
+**Read `design/AGENTS.md` in full before writing anything in this lane** (see the note in Step 1 — this holds on every harness). Read the product spec from Step 1 (or the existing product spec if Step 1 was skipped). Take on the design role, working in `design/`:
 
 - **Updating an existing spec**: Tell the agent which file to update and what changed in the product spec. The agent should make targeted updates — not rewrite.
 - **New spec**: Have it create a design spec following `design/AGENTS.md`.
@@ -110,7 +123,7 @@ These two can run **in parallel** because both depend on the same upstream input
 
 ### Engineering Spec
 
-Read the product spec and design spec (whichever exist). Take on the engineering role, working in `engineering/` (per `engineering/AGENTS.md`):
+**Read `engineering/AGENTS.md` in full before writing anything in this lane** (see the note in Step 1). Read the product spec and design spec (whichever exist). Take on the engineering role, working in `engineering/`:
 
 - **Updating an existing spec**: Tell the agent which file to update, what changed upstream, and what technical approach needs revisiting.
 - **New spec**: Have it create a technical spec following `engineering/AGENTS.md`.
@@ -127,7 +140,7 @@ Do NOT write code at this stage — only the technical spec.
 
 **Only if triage determined QA work is needed.**
 
-Read the product spec and design spec. Take on the QA role, working in `qa/` (per `qa/AGENTS.md`):
+**Read `qa/AGENTS.md` in full before writing anything in this lane** (see the note in Step 1). Read the product spec and design spec. Take on the QA role, working in `qa/`:
 
 - **Updating an existing test plan**: Tell the agent which file to update, what changed, and which test cases need adding/modifying.
 - **New test plan**: Have it create a test plan following `qa/AGENTS.md`.

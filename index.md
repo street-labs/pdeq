@@ -26,7 +26,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-mechanical-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-semantic-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-order-within | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-explicit-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
 | FR-migrations-pending-detection | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-ordered-application | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
@@ -34,7 +34,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-nonbreaking-advance | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:301 |
 | FR-migrations-noop-when-current | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-dry-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-scoped-writes | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:354 |
 | FR-migrations-breaking-gate | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
 | FR-migrations-no-false-positive | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
@@ -317,16 +317,16 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-lane-discipline-review-output-shape | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
 | AC-lane-discipline-review-suggests-terms | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
 | FR-lane-discipline-backstop-at-commit | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
-| FR-lane-discipline-default-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:105 |
-| FR-lane-discipline-lexical-backstop | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:105, scripts/audit-lanes.sh:55 |
-| FR-lane-discipline-project-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, pdeq.schema.json, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:25 |
-| FR-lane-discipline-review-in-workflow | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | pdeq-rules/commands/pdeq-kickoff.md:161 |
-| FR-lane-discipline-severity | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
-| FR-lane-discipline-structural-review | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
-| FR-lane-discipline-structured-output | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
-| FR-lane-discipline-taxonomy | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
-| FR-lane-discipline-term-suggestions | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:445 |
-| FR-lane-discipline-two-layer | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | pdeq-rules/commands/pdeq-kickoff.md:161 |
+| FR-lane-discipline-default-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:52 |
+| FR-lane-discipline-lexical-backstop | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-lanes.sh:52, scripts/lib/lane-scan.sh:56 |
+| FR-lane-discipline-project-terms | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, pdeq.schema.json, qa/cli/lane-discipline.md | scripts/lib/lane-scan.sh:18 |
+| FR-lane-discipline-review-in-workflow | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | pdeq-rules/commands/pdeq-kickoff.md:174 |
+| FR-lane-discipline-severity | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:460 |
+| FR-lane-discipline-structural-review | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:460 |
+| FR-lane-discipline-structured-output | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:460 |
+| FR-lane-discipline-taxonomy | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:460 |
+| FR-lane-discipline-term-suggestions | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | AGENTS.md:460 |
+| FR-lane-discipline-two-layer | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | pdeq-rules/commands/pdeq-kickoff.md:174 |
 | NFR-lane-discipline-advisory-review | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
 | NFR-lane-discipline-backcompat | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
 | NFR-lane-discipline-deterministic-backstop | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
@@ -355,3 +355,50 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-migrations-advisory-conformant | AC | product/migrations.md | engineering/cli/migrations.md, qa/cli/migrations.md |  |
 | TC-migrations-advisory-applied | TC | qa/cli/migrations.md |  |  |
 | TC-migrations-advisory-conformant | TC | qa/cli/migrations.md |  |  |
+| AC-lane-discipline-content-clean-passes | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-content-construction-blocks | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-content-incidental-passes | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-content-platform-blocks | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-content-presentation-blocks | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-downstream-design-blocks | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-downstream-eng-blocks | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-lane-discipline-escape-hatch-demotes | AC | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| FR-lane-discipline-blocking-at-commit | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| FR-lane-discipline-blocking-enforcement | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-structure.sh:40 |
+| FR-lane-discipline-blocking-escape-hatch | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-structure.sh:40 |
+| FR-lane-discipline-content-class-check | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-structure.sh:52 |
+| FR-lane-discipline-content-class-precision | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/lib/lane-scan.sh:56 |
+| FR-lane-discipline-downstream-scan | FR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md | scripts/audit-structure.sh:128 |
+| NFR-lane-discipline-blocking-precision | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| NFR-lane-discipline-cross-lane-consistency | NFR | product/lane-discipline.md | engineering/cli/lane-discipline.md, qa/cli/lane-discipline.md |  |
+| AC-spec-structure-lane-context-loaded | AC | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| AC-spec-structure-no-remap-tooling | AC | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| AC-spec-structure-overlap-surfaced | AC | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| AC-spec-structure-presentation-routed | AC | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| AC-spec-structure-shared-neutral-flagged | AC | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| AC-spec-structure-triage-announced | AC | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| AC-spec-structure-update-in-place | AC | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| FR-spec-structure-existing-scan | FR | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md | pdeq-rules/commands/pdeq-kickoff.md:26 |
+| FR-spec-structure-lane-context | FR | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md | pdeq-rules/commands/pdeq-kickoff.md:81 |
+| FR-spec-structure-manifestation-routing | FR | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| FR-spec-structure-overlap-check | FR | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| FR-spec-structure-shared-neutral | FR | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md | AGENTS.md:118 |
+| FR-spec-structure-triage-classification | FR | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md | pdeq-rules/commands/pdeq-kickoff.md:26 |
+| NFR-spec-structure-harness-neutral | NFR | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| NFR-spec-structure-prevention-first | NFR | product/spec-structure.md | engineering/cli/spec-structure.md, qa/cli/spec-structure.md |  |
+| TC-lane-discipline-content-clean | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-content-construction | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-content-incidental | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-content-platform | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-content-presentation | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-downstream-design | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-downstream-eng | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-escape-hatch | TC | qa/cli/lane-discipline.md |  |  |
+| TC-lane-discipline-structure-hook-blocks | TC | qa/cli/lane-discipline.md |  |  |
+| TC-spec-structure-lane-context | TC | qa/cli/spec-structure.md |  |  |
+| TC-spec-structure-no-remap-tooling | TC | qa/cli/spec-structure.md |  |  |
+| TC-spec-structure-overlap-surfaced | TC | qa/cli/spec-structure.md |  |  |
+| TC-spec-structure-presentation-routed | TC | qa/cli/spec-structure.md |  |  |
+| TC-spec-structure-shared-neutral | TC | qa/cli/spec-structure.md |  |  |
+| TC-spec-structure-triage-announced | TC | qa/cli/spec-structure.md |  |  |
+| TC-spec-structure-update-in-place | TC | qa/cli/spec-structure.md |  |  |

@@ -6,7 +6,9 @@ Pdeq keeps product specs free of design and engineering detail: product describe
 
 Today the only mechanical guard is a deterministic audit that scans product specs for a fixed list of technology keywords. A keyword list catches the words it knows and nothing else: it misses any vendor, protocol, or platform no one thought to list, and — more fundamentally — it cannot see *structural* bleed, where a requirement reads as implementation-shaped without naming any listed word ("authorization code exchange" is OAuth-shaped without the word OAuth; "subsequent invocations" is host-specific without any flagged term). A grep also cannot tell a real violation from a legitimate mention — an overview sentence that names a host for context, or a per-host constraint stated in a non-functional requirement, are both allowed.
 
-This feature enforces the lane *principle* rather than a fixed word list, through two complementary layers. A **deterministic lexical backstop** keeps the cheap, no-judgment keyword scan but makes its term list project-tunable, so each project can name its own vendors, protocols, and platforms without editing shared framework files. A **prompt-guided lane review** run by an agent reasons about structural bleed the keyword scan cannot see, classifies each finding by category and severity so it can distinguish a true violation from an allowed mention, and reports its findings in a structured, actionable form. The two layers are complementary, not redundant: the backstop is a fast deterministic net for obvious lexical leaks; the review is the real principle enforcement.
+This feature enforces the lane *principle* rather than a fixed word list, through complementary layers. A **deterministic lexical backstop** keeps the cheap, no-judgment keyword scan but makes its term list project-tunable, so each project can name its own vendors, protocols, and platforms without editing shared framework files. A **prompt-guided lane review** run by an agent reasons about structural bleed the keyword scan cannot see, classifies each finding by category and severity so it can distinguish a true violation from an allowed mention, and reports its findings in a structured, actionable form. The two layers are complementary, not redundant: the backstop is a fast deterministic net for obvious lexical leaks; the review is the real principle enforcement.
+
+Alongside the noisy, warn-only keyword backstop, a higher-precision **deterministic content-class check** targets a small set of *structural* content classes rather than an open-ended keyword list — presentation and interaction detail, technical and construction detail, and treating one platform as if it were the product. Because it is precise enough to distinguish these classes from ordinary prose (skipping quoted code and permanent identifier tokens), it is trusted to **block** a commit rather than merely warn, with a documented escape hatch for the rare false positive. This same deterministic checking extends **beyond product specs to the downstream lanes** — a design spec is checked for engineering-lane content, an engineering spec for product-lane content — so bleed is caught wherever it lands, not only in product. Together these turn lane discipline from an advisory net around one lane into an enforced boundary around every lane.
 
 ## User Stories
 
@@ -15,6 +17,9 @@ This feature enforces the lane *principle* rather than a fixed word list, throug
 - As a **reviewing agent**, I want each flagged item classified by category and severity — a real violation versus an allowed contextual mention — so that I can act on the genuine problems without drowning in false positives.
 - As a **commit-time gate**, I want the deterministic backstop to run automatically on every commit without ever blocking it, so that obvious leaks are surfaced early while a heuristic scan never wedges a legitimate change.
 - As a **framework that improves over time**, I want the agent review to suggest term-list additions for the lexical leaks it found, so that the deterministic net grows smarter without manual curation.
+- As a **maintainer who has been burned by bleed surviving into implementation**, I want the highest-confidence, structural lane violations to *block* a commit rather than only warn, so that a spec carrying presentation, construction, or platform-as-product detail cannot silently reach the codebase.
+- As a **design or engineering spec author**, I want the deterministic check to run on my lane too — flagging engineering detail in a design spec, or product behavior redefined in an engineering spec — so that lane discipline protects every lane, not just product.
+- As an **author hitting a rare false positive**, I want a documented, single-commit escape hatch that demotes the block to a warning and names what it suppressed, so that a heuristic mistake never permanently wedges a legitimate change.
 
 ## Requirements
 
@@ -32,6 +37,21 @@ A no-judgment scan flags configured red-flag terms in product specs. It is the c
 - **Project-tunable terms** `FR-lane-discipline-project-terms`: A project can supply its own red-flag terms — its vendors, protocols, platforms, and libraries — that the backstop scans for, without editing files shared across projects. This lets the backstop be meaningful for a project's own domain rather than only the terms the framework happened to ship.
 - **Default terms** `FR-lane-discipline-default-terms`: When a project supplies no terms of its own, a sensible built-in default set applies. Project-supplied terms extend the defaults rather than replacing them, so configuring a project's own vendors never silences the shipped guard.
 
+### Blocking Structural Content Check
+
+A higher-precision deterministic check targets structural content classes and is trusted to block a commit, complementing the noisy warn-only keyword backstop.
+
+- **Content-class detection** `FR-lane-discipline-content-class-check`: A deterministic check flags a small, named set of *content classes* that do not belong in a shared product spec: presentation and interaction detail (naming concrete visual elements or user gestures), technical and construction detail (naming how the feature is built — its components, targets, or dependencies), and platform-as-product framing (specifying behavior that treats one platform as if it were the whole product). The classes are defined structurally, so the check generalizes beyond any fixed keyword list.
+- **Blocking enforcement** `FR-lane-discipline-blocking-enforcement`: When the content-class check finds a violation, it blocks the commit rather than merely warning. This is deliberately stronger than the lexical backstop, which stays warn-only: the content-class check is scoped to high-confidence structural classes and ignores incidental matches (see false-positive handling), so a block reflects a real lane violation.
+- **Escape hatch** `FR-lane-discipline-blocking-escape-hatch`: A documented, single-commit escape hatch demotes the block to a warning, so a rare false positive never permanently wedges a legitimate change. When the escape hatch is used, the check still reports what it found and names the conditions it suppressed, so the suppression is visible rather than silent.
+- **Incidental-match handling** `FR-lane-discipline-content-class-precision`: The content-class check does not flag text where a class term appears incidentally rather than as a requirement — quoted or fenced code, and permanent identifier tokens (requirement and test slugs) — so that legitimate examples and identifiers do not trip a blocking check. This precision is what justifies blocking rather than warning.
+
+### Downstream Lane Scanning
+
+Deterministic bleed detection is not limited to product specs; each downstream lane is checked for content that belongs to another lane.
+
+- **Downstream scan** `FR-lane-discipline-downstream-scan`: The deterministic checks extend beyond product specs to the downstream lanes. A design spec is scanned for engineering-lane content (how it is built — components, algorithms, interface contracts); an engineering spec is scanned for product-lane content (redefining *what* the feature does rather than *how* it is built). Bleed detected downstream is enforced at the same strength as the product content-class check, so a lane boundary is protected wherever specs are written.
+
 ### Prompt-Guided Lane Review
 
 An agent-run review reasons about structural bleed the keyword scan cannot see, and classifies findings so real violations are distinguishable from allowed mentions.
@@ -47,7 +67,8 @@ An agent-run review reasons about structural bleed the keyword scan cannot see, 
 The two layers run in different places, matching their cost and determinism.
 
 - **Review in the spec workflow** `FR-lane-discipline-review-in-workflow`: The prompt-guided lane review runs as part of the feature-kickoff quality checks and as part of the standalone reviewer pass, alongside the existing reviewer and consistency checks. It is not part of the commit-time gate.
-- **Backstop at commit time** `FR-lane-discipline-backstop-at-commit`: The deterministic backstop runs automatically as part of the commit-time checks in addition to being runnable on demand, so obvious lexical leaks are surfaced without waiting for an agent review.
+- **Backstop at commit time** `FR-lane-discipline-backstop-at-commit`: The deterministic lexical backstop runs automatically as part of the commit-time checks in addition to being runnable on demand, so obvious lexical leaks are surfaced without waiting for an agent review.
+- **Blocking checks at commit time** `FR-lane-discipline-blocking-at-commit`: The content-class check and the downstream lane scan run automatically as part of the commit-time checks and, unlike the lexical backstop, block the commit on a violation (subject to the escape hatch). They are also runnable on demand and in continuous integration, where they signal failure through their exit status.
 
 ### Update Propagation
 
@@ -60,7 +81,9 @@ When an existing project adopts a version of the framework that includes lane di
 
 - **Deterministic and agent-free backstop** `NFR-lane-discipline-deterministic-backstop`: The lexical backstop is fully deterministic and runs with no agent or network dependency, so it is usable in continuous-integration and commit-time contexts where no agent is available.
 - **Advisory review** `NFR-lane-discipline-advisory-review`: The prompt-guided review is advisory. Because it is non-deterministic, it never runs as a blocking commit-time gate; its output informs humans and downstream tooling.
-- **Non-blocking backstop** `NFR-lane-discipline-nonblocking-backstop`: When the deterministic backstop runs at commit time, it reports findings as warnings and never blocks the commit, reflecting that a heuristic keyword scan can produce false positives that must not wedge a legitimate change. The backstop still signals failure through its exit status when run on demand or in continuous integration.
+- **Non-blocking lexical backstop** `NFR-lane-discipline-nonblocking-backstop`: When the deterministic *lexical* backstop (the open-ended keyword scan) runs at commit time, it reports findings as warnings and never blocks the commit, reflecting that a heuristic keyword scan can produce false positives that must not wedge a legitimate change. The lexical backstop still signals failure through its exit status when run on demand or in continuous integration. This warn-only stance applies to the keyword scan specifically; it does not extend to the content-class check or downstream scan, which are scoped precisely enough to block.
+- **Blocking check is precise and recoverable** `NFR-lane-discipline-blocking-precision`: The content-class check and downstream scan are scoped to high-confidence structural classes and skip incidental matches (quoted code, permanent identifier tokens), so that blocking reflects a genuine lane violation and not prose noise. Because no heuristic is perfect, a single-commit escape hatch is always available and, when used, names the conditions it suppressed so the suppression is auditable rather than silent.
+- **Consistent enforcement across lanes** `NFR-lane-discipline-cross-lane-consistency`: The deterministic content checks apply the same enforcement strength wherever a lane boundary exists — product, design, and engineering — rather than protecting only the product lane, so no lane is a privileged place to hide bleed.
 - **Back-compatibility** `NFR-lane-discipline-backcompat`: A project that has not configured any custom terms continues to work unchanged, using the built-in default term set. Adding the term-list configuration is optional and additive.
 
 ## Acceptance Criteria
@@ -78,6 +101,14 @@ These are the testable conditions that define "done." QA writes test cases again
 - [ ] **Review suggests term additions** `AC-lane-discipline-review-suggests-terms`: When the review finds a lexical leak that the backstop's current terms would miss, it suggests the term-list addition that would let the backstop catch it.
 - [ ] **Update seed is idempotent** `AC-lane-discipline-update-seed-idempotent`: Running the update a second time neither duplicates the seeded term scaffold nor overwrites a term list the project has already populated.
 - [ ] **Update review makes no edits** `AC-lane-discipline-update-review-no-edit`: The review the update runs over existing product specs reports its findings but leaves every spec file byte-for-byte unchanged.
+- [ ] **Presentation detail in product blocks** `AC-lane-discipline-content-presentation-blocks`: A commit touching a shared product spec that names a concrete visual element or user gesture (presentation-and-interaction content class) is blocked by the content-class check.
+- [ ] **Construction detail in product blocks** `AC-lane-discipline-content-construction-blocks`: A commit touching a shared product spec that names how the feature is built — a component, build target, or dependency (technical-and-construction content class) — is blocked.
+- [ ] **Platform-as-product framing blocks** `AC-lane-discipline-content-platform-blocks`: A commit touching a shared product spec that specifies behavior treating one platform as if it were the whole product is blocked.
+- [ ] **Clean product spec passes** `AC-lane-discipline-content-clean-passes`: A commit touching a shared product spec written in platform-neutral, behavior-only language passes the content-class check without a block.
+- [ ] **Engineering detail in design blocks** `AC-lane-discipline-downstream-design-blocks`: A commit touching a design spec that specifies engineering-lane content (how it is built — components, algorithms, or interface contracts) is blocked by the downstream scan.
+- [ ] **Product redefinition in engineering blocks** `AC-lane-discipline-downstream-eng-blocks`: A commit touching an engineering spec that redefines what the feature does (product-lane content) rather than how it is built is blocked by the downstream scan.
+- [ ] **Escape hatch demotes and names** `AC-lane-discipline-escape-hatch-demotes`: With the escape hatch engaged, a commit that would otherwise be blocked by the content-class check or downstream scan succeeds, and the suppressed conditions are named in the output rather than silently ignored.
+- [ ] **Incidental matches do not trip the block** `AC-lane-discipline-content-incidental-passes`: A shared product spec in which a content-class term appears only inside quoted or fenced code, or inside a permanent identifier token (a requirement or test slug), is not blocked by the content-class check.
 
 ## Open Questions
 
