@@ -118,6 +118,32 @@ test_downstream_eng_definition_blocks_reference_passes() {
   assert_eq "1" "$n" "downstream eng: only the definition trips, not references" || return 1
 }
 
+# ── laneAudit.exclude — domain-legitimate terms ───────────────────────────
+test_exclude_passes() {
+  local root out code; root="$(new_fixture)"
+  printf '{ "platforms": ["macos"], "laneAudit": { "exclude": ["macOS","Linux","Windows","TypeScript","Python"] } }\n' > "$root/pdeq.json"
+  printf '# A\n- The tool must run on macOS, Linux, and Windows.\n- It supports TypeScript and Python.\n' > "$root/product/a.md"
+  out="$(run_audit "$root")"; code=$?; rm -rf "$root"
+  assert_exit_code 0 "$code" "exclude: only-excluded-terms line passes" || return 1
+}
+
+test_exclude_surgical() {
+  local root out code; root="$(new_fixture)"
+  printf '{ "platforms": ["macos"], "laneAudit": { "exclude": ["macOS"] } }\n' > "$root/pdeq.json"
+  printf '# B\n- On macOS the app shows a **sidebar**.\n' > "$root/product/b.md"
+  out="$(run_audit "$root")"; code=$?; rm -rf "$root"
+  assert_exit_code 1 "$code" "exclude: surgical — line still blocks on non-excluded term" || return 1
+  assert_contains "$out" "sidebar" "exclude: sidebar still flagged" || return 1
+}
+
+test_exclude_optional() {
+  local root out code; root="$(new_fixture)"
+  printf '{ "platforms": ["macos"] }\n' > "$root/pdeq.json"
+  printf '# A\n- The tool must run on macOS, Linux, and Windows.\n' > "$root/product/a.md"
+  out="$(run_audit "$root")"; code=$?; rm -rf "$root"
+  assert_exit_code 1 "$code" "exclude: absent list behaves as before (macOS blocks)" || return 1
+}
+
 # ── Escape hatch ───────────────────────────────────────────────────────────
 test_escape_hatch_demotes() {
   local root out code; root="$(new_fixture)"
@@ -136,6 +162,7 @@ main() {
     test_clean_passes test_incidental_passes \
     test_downstream_design_blocks \
     test_downstream_eng_definition_blocks_reference_passes \
+    test_exclude_passes test_exclude_surgical test_exclude_optional \
     test_escape_hatch_demotes; do
     total=$((total + 1))
     if "$t"; then echo "  PASS: $t"; passed=$((passed + 1))

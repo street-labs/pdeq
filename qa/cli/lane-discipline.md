@@ -1,6 +1,6 @@
 ---
-product-hash: 56aaf02a5119b4d66eb9a3705b41b0a44c057be8c71bb64fe20086baa22217eb
-product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-content-clean-passes, AC-lane-discipline-content-construction-blocks, AC-lane-discipline-content-incidental-passes, AC-lane-discipline-content-platform-blocks, AC-lane-discipline-content-presentation-blocks, AC-lane-discipline-default-catches-known, AC-lane-discipline-downstream-design-blocks, AC-lane-discipline-downstream-eng-blocks, AC-lane-discipline-escape-hatch-demotes, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-blocking-at-commit, FR-lane-discipline-blocking-enforcement, FR-lane-discipline-blocking-escape-hatch, FR-lane-discipline-content-class-check, FR-lane-discipline-content-class-precision, FR-lane-discipline-default-terms, FR-lane-discipline-downstream-scan, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-blocking-precision, NFR-lane-discipline-cross-lane-consistency, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-nonblocking-backstop]
+product-hash: 0610979f7ee1820c6ae602957be7efc295ce8b10101364399c538080592cb1bc
+product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-content-clean-passes, AC-lane-discipline-content-construction-blocks, AC-lane-discipline-content-incidental-passes, AC-lane-discipline-content-platform-blocks, AC-lane-discipline-content-presentation-blocks, AC-lane-discipline-default-catches-known, AC-lane-discipline-downstream-design-blocks, AC-lane-discipline-downstream-eng-blocks, AC-lane-discipline-escape-hatch-demotes, AC-lane-discipline-exclude-optional, AC-lane-discipline-exclude-passes, AC-lane-discipline-exclude-surgical, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-blocking-at-commit, FR-lane-discipline-blocking-enforcement, FR-lane-discipline-blocking-escape-hatch, FR-lane-discipline-content-class-check, FR-lane-discipline-content-class-precision, FR-lane-discipline-default-terms, FR-lane-discipline-downstream-scan, FR-lane-discipline-exclude-terms, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-blocking-precision, NFR-lane-discipline-cross-lane-consistency, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-exclude-surgical, NFR-lane-discipline-nonblocking-backstop]
 ---
 # Lane Discipline Enforcement — CLI Test Plan
 
@@ -77,6 +77,9 @@ Layer 1 cases are `[auto]`. Layer 2 cases are `[manual]` (agent-run + human conf
 | AC-lane-discipline-downstream-design-blocks | TC-lane-discipline-downstream-design | 1b | auto | Not started |
 | AC-lane-discipline-downstream-eng-blocks | TC-lane-discipline-downstream-eng | 1b | auto | Not started |
 | AC-lane-discipline-escape-hatch-demotes | TC-lane-discipline-escape-hatch | 1b | auto | Not started |
+| AC-lane-discipline-exclude-passes | TC-lane-discipline-exclude-passes | 1b | auto | Not started |
+| AC-lane-discipline-exclude-surgical | TC-lane-discipline-exclude-surgical | 1b | auto | Not started |
+| AC-lane-discipline-exclude-optional | TC-lane-discipline-exclude-optional | 1b | auto | Not started |
 
 Supporting cases (no direct AC, cover FR/NFR behavior): `TC-lane-discipline-extend-not-replace` (FR-lane-discipline-default-terms), `TC-lane-discipline-literal-escape` (FR-lane-discipline-project-terms precision), `TC-lane-discipline-no-pcre-grep` (NFR-lane-discipline-deterministic-backstop), `TC-lane-discipline-slug-not-flagged` (FR-lane-discipline-lexical-backstop precision — slug identifiers are excluded).
 
@@ -174,6 +177,21 @@ Fixture `downstream-eng-bleed/`. Run `audit-structure.sh`.
 > Covers `AC-lane-discipline-escape-hatch-demotes`, `FR-lane-discipline-blocking-escape-hatch`.
 Fixture `content-presentation/` (would otherwise block). Run `PDEQ_ALLOW_DRIFT=1 audit-structure.sh`.
 - **Expect**: exit 0; each finding printed as `⚠ (suppressed by PDEQ_ALLOW_DRIFT)`; a summary line names the suppressed conditions — the hatch demotes the block to a named warning rather than silently passing.
+
+### TC-lane-discipline-exclude-passes
+> Covers `AC-lane-discipline-exclude-passes`, `FR-lane-discipline-exclude-terms`.
+Fixture with `laneAudit.exclude: ["macOS","Linux","Windows","TypeScript","Python"]` and a product spec whose only flagged content on a line is excluded terms ("must run on macOS, Linux, and Windows"). Run `audit-structure.sh`.
+- **Expect**: exit 0 — the excluded terms are stripped before matching, so they neither block nor warn.
+
+### TC-lane-discipline-exclude-surgical
+> Covers `AC-lane-discipline-exclude-surgical`, `NFR-lane-discipline-exclude-surgical`.
+Same exclusion, but a line contains both an excluded term and a non-excluded one ("On macOS the app shows a **sidebar**"). Run `audit-structure.sh`.
+- **Expect**: exit 1; the line is flagged on `sidebar` — exclusion removed only `macOS`, not the whole line.
+
+### TC-lane-discipline-exclude-optional
+> Covers `AC-lane-discipline-exclude-optional`.
+The same fixtures with **no** `laneAudit.exclude` key. Run `audit-structure.sh`.
+- **Expect**: both specs block (exit 1) — a project with no exclusion list behaves exactly as before the feature existed.
 
 ### TC-lane-discipline-structure-hook-blocks
 > Covers `FR-lane-discipline-blocking-at-commit` (and complements the warn-only `TC-lane-discipline-hook-warn-only`).

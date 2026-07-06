@@ -24,6 +24,10 @@ PDEQ_LIB_DIR="$(cd "$(dirname "$0")" && pwd)/lib"
 # shellcheck source=lib/lane-scan.sh
 . "$PDEQ_LIB_DIR/lane-scan.sh"
 
+# Honor laneAudit.exclude so a domain-legitimate term does not even warn.
+PDEQ_EXCLUDE_RX="$(read_lane_terms "exclude")"
+export PDEQ_EXCLUDE_RX
+
 warn() {
   violations+=("$1")
   echo "  ⚠  $1"
