@@ -110,6 +110,25 @@
         }
       }
     },
+    "temporalAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Configuration for the temporal language audit (scripts/audit-temporal.sh), which detects phasing/versioning language in authoritative specs. Introduced in pdeq 0.10.0. Realizes FR-living-spec-temporal-audit-modes.",
+      "properties": {
+        "patterns": {
+          "type": "array",
+          "description": "Custom temporal language patterns to scan for. REPLACES the default pattern list. Each pattern is a grep-compatible extended regex. Omit to use built-in defaults (MVP, 'phase N', 'V2', 'iteration N', 'will be added', etc.).",
+          "items": { "type": "string" },
+          "examples": [["\\bMVP\\b", "\\bphase [0-9]+\\b", "\\bV[0-9]+\\b", "\\bwill be added\\b"]]
+        },
+        "blockCommit": {
+          "type": "boolean",
+          "description": "Whether the pre-commit hook blocks commits when temporal language is detected. Defaults to TRUE (pristine specs enforced). Set to false only if the project needs incremental cleanup; this opt-out is visible in version control.",
+          "default": true,
+          "examples": [true, false]
+        }
+      }
+    },
     "nested": {
       "type": "object",
       "description": "Configuration for nested installs (inside a monorepo package or feature subdirectory). Omit for root-level installs.",

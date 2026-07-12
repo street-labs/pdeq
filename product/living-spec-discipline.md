@@ -29,7 +29,7 @@ The roadmap mechanism gains the ability to hold forward-looking *spec content*, 
 A new audit detects temporal and phasing language in authoritative specs and flags it for removal.
 
 - **Temporal language patterns flagged** `FR-living-spec-temporal-audit-patterns`: The audit scans authoritative specs (product, design, engineering, QA — not roadmap) for temporal language patterns including: "MVP", "phase [N]", "iteration [N]", "first version", "V[N]", "initial release", "later", "eventually", "future", "upcoming", "next", and phrases like "will be added", "to be implemented", "planned for". Each match is reported with file, line, and flagged text.
-- **Audit runs in multiple modes** `FR-living-spec-temporal-audit-modes`: The audit can run on-demand (via a dedicated command), as part of the kickoff quality-check step, in CI, and optionally at commit time. The commit-time mode defaults to warn-only (does not block commits) and can be configured per-project.
+- **Audit runs in multiple modes** `FR-living-spec-temporal-audit-modes`: The audit can run on-demand (via a dedicated command), as part of the kickoff quality-check step, in CI, and at commit time. The commit-time mode blocks commits by default when temporal language is detected. Projects can opt out via `temporalAudit.blockCommit: false` in `pdeq.json` for incremental cleanup, but the default enforces pristine specs.
 - **Suggested rewordings** `FR-living-spec-temporal-audit-rewording`: For each flagged instance, the audit suggests how to reword it: either move the content to roadmap (if it describes future work), or rewrite it in present tense describing current state (if the work has shipped and the language is stale).
 - **Exempt roadmap and decisions log** `FR-living-spec-temporal-audit-exemptions`: The audit does not scan `roadmap/` (temporal language is expected there) or `decisions.md` / `decisions-pending.md` (historical context legitimately references past phases).
 
@@ -61,8 +61,7 @@ These are the testable conditions that define "done."
 
 ## Open Questions
 
-- Should the roadmap slug prefixes be `FRR-` / `NFRR-` / `ACR-` (R for roadmap), or something else (e.g., `FR-ex-future-*`, `FR-ex-v2-*` style suffix)? The double-R form is shorter and visually distinct; a suffix-based form is more greppable. Lean toward `FRR-` / `NFRR-` / `ACR-` for brevity unless there's a strong reason to use a different convention.
-- Should the temporal audit block commits by default (like traceability), or default to warn-only? Lean toward warn-only initially since this is a new discipline and existing specs likely have some temporal language that would need cleanup; make it blocking per-project opt-in once the codebase is clean.
+- None currently. The roadmap slug prefix choice (`FRR-` / `NFRR-` / `ACR-`) and the blocking-by-default enforcement are settled decisions recorded in the decision log.
 
 ## Dependencies
 
