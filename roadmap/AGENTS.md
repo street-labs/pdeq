@@ -52,9 +52,59 @@ Speculative / aspirational. May or may not happen.
 
 Horizon sections (**Fast Follow**, **V2**, **Later**) are a suggestion — use whatever names make sense for the feature. Could also be **V1 → V2 → V3**, **Phase 1 → Phase 2**, etc.
 
+## Roadmap Spec Supplements (Optional)
+
+<!-- Implements: FR-living-spec-roadmap-supplements, FR-living-spec-multi-phase-roadmap -->
+For multi-phase or detailed forward-looking planning, a roadmap file can include **spec-shaped sections** with requirements using reserved slug prefixes. This is opt-in — most roadmap files stay lightweight bullet lists. Use structured supplements only when you need to spec out multiple phases or iterations of a feature in detail before any phase is ready for implementation.
+
+### Reserved Roadmap Slug Prefixes
+
+- **`FRR-<feature>-<slug>`** — Future Functional Requirement (Roadmap)
+- **`NFRR-<feature>-<slug>`** — Future Non-Functional Requirement (Roadmap)
+- **`ACR-<feature>-<slug>`** — Future Acceptance Criterion (Roadmap)
+
+These are explicitly **non-authoritative** and exempt from traceability audits. Use the same `<feature>` name as the eventual product spec.
+
+### Structure
+
+Organize by phase/iteration (e.g., "V2", "Fast Follow", "Phase 2"):
+
+```markdown
+# [Feature Name] — Roadmap
+
+...
+
+## V2
+
+Requirements for the second phase, not yet scheduled for implementation.
+
+- **[Readable Label]** `FRR-<feature>-<slug>`: Requirement description
+- **[Performance goal]** `NFRR-<feature>-<slug>`: Non-functional requirement
+
+### Acceptance Criteria
+
+- [ ] **[Test condition]** `ACR-<feature>-<slug>`: Testable criterion
+
+## Phase 3
+
+- **[Future idea]** `FRR-<feature>-<other-slug>`: ...
+```
+
+### Graduation Flow
+
+<!-- Implements: FR-living-spec-roadmap-graduation -->
+When a roadmap section is ready for implementation:
+
+1. **Renumber slugs**: `FRR-` → `FR-`, `NFRR-` → `NFR-`, `ACR-` → `AC-`
+2. **Move content** into the authoritative product spec (`../product/<feature>.md`)
+3. **Delete the roadmap section**. Delete the file if empty.
+
+The roadmap remains the staging ground; product specs remain the source of truth for what is current.
+
 ## Rules
 
-- **No slugs.** `FR-`, `NFR-`, `AC-`, `TC-` prefixes never appear in roadmap files. Slugs are minted only when an idea graduates into `../product/`.
+- **Lightweight by default.** Roadmap files are simple bullet lists unless you opt into spec supplements for multi-phase planning.
+- **Roadmap slugs (`FRR-`, `NFRR-`, `ACR-`) never become authoritative until graduated.** They are exempt from traceability audits and do not appear in `../index.md`.
 - **No lane discipline.** Roadmap entries can hand-wave across product/design/engineering/QA concerns. Detail comes later at kickoff.
 - **Not tracked in `../index.md`.** Roadmap is not authoritative.
 - **Not audited by the pre-commit traceability hook.**

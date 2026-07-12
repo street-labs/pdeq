@@ -558,6 +558,9 @@ if [ -n "$all_downstream_refs" ]; then
   echo "[2/9] Downstream references have definitions..."
   while IFS= read -r slug; do
     if [[ "$slug" == TC-* ]]; then continue; fi
+    # Implements: FR-living-spec-roadmap-slug-prefix
+    # Skip roadmap slugs (FRR-, NFRR-, ACR-)
+    if [[ "$slug" =~ ^(FRR|NFRR|ACR)- ]]; then continue; fi
     if [ -n "$defined_slugs" ] && echo "$defined_slugs" | grep -qx "$slug"; then
       continue
     fi
@@ -570,6 +573,9 @@ if [ -n "$all_downstream_refs" ]; then
   echo "[3/9] Downstream references present in index..."
   while IFS= read -r slug; do
     if [[ "$slug" == TC-* ]]; then continue; fi
+    # Implements: FR-living-spec-roadmap-slug-prefix
+    # Skip roadmap slugs (FRR-, NFRR-, ACR-)
+    if [[ "$slug" =~ ^(FRR|NFRR|ACR)- ]]; then continue; fi
     if [ -n "$indexed_slugs" ] && echo "$indexed_slugs" | grep -qx "$slug"; then
       continue
     fi
@@ -600,6 +606,11 @@ scan_markers > "$markers_tsv" || true
 # Implements: FR-code-mapping-audit-validates-slug, FR-code-mapping-marker-retirement-blocks
 while IFS=$'\t' read -r slug file line; do
   [ -z "$slug" ] && continue
+  # Implements: FR-living-spec-roadmap-slug-prefix
+  # Skip roadmap slugs (FRR-, NFRR-, ACR-) — these are forward-looking and exempt from traceability
+  if [[ "$slug" =~ ^(FRR|NFRR|ACR)- ]]; then
+    continue
+  fi
   if ! echo "$defined_slugs" | grep -qx "$slug"; then
     errf "orphan marker at $file:$line: $slug not defined in any current product spec"
   fi
