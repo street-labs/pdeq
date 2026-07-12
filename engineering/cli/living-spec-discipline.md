@@ -22,7 +22,7 @@ No persistent data. The audit is stateless — it reads specs and reports findin
 {
   "temporalAudit": {
     "patterns": ["MVP", "phase [0-9]+", "iteration [0-9]+", "V[0-9]+", ...],
-    "blockCommit": false
+    "blockCommit": true  // default; set to false to opt out of commit-time blocking
   }
 }
 ```
@@ -156,22 +156,23 @@ None. This is a read-only local scan; no network access, no writes except to std
 
 ## Integration with Pre-Commit Hook
 
-Extend `.pdeq/pdeq-rules/scripts/pre-commit.sh` (or the consumer project's `.git/hooks/pre-commit` if installed) to optionally invoke `audit-temporal.sh --staged`:
+Extend `.pdeq/pdeq-rules/scripts/pre-commit.sh` (or the consumer project's `.git/hooks/pre-commit` if installed) to invoke `audit-temporal.sh --staged`:
 
 ```bash
-if [[ "${TEMPORAL_AUDIT_ENABLED:-false}" == "true" ]]; then
-  ./scripts/audit-temporal.sh --staged || {
-    if [[ "${TEMPORAL_AUDIT_BLOCK:-false}" == "true" ]]; then
-      echo "Temporal audit failed. Fix findings or set PDEQ_ALLOW_DRIFT=1 to bypass."
-      exit 1
-    else
-      echo "Temporal audit warnings (not blocking)."
-    fi
-  }
-fi
+# Temporal audit: blocks by default unless opted out
+BLOCK_COMMIT=$(jq -r '.temporalAudit.blockCommit // true' pdeq.json 2>/dev/null || echo "true")
+
+./scripts/audit-temporal.sh --staged || {
+  if [[ "$BLOCK_COMMIT" == "true" && "${PDEQ_ALLOW_DRIFT:-0}" != "1" ]]; then
+    echo "✗ Temporal audit failed. Fix findings, set temporalAudit.blockCommit: false in pdeq.json, or bypass with PDEQ_ALLOW_DRIFT=1."
+    exit 1
+  else
+    echo "⚠ Temporal audit warnings (not blocking due to config or PDEQ_ALLOW_DRIFT)."
+  fi
+}
 ```
 
-Default: off (existing projects likely have temporal language). Projects opt in by setting `TEMPORAL_AUDIT_ENABLED=true` in their shell environment or via a project-level pre-commit config.
+Default: **blocks commits** when temporal language is detected. Projects can opt out by setting `temporalAudit.blockCommit: false` in `pdeq.json`.
 
 ## Implementation Plan
 
