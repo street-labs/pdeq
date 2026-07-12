@@ -175,6 +175,8 @@ These post-processing steps are independent — order among them does not matter
 
 7. **Graduate roadmap items** — If this kickoff consumed any roadmap entry (per Step 0 B.1), remove the graduated item(s) from `roadmap/<feature>.md`. Delete the file entirely if no items remain.
 
+8. **Temporal language audit** <!-- Implements: FR-living-spec-kickoff-temporal-check --> — Run `./scripts/audit-temporal.sh` over newly created or updated specs. Report any findings (temporal/phasing language like "MVP", "phase 1", "V2", "iteration 2"). This is advisory (does not block kickoff). Findings should be moved to roadmap or rewritten in present tense before implementation.
+
 ### After the parallel batch completes:
 
 Run `./scripts/audit-traceability.sh` to verify the index is correct. This must wait for the index update (task 1) to finish.

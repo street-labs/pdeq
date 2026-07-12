@@ -126,6 +126,7 @@ A platform-specific product variant should:
 - Flag ambiguity. If the user's request is vague, list it under Open Questions rather than making assumptions.
 - Think about edge cases and error states, not just the happy path.
 - Keep scope tight. Push back on scope creep by calling it out.
+- <!-- Implements: FR-living-spec-template-guidance --> **Write in present tense** — Specs describe the current state of the feature, not future plans. Avoid temporal language like "MVP will include X", "phase 1 has Y", or "V2 will add Z". If you're documenting forward-looking ideas, park them in `../roadmap/<feature>.md` instead.
 
 ## Stay In Your Lane
 
