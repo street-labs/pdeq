@@ -456,3 +456,40 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-conformance-uncertainty-marked | TC | qa/cli/conformance.md |  |  |
 | TC-conformance-undocumented-detected | TC | qa/cli/conformance.md |  |  |
 | TC-conformance-unfulfilled-behavioral | TC | qa/cli/conformance.md |  |  |
+| FR-living-spec-roadmap-supplements | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-roadmap-graduation | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-roadmap-slug-prefix | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-multi-phase-roadmap | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-temporal-audit-patterns | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-temporal-audit-modes | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-temporal-audit-rewording | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-temporal-audit-exemptions | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-kickoff-temporal-check | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| FR-living-spec-template-guidance | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| NFR-living-spec-deterministic-audit | NFR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| NFR-living-spec-low-noise | NFR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| NFR-living-spec-roadmap-lightweight-default | NFR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-roadmap-spec-sections | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-roadmap-slugs-exempt | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-graduation-moves-content | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-temporal-patterns-detected | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-temporal-suggestions | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-temporal-in-kickoff | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-roadmap-not-scanned | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-template-has-guidance | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| TC-living-spec-roadmap-frr-recognized | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-roadmap-slugs-no-warn | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-graduation-renumber | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-mvp-detected | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-phase-detected | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-v2-detected | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-future-detected | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-suggestion-format | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-kickoff-runs-audit | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-roadmap-exempt-scan | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-decisions-exempt | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-template-reminder | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-code-fence-flagged | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-config-fallback | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-check-mode-exit | TC | qa/cli/living-spec-discipline.md |  |  |
+| TC-living-spec-staged-mode | TC | qa/cli/living-spec-discipline.md |  |  |
