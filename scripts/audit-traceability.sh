@@ -547,7 +547,7 @@ all_downstream_refs=$(printf '%s\n%s\n%s\n' "$design_refs" "$engineering_refs" "
 if [ -n "$defined_slugs" ]; then
   echo "[1/9] Defined slugs present in index..."
   while IFS= read -r slug; do
-    if ! echo "$indexed_slugs" | grep -qx "$slug"; then
+    if ! grep -qx "$slug" <<< "$indexed_slugs"; then
       errf "$slug defined in product/ but missing from index.md"
     fi
   done <<< "$defined_slugs"
@@ -561,7 +561,7 @@ if [ -n "$all_downstream_refs" ]; then
     # Implements: FR-living-spec-roadmap-slug-prefix
     # Skip roadmap slugs (FRR-, NFRR-, ACR-)
     if [[ "$slug" =~ ^(FRR|NFRR|ACR)- ]]; then continue; fi
-    if [ -n "$defined_slugs" ] && echo "$defined_slugs" | grep -qx "$slug"; then
+    if [ -n "$defined_slugs" ] && grep -qx "$slug" <<< "$defined_slugs"; then
       continue
     fi
     errf "$slug referenced downstream but not defined in product/"
@@ -576,7 +576,7 @@ if [ -n "$all_downstream_refs" ]; then
     # Implements: FR-living-spec-roadmap-slug-prefix
     # Skip roadmap slugs (FRR-, NFRR-, ACR-)
     if [[ "$slug" =~ ^(FRR|NFRR|ACR)- ]]; then continue; fi
-    if [ -n "$indexed_slugs" ] && echo "$indexed_slugs" | grep -qx "$slug"; then
+    if [ -n "$indexed_slugs" ] && grep -qx "$slug" <<< "$indexed_slugs"; then
       continue
     fi
     errf "$slug referenced downstream but missing from index.md"
@@ -611,7 +611,7 @@ while IFS=$'\t' read -r slug file line; do
   if [[ "$slug" =~ ^(FRR|NFRR|ACR)- ]]; then
     continue
   fi
-  if ! echo "$defined_slugs" | grep -qx "$slug"; then
+  if ! grep -qx "$slug" <<< "$defined_slugs"; then
     errf "orphan marker at $file:$line: $slug not defined in any current product spec"
   fi
 done < "$markers_tsv"
