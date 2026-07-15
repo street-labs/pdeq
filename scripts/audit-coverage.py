@@ -118,6 +118,27 @@ def parse_qa_matrix(qa_path):
     return rows
 
 
+def parse_covers_coverage(qa_path):
+    """Parse test case Covers fields from a QA markdown file.
+
+    Returns set of requirement slugs found in `Covers:` lines of
+    test case descriptions. These FRs/NFRs/ACs are covered by
+    test cases even if they lack their own table row.
+    """
+    if not os.path.isfile(qa_path):
+        return set()
+
+    with open(qa_path) as f:
+        text = f.read()
+
+    result = set()
+    for m in re.finditer(r'^- \*\*Covers\*\*: (.+)$', text, flags=re.MULTILINE):
+        covers_line = m.group(1)
+        slugs = re.findall(r'(?:FR|NFR|AC)-[a-z0-9-]+', covers_line)
+        result.update(slugs)
+    return result
+
+
 def read_platforms(root, config_path):
     """Read platform list from pdeq.json, or probe qa/ directories."""
     platforms = []
@@ -166,18 +187,27 @@ def main():
         print("CLEAR:No features with realizing code")
         return 0
 
-    # Phase 3: Read platforms
+    # Phase 3: Build per-FR code lookup (from Phase 1 index data)
+    fr_has_code = {slug for slug, slug_type, _, code_col in slugs
+                   if slug_type == "FR" and code_col}
+
+    # Phase 4: Read platforms
     platforms = read_platforms(root, config_path)
     if not platforms:
         print("CLEAR:No platforms configured")
         return 0
 
-    # Phase 4: Check coverage for each feature with code
+    # Phase 5: Check coverage for each FR that has realizing code
     any_block = False
-    checked_features = 0
+    checked_frs = 0
+    fr_features = {slug: feat for slug, slug_type, feat, code_col in slugs
+                   if slug_type == "FR"}
 
-    for feat in sorted(features_with_code):
-        checked_features += 1
+    for req_slug in sorted(fr_has_code):
+        feat = fr_features.get(req_slug, "")
+        if not feat:
+            continue
+        checked_frs += 1
         for platform in sorted(platforms):
             qa_path = os.path.join(root, "qa", platform, f"{feat}.md")
             if not os.path.isfile(qa_path):
@@ -185,13 +215,14 @@ def main():
                 continue
 
             rows = parse_qa_matrix(qa_path)
-            if not rows:
-                continue
+            covers_map = parse_covers_coverage(qa_path)
 
-            for req_slug, tc_slugs, status in rows:
-                is_terminal = status in ("Pass", "Fail")
-
-                if req_slug.startswith("FR-"):
+            # Check if FR has a table row or appears in a Covers field
+            found = False
+            for row_slug, tc_slugs, status in rows:
+                if row_slug == req_slug:
+                    found = True
+                    is_terminal = status in ("Pass", "Fail", "Skip")
                     if not is_terminal:
                         msg = f"{feat}/{platform}: {req_slug} has code but coverage is '{status}'"
                         if allow_drift:
@@ -199,19 +230,51 @@ def main():
                         else:
                             print(f"BLOCK:{msg}")
                             any_block = True
-                elif req_slug.startswith(("NFR-", "AC-")):
+                    break
+
+            if not found and req_slug in covers_map:
+                # Covered via test case Covers field — no separate table row needed
+                found = True
+
+            if not found:
+                msg = f"{feat}/{platform}: {req_slug} has code but is missing from coverage matrix"
+                if allow_drift:
+                    print(f"SUPPRESS:{msg}")
+                else:
+                    print(f"BLOCK:{msg}")
+                    any_block = True
+
+            if not rows:
+                if not found:
+                    msg = f"{feat}/{platform}: {req_slug} has code but no QA coverage matrix"
+                    if allow_drift:
+                        print(f"SUPPRESS:{msg}")
+                    else:
+                        print(f"BLOCK:{msg}")
+                        any_block = True
+
+    # Also warn on NFRs and ACs with non-terminal coverage (warn-only)
+    for feat in sorted(features_with_code):
+        for platform in sorted(platforms):
+            qa_path = os.path.join(root, "qa", platform, f"{feat}.md")
+            if not os.path.isfile(qa_path):
+                continue
+            rows = parse_qa_matrix(qa_path)
+            for req_slug, tc_slugs, status in rows:
+                if req_slug.startswith(("NFR-", "AC-")):
+                    is_terminal = status in ("Pass", "Fail")
                     if not is_terminal:
                         msg = f"{feat}/{platform}: {req_slug} coverage is '{status}' (warn only)"
                         print(f"WARN:{msg}")
 
-    if not checked_features:
-        print("CLEAR:No features with code to check")
+    if checked_frs == 0:
+        print("CLEAR:No FRs with realizing code")
         return 0
 
     if any_block:
         return 1
 
-    print("CLEAR:All features with code have terminal coverage")
+    print("CLEAR:All FRs with code have terminal coverage")
     return 0
 
 

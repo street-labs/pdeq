@@ -600,7 +600,7 @@ echo "[5b/9] Marker scope check..."
 # false-positive class where a marker on, e.g., line 3 of a short component
 # whose function declaration begins on line 1 was warned on by the prior
 # `line <= 5` heuristic. See engineering/cli/code-mapping.md §Scope rule.
-DECL_REGEX='^(export[[:space:]]+)?(function[[:space:]]+|async[[:space:]]+function|def[[:space:]]+|func[[:space:]]+|class[[:space:]]+)|^[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\('
+DECL_REGEX='^(export[[:space:]]+)?(function[[:space:]]+|async[[:space:]]+function|def[[:space:]]+|func[[:space:]]+|class[[:space:]]+|struct[[:space:]]+|enum[[:space:]]+|actor[[:space:]]+|extension[[:space:]]+|protocol[[:space:]]+)|^[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\('
 while IFS=$'\t' read -r slug file line; do
   [ -z "$slug" ] && continue
   case "${file##*.}" in
