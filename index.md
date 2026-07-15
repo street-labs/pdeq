@@ -26,7 +26,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-mechanical-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-semantic-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-order-within | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-explicit-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
 | FR-migrations-pending-detection | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-ordered-application | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
@@ -34,7 +34,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-nonbreaking-advance | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:301 |
 | FR-migrations-noop-when-current | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-dry-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-scoped-writes | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:354 |
 | FR-migrations-breaking-gate | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
 | FR-migrations-no-false-positive | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
@@ -493,14 +493,14 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-living-spec-config-fallback | TC | qa/cli/living-spec-discipline.md |  |  |
 | TC-living-spec-check-mode-exit | TC | qa/cli/living-spec-discipline.md |  |  |
 | TC-living-spec-staged-mode | TC | qa/cli/living-spec-discipline.md |  |  |
-| FR-coverage-audit-code-signal | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:33 |
-| FR-coverage-audit-feature-grouping | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
-| FR-coverage-audit-status-check | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
-| FR-coverage-audit-block | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
-| FR-coverage-audit-terminal-statuses | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
+| FR-coverage-audit-code-signal | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:33 |
+| FR-coverage-audit-feature-grouping | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
+| FR-coverage-audit-status-check | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
+| FR-coverage-audit-block | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
+| FR-coverage-audit-terminal-statuses | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
 | FR-coverage-audit-prose-skip | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:78 |
 | FR-coverage-audit-nfr-ac-best-effort | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
-| FR-coverage-audit-escape-hatch | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
+| FR-coverage-audit-escape-hatch | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
 | FR-coverage-audit-reuse-parser | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:78 |
 | FR-coverage-audit-independent | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | .github/workflows/ci.yml:27, scripts/audit-coverage.sh:2 |
 | FR-coverage-audit-reads-index | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:33 |
