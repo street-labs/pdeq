@@ -63,6 +63,11 @@ warnf() {
   echo "  ⚠  $1"
 }
 
+# ─── Source shared libraries ───────────────────────────────────────────────────
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/qa-matrix.sh"
+
 # ─── Existing slug-set helpers ───────────────────────────────────────────────
 
 # Implements: FR-code-mapping-audit-validates-slug
@@ -412,41 +417,7 @@ collect_tc_in_code() {
   fi
 }
 
-# Emits "status\ttc_csv" rows for each Coverage Matrix row that cites >=1 TC slug.
-# Rows without TC slugs (e.g. structural coverage described in prose) are skipped.
-parse_qa_matrix() {
-  local spec="$1"
-  [ -f "$spec" ] || return 0
-  QA_MATRIX_SPEC="$spec" python3 << 'PY'
-import os, re, pathlib, sys
-path = pathlib.Path(os.environ["QA_MATRIX_SPEC"])
-text = path.read_text()
-m = re.search(r'^##\s+Coverage Matrix\s*$', text, flags=re.MULTILINE)
-if not m:
-    sys.exit(0)
-start = m.end()
-rest = text[start:]
-next_h = re.search(r'^#{1,2} ', rest, flags=re.MULTILINE)
-section = rest if not next_h else rest[:next_h.start()]
-for line in section.splitlines():
-    s = line.strip()
-    if not s.startswith('|'):
-        continue
-    if re.match(r'\|[-: ]+\|', s):
-        continue
-    cells = [c.strip() for c in s.strip('|').split('|')]
-    if len(cells) < 3:
-        continue
-    status = cells[-1]
-    tcs = re.findall(r'TC-[a-z0-9-]+', ' '.join(cells[:-1]))
-    if not tcs:
-        continue
-    seen = set(); uniq = []
-    for t in tcs:
-        if t not in seen: seen.add(t); uniq.append(t)
-    print(f"{status}\t{','.join(uniq)}")
-PY
-}
+# (parse_qa_matrix sourced from lib/qa-matrix.sh)
 
 # True if $1 has a "Test Execution Results" section that names the TC slug $2 and
 # records a status line matching $3 (Pass/Fail). Per-TC (not per-file) so a collective

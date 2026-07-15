@@ -142,29 +142,29 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-migrations-update-dry-run | TC | qa/cli/migrations.md |  |  |
 | TC-migrations-update-self-host-refuses | TC | qa/cli/migrations.md |  |  |
 | TC-migrations-update-symlink-prune | TC | qa/cli/migrations.md |  |  |
-| FR-code-mapping-marker-presence | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:178 |
+| FR-code-mapping-marker-presence | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:183 |
 | FR-code-mapping-marker-multi | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-marker-scope | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:623 |
+| FR-code-mapping-marker-scope | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:594 |
 | FR-code-mapping-marker-language | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-marker-slug-reference | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-marker-retirement-blocks | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:606 |
-| FR-code-mapping-planned-paths | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:261 |
-| FR-code-mapping-planned-paths-living | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:261 |
+| FR-code-mapping-marker-retirement-blocks | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:577 |
+| FR-code-mapping-planned-paths | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:266 |
+| FR-code-mapping-planned-paths-living | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:266 |
 | FR-code-mapping-planned-paths-per-platform | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-acknowledged-unimplemented | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:139, scripts/audit-traceability.sh:178, scripts/init.sh:644 |
-| FR-code-mapping-audit-validates-slug | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:606, scripts/audit-traceability.sh:68 |
+| FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:144, scripts/audit-traceability.sh:183, scripts/init.sh:644 |
+| FR-code-mapping-audit-validates-slug | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:577, scripts/audit-traceability.sh:73 |
 | FR-code-mapping-audit-validates-path | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-audit-coverage | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-audit-coverage-blocks | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-audit-coverage-grace | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-audit-escape-hatch | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-audit-qa-status-evidence | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:479 |
-| FR-code-mapping-index-code-locations | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:326 |
-| FR-code-mapping-index-populated | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:326, scripts/audit-traceability.sh:763 |
+| FR-code-mapping-audit-qa-status-evidence | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:450 |
+| FR-code-mapping-index-code-locations | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:331 |
+| FR-code-mapping-index-populated | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:331, scripts/audit-traceability.sh:734 |
 | FR-code-mapping-index-removes-stale | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | NFR-code-mapping-audit-speed | NFR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| NFR-code-mapping-precision | NFR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:174 |
+| NFR-code-mapping-precision | NFR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:179 |
 | NFR-code-mapping-review-cost | NFR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | NFR-code-mapping-determinism | NFR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-orphan-marker-rejected | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
@@ -174,7 +174,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-code-mapping-uncovered-blocks | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-acknowledged-unimplemented | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-multi-slug-counted | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| AC-code-mapping-marker-scope-enforced | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:623 |
+| AC-code-mapping-marker-scope-enforced | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:594 |
 | AC-code-mapping-marker-syntax-per-type | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-planned-paths-living | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-index-reflects-markers | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
@@ -458,7 +458,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-conformance-unfulfilled-behavioral | TC | qa/cli/conformance.md |  |  |
 | FR-living-spec-roadmap-supplements | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:57 |
 | FR-living-spec-roadmap-graduation | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:95 |
-| FR-living-spec-roadmap-slug-prefix | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-traceability.sh:561, scripts/audit-traceability.sh:576, scripts/audit-traceability.sh:609 |
+| FR-living-spec-roadmap-slug-prefix | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-traceability.sh:532, scripts/audit-traceability.sh:547, scripts/audit-traceability.sh:580 |
 | FR-living-spec-multi-phase-roadmap | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:57 |
 | FR-living-spec-temporal-audit-patterns | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2, scripts/audit-temporal.sh:24 |
 | FR-living-spec-temporal-audit-modes | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2 |
@@ -493,3 +493,47 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-living-spec-config-fallback | TC | qa/cli/living-spec-discipline.md |  |  |
 | TC-living-spec-check-mode-exit | TC | qa/cli/living-spec-discipline.md |  |  |
 | TC-living-spec-staged-mode | TC | qa/cli/living-spec-discipline.md |  |  |
+| FR-coverage-audit-code-signal | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:33 |
+| FR-coverage-audit-feature-grouping | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
+| FR-coverage-audit-status-check | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
+| FR-coverage-audit-block | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
+| FR-coverage-audit-terminal-statuses | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
+| FR-coverage-audit-prose-skip | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:78 |
+| FR-coverage-audit-nfr-ac-best-effort | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
+| FR-coverage-audit-escape-hatch | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
+| FR-coverage-audit-reuse-parser | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:78 |
+| FR-coverage-audit-independent | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | .github/workflows/ci.yml:27, scripts/audit-coverage.sh:2 |
+| FR-coverage-audit-reads-index | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:33 |
+| NFR-coverage-audit-speed | NFR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| NFR-coverage-audit-determinism | NFR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| NFR-coverage-audit-precision | NFR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-code-exists-no-coverage | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-code-exists-coverage-done | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-no-code-passes | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-prose-skipped | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-nfr-warns | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-escape-hatch | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-speed | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-deterministic-output | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| AC-coverage-audit-non-fr-ignored | AC | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md |  |
+| TC-coverage-audit-code-column-used | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-feature-grouping | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-code-exists-not-started | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-code-exists-pass | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-code-exists-fail | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-mixed-status | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-prose-row-skipped | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-nfr-warn | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-ac-warn | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-escape-hatch-active | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-escape-hatch-names-suppressed | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-qa-parser-shared | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-runs-independently | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-index-unchanged | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-missing-qa-file | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-malformed-index | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-multiple-platforms | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-under-2s | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-deterministic-two-runs | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-no-code-passes | TC | qa/cli/coverage-audit.md |  |  |
+| TC-coverage-audit-non-fr-ignored | TC | qa/cli/coverage-audit.md |  |  |
