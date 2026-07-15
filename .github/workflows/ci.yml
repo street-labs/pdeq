@@ -23,6 +23,11 @@ jobs:
         run: ./scripts/audit-lanes.sh
       - name: Lane-discipline blocking structural check
         run: ./scripts/audit-structure.sh
+      - name: QA coverage audit (CI)
+        # Implements: FR-coverage-audit-independent
+        # PDEQ_ALLOW_DRIFT=1: pdeq's own coverage matrices need updating.
+        # Remove this override once all features with code have terminal coverage.
+        run: PDEQ_ALLOW_DRIFT=1 ./scripts/audit-coverage.sh --check
 
   tests:
     name: Test suites
