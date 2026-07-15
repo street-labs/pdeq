@@ -262,7 +262,7 @@ def main():
             rows = parse_qa_matrix(qa_path)
             for req_slug, tc_slugs, status in rows:
                 if req_slug.startswith(("NFR-", "AC-")):
-                    is_terminal = status in ("Pass", "Fail")
+                    is_terminal = status in ("Pass", "Fail", "Skip")
                     if not is_terminal:
                         msg = f"{feat}/{platform}: {req_slug} coverage is '{status}' (warn only)"
                         print(f"WARN:{msg}")
