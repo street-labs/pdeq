@@ -177,6 +177,7 @@ build_exclude_args_grep() {
 # Core scan regex. Matches any marker form across supported file kinds.
 # Word-boundary lookahead `(?![a-z0-9-])` prevents FR-auth matching inside FR-auth-login.
 # Implements: NFR-code-mapping-precision
+# Implements: FR-code-mapping-marker-language, FR-code-mapping-marker-multi
 MARKER_REGEX='^.*(//|#|--|<!--|/\*)[[:space:]]*Implements:[[:space:]]*(FR|NFR|AC)-[a-z0-9-]+(?![a-z0-9-])([[:space:]]*,[[:space:]]*(FR|NFR|AC)-[a-z0-9-]+(?![a-z0-9-]))*([[:space:]]*-->|[[:space:]]*\*/)?[[:space:]]*$'
 
 # Emits tab-separated "slug\tfile\tline" tuples on stdout, sorted by file path.
@@ -575,6 +576,7 @@ trap "rm -f '$markers_tsv'" EXIT
 scan_markers > "$markers_tsv" || true
 
 # Phase 5 + 6 combined: any marker citing a slug not in $defined_slugs is orphan/retired.
+# Implements: FR-code-mapping-marker-slug-reference
 # Implements: FR-code-mapping-audit-validates-slug, FR-code-mapping-marker-retirement-blocks
 while IFS=$'\t' read -r slug file line; do
   [ -z "$slug" ] && continue
