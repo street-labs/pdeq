@@ -425,6 +425,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-conformance-seeded | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:28 |
 | FR-conformance-single-verdict | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:48 |
 | FR-conformance-summary | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:64 |
+| FR-conformance-temporal-specs | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:40 |
 | FR-conformance-undocumented | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
 | FR-conformance-unfulfilled | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
 | NFR-conformance-precision | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
@@ -437,6 +438,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-conformance-non-blocking | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
 | AC-conformance-platform-isolation | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
 | AC-conformance-report-shape | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-temporal-flagged | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
 | AC-conformance-uncertainty-marked | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
 | AC-conformance-undocumented-detected | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
 | AC-conformance-unfulfilled-behavioral | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
