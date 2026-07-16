@@ -1,4 +1,4 @@
-<!-- Implements: FR-conformance-per-platform, FR-conformance-requirement-scope, FR-conformance-seeded, FR-conformance-four-quadrant, FR-conformance-single-verdict, FR-conformance-summary, FR-conformance-evidence, FR-conformance-actionable, FR-conformance-advisory, FR-conformance-complements -->
+<!-- Implements: FR-conformance-per-platform, FR-conformance-requirement-scope, FR-conformance-seeded, FR-conformance-four-quadrant, FR-conformance-single-verdict, FR-conformance-summary, FR-conformance-evidence, FR-conformance-actionable, FR-conformance-temporal-specs, FR-conformance-advisory, FR-conformance-complements -->
 
 # Platform Conformance Audit: $ARGUMENTS
 
@@ -35,13 +35,22 @@ Assemble the grounding set **before reading any code**. Do not rediscover the re
 
 (2) and (3) give the *known* requirement→code map. Treat it as a **starting point, not ground truth** — the whole reason this audit exists is that a Code Map row can say `implemented` while the code diverges, and the deterministic audit will not notice.
 
-## Phase 2 — READ the code
+## Phase 2 — READ the code + evaluate spec temporal compliance
 
-<!-- Implements: FR-conformance-evidence -->
+<!-- Implements: FR-conformance-evidence, FR-conformance-temporal-specs -->
 
 For each seeded location, open the cited file at the cited line and read the realizing unit. Then read the platform's source tree under `{codeRoot}` broadly enough to (a) confirm each requirement's behavior in context and (b) surface behavior no requirement points at (the reverse-traceability sweep). If `[feature]` narrowed the scope, read the code for that feature's slugs plus its neighborhood; otherwise read the whole platform's source.
 
 Every verdict you reach must be backed by a concrete `file:line` you actually read — a finding a reader cannot check against the source is not acceptable.
+
+**While reading each spec file** (product specs from Phase 1, plus any engineering/design/QA specs you open), evaluate whether the prose is **temporal** — describing plans, future work, setup, or becoming rather than present state. The deterministic `scripts/audit-temporal.sh` catches known patterns by grep; your job here is the semantic complement: catch temporal framing the grep list would miss. Look for:
+
+- Novel planning verbs not in the pattern list ("prepares", "lays the foundation", "readies")
+- Domain-specific setup phrasing ("creates the scaffolding for X", "converts the legacy path")
+- Spec meta-language that alludes to timing (before-after narratives, implicit ordering)
+- Any prose that frames a feature as becoming rather than being
+
+For each violation found, record the `file:line`, the offending prose excerpt, and a suggested present-tense rewrite. These go into the *Spec Temporal Violations* section of the report.
 
 ## Phase 3 — REASON to verdicts
 
@@ -78,12 +87,13 @@ Open with a header naming the platform (and feature, if narrowed), then a count 
 | Unfulfilled           | <n>   |
 | Incorrectly fulfilled | <n>   |
 | Undocumented          | <n>   |
+| Spec temporal violations | <n>   |   ← separate dimension (not part of requirements in scope)
 | Requirements in scope | <n>   |   ← fulfilled + unfulfilled + incorrect (the exhaustive FR denominator)
 ```
 
 `Requirements in scope` **must equal** the count of `FR-` slugs enumerated in Phase 1 and the sum of the three requirement verdicts. `Undocumented` is counted separately (it is a property of code, not of the requirement set).
 
-### Then four sections, in this fixed order
+### Then five sections, in this fixed order
 
 Each section is either a findings table or an explicit empty line (e.g. `_No incorrectly-fulfilled requirements found._`) — **never omitted**, so the report shape is stable.
 
@@ -102,6 +112,18 @@ Each section is either a findings table or an explicit empty line (e.g. `_No inc
 |---|---|---|---|---|
 
 Recommended action here is the reverse-traceability choice: *specify it as a requirement* or *remove the dead behavior*.
+
+**Spec Temporal Violations** (`FR-conformance-temporal-specs`, `AC-conformance-temporal-flagged`). One row per temporal/planning phrasing found in spec prose — catching framing the deterministic `scripts/audit-temporal.sh` grep would miss:
+
+| Slug | File:line | Offending prose | Suggested rewrite | Confidence |
+|---|---|---|---|---|
+
+- **File:line** — exact location of the temporal prose.
+- **Offending prose** — the sentence or clause, truncated to ~100 chars.
+- **Suggested rewrite** — a present-tense version stating what *is*.
+- **Confidence** — `high` for unambiguous temporal framing (creation verbs, before-after narratives); down-rank borderline prose.
+
+This section is always present (populated or empty). Its count is **not** part of `Requirements in scope` — it is a separate spec-health dimension.
 
 ---
 
