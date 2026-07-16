@@ -11,6 +11,9 @@
     "pi"
   ],
   "selfHost": true,
+  "temporalAudit": {
+    "exclude": ["\\bphase [0-9IVX]+\\b"]
+  },
   "laneAudit": {
     "vendors": [],
     "protocols": [],
