@@ -392,7 +392,7 @@ Currently pdeq has no `.pdeq` submodule; it **is** pdeq. There is no previous-st
 The bootstrap plan:
 
 1. **Before this feature ships**, tag the current `main` as `v0.1.0`. This is the baseline — pdeq without migrations, without `pdeqVersion`, without a VERSION file.
-2. **This feature lands in `v0.2.0`** (or whatever the then-current version is). The merge introduces: `VERSION` file with `0.2.0`, the `pdeqVersion` schema field, `scripts/migrate.sh`, `scripts/audit-migrations.sh`, `.claude/commands/pdeq-migrate.md`, `migrations/` directory, and `migrations/0.2.0.md` — the first authored migration. The 0.2.0 migration's job is to tell consumers "add `pdeqVersion: 0.2.0` to your `pdeq.json`" — mechanical block edits the file directly.
+2. **This feature lands in `v0.2.0`** (or whatever the then-current version is). The merge includes: `VERSION` file with `0.2.0`, the `pdeqVersion` schema field, `scripts/migrate.sh`, `scripts/audit-migrations.sh`, `.claude/commands/pdeq-migrate.md`, `migrations/` directory, and `migrations/0.2.0.md` — the first authored migration. The 0.2.0 migration's job is to tell consumers "add `pdeqVersion: 0.2.0` to your `pdeq.json`" — mechanical block edits the file directly.
 3. **After v0.2.0 is tagged**, the pdeq repo adds itself as a submodule: `git submodule add <self-url> .pdeq`, pinned to `v0.1.0`. The pdeq repo's own `pdeq.json` declares `pdeqVersion: 0.1.0` — the pdeq repo is now a consumer of pdeq-v0.1.0.
 4. **On release of v0.3.0**: the maintainer bumps `VERSION` to `0.3.0`, authors `migrations/0.3.0.md`, ensures the `commit-msg` gate passes, commits, tags `v0.3.0`. Then bumps `.pdeq` submodule pin from `v0.1.0` → `v0.2.0` (the previous release, not v0.3.0 — pdeq is always a consumer of N-1), runs `/pdeq-migrate` against its own specs, commits the resulting diff.
 
@@ -574,7 +574,7 @@ This is the novel piece. Two sub-problems:
 
 Today, `init.sh` Steps 5–6 symlink every `*` in `.pdeq/scripts/` and `.pdeq/.claude/commands/` into `<git-root>/scripts/` and `<git-root>/.claude/commands/`. The symlink targets are relative paths into the submodule (e.g., `scripts/migrate.sh -> ../.pdeq/scripts/migrate.sh`), so when `git submodule update --remote` advances `.pdeq/`, the symlink targets resolve to the **new** files automatically — **modified** commands and scripts pick up content changes for free with no re-symlinking.
 
-The problem is **new** files: a bumped pdeq version that introduces, say, `.pdeq/.claude/commands/foo.md` and `.pdeq/scripts/foo.sh` ships those into the submodule, but `<git-root>/.claude/commands/foo.md` and `<git-root>/scripts/foo.sh` do not exist yet — no symlink, no command. Conversely, **deleted** files leave dangling symlinks (the target no longer exists in the new submodule content).
+The problem is **new** files: a bumped pdeq version that ships, say, `.pdeq/.claude/commands/foo.md` and `.pdeq/scripts/foo.sh` ships those into the submodule, but `<git-root>/.claude/commands/foo.md` and `<git-root>/scripts/foo.sh` do not exist yet — no symlink, no command. Conversely, **deleted** files leave dangling symlinks (the target no longer exists in the new submodule content).
 
 The `/pdeq-update` runner handles both cases by re-running the same idempotent symlink loop init.sh already implements, between the bump and the migration loop:
 

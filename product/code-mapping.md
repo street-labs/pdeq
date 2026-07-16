@@ -98,4 +98,4 @@ These cover the testable, observable outcomes QA verifies directly.
 - **Drift detection convention:** downstream specs (including engineering Code Map updates) continue to stamp `product-hash` and `product-slugs` per the established convention. A Code Map change does not require re-stamping on its own; a product-spec change does.
 - **Audit override mechanism:** this feature reuses the same override the audit already honors rather than introducing a new one. The exact mechanism (environment variable, commit trailer, or other) is an engineering concern.
 - **Hook installation (PDEQ-fdaiacem):** the audit is only effective when wired into the consumer project's git-hook chain at install time. Without hook installation the code-mapping feature is dormant. This feature's adoption is therefore gated on the expanded hook-install task landing first.
-- **Glossary:** introduces the terms *Inline marker*, *Code Map*, *Traceability audit*, and *Orphan marker* — see `glossary.md`.
+- **Glossary:** defines the terms *Inline marker*, *Code Map*, *Traceability audit*, and *Orphan marker* — see `glossary.md`.

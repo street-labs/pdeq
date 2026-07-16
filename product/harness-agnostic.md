@@ -77,7 +77,7 @@ A consumer who later wants to enable a new harness (or disable one) does so by e
 
 ### Non-Functional Requirements
 
-- **No new install dependencies** `NFR-harness-agnostic-no-new-deps`: The installer continues to require only `git` and `bash`. No language toolchain (Rust, Node, Python, Go) and no new binary becomes a hard install dependency at v1. Adding a new harness to the adapter table later may not introduce such a dependency without explicit product approval.
+- **No new install dependencies** `NFR-harness-agnostic-no-new-deps`: The installer continues to require only `git` and `bash`. No language toolchain (Rust, Node, Python, Go) and no new binary becomes a hard install dependency at v1. Adding a new harness to the adapter table later may not add such a dependency without explicit product approval.
 - **Installer reports per-harness actions** `NFR-harness-agnostic-installer-reporting`: The installer's output makes clear which file is being materialized for which harness, so a consumer can audit at a glance that their harness list was honored.
 - **Symlink targets are portable** `NFR-harness-agnostic-symlink-portability`: Symlinks the installer creates use relative paths so the install survives the consumer cloning the project to a different absolute location. This matches the symlink convention `init.sh` already uses for scripts and command files.
 - **Documentation reflects multi-harness reality** `NFR-harness-agnostic-docs-multi-harness`: User-facing documentation (README, the consumer-project skill copy where applicable) describes pdeq as a multi-harness framework, not as Claude Code-specific. Specific harnesses are named only when relevant (e.g., for invocation examples).
@@ -116,4 +116,4 @@ These cover the observable outcomes QA will test directly.
 - **Migration system (`product/migrations.md`):** the 0.3.x → 0.4.0 cutover is delivered as a standard migration file (`migrations/0.4.0.md`). The migration system itself does not change for this feature; only a new migration file is authored.
 - **Config schema (`pdeq.schema.json`):** gains a `harnesses` field with the v1 enumeration of recognized identifiers.
 - **CLI conventions (`product/cli-conventions.md`):** the `pdeq-` prefix convention is unchanged. The slash-command source location moves from `.claude/commands/` to a harness-neutral directory inside the submodule, but the prefix and discoverability contract is unaffected.
-- **Glossary:** introduces the terms *Harness*, *Harness adapter table*, *Canonical agent-instructions file*, and *Harness materialization*. See `../glossary.md`.
+- **Glossary:** defines the terms *Harness*, *Harness adapter table*, *Canonical agent-instructions file*, and *Harness materialization*. See `../glossary.md`.
