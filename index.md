@@ -413,21 +413,21 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-lane-discipline-exclude-passes | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-exclude-surgical | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-exclude-optional | TC | qa/cli/lane-discipline.md |  |  |
-| FR-conformance-actionable | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:64 |
-| FR-conformance-advisory | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:110 |
-| FR-conformance-complements | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:110 |
+| FR-conformance-actionable | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:73 |
+| FR-conformance-advisory | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:132 |
+| FR-conformance-complements | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:132 |
 | FR-conformance-evidence | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:40 |
-| FR-conformance-four-quadrant | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:48 |
-| FR-conformance-fulfilled | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
-| FR-conformance-incorrect | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
+| FR-conformance-four-quadrant | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:57 |
+| FR-conformance-fulfilled | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:57 |
+| FR-conformance-incorrect | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:57 |
 | FR-conformance-per-platform | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:17 |
 | FR-conformance-requirement-scope | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:28 |
 | FR-conformance-seeded | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:28 |
-| FR-conformance-single-verdict | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:48 |
-| FR-conformance-summary | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:64 |
+| FR-conformance-single-verdict | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:57 |
+| FR-conformance-summary | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:73 |
 | FR-conformance-temporal-specs | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:40 |
-| FR-conformance-undocumented | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
-| FR-conformance-unfulfilled | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:48 |
+| FR-conformance-undocumented | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:57 |
+| FR-conformance-unfulfilled | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:57 |
 | NFR-conformance-precision | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
 | NFR-conformance-uncertainty | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
 | NFR-conformance-verifiable | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
@@ -462,10 +462,10 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-living-spec-roadmap-graduation | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:95 |
 | FR-living-spec-roadmap-slug-prefix | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-traceability.sh:532, scripts/audit-traceability.sh:547, scripts/audit-traceability.sh:580 |
 | FR-living-spec-multi-phase-roadmap | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:57 |
-| FR-living-spec-temporal-audit-patterns | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2, scripts/audit-temporal.sh:24 |
+| FR-living-spec-temporal-audit-patterns | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2, scripts/audit-temporal.sh:27 |
 | FR-living-spec-temporal-audit-modes | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2 |
-| FR-living-spec-temporal-audit-rewording | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:198 |
-| FR-living-spec-temporal-audit-exemptions | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:11 |
+| FR-living-spec-temporal-audit-rewording | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:265 |
+| FR-living-spec-temporal-audit-exemptions | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:12 |
 | FR-living-spec-kickoff-temporal-check | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
 | FR-living-spec-template-guidance | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
 | NFR-living-spec-deterministic-audit | NFR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
@@ -479,6 +479,9 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-living-spec-temporal-in-kickoff | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
 | AC-living-spec-roadmap-not-scanned | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
 | AC-living-spec-template-has-guidance | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-exclude-removes-patterns | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-include-adds-patterns | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
+| AC-living-spec-patterns-full-replacement | AC | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
 | TC-living-spec-roadmap-frr-recognized | TC | qa/cli/living-spec-discipline.md |  |  |
 | TC-living-spec-roadmap-slugs-no-warn | TC | qa/cli/living-spec-discipline.md |  |  |
 | TC-living-spec-graduation-renumber | TC | qa/cli/living-spec-discipline.md |  |  |
