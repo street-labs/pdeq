@@ -49,7 +49,7 @@ The `demo` platform realizes one product feature, `product/orders.md`, seeded so
 |---|---|---|
 | `FR-ex-orders-reject-negative-total` — reject an order whose total is negative | `validateTotal()` correctly rejects `total < 0`, marker present | **Fulfilled** |
 | `FR-ex-orders-discount-cap` — a discount may never exceed 50% of subtotal | `applyDiscount()` carries a valid `// Implements: FR-ex-orders-discount-cap` marker but the guard is inverted / caps at 150% — contradicts the threshold | **Incorrectly fulfilled** |
-| `FR-ex-orders-email-receipt` — email a receipt after checkout completes | `sendReceipt()` carries the marker but its body is an empty stub (`return; // TODO`) — no real behavior | **Unfulfilled** |
+| `FR-ex-orders-email-receipt` — email a receipt after checkout completes | `sendReceipt()` carries the marker but its body is an empty stub (`return;`) — no real behavior | **Unfulfilled** |
 | `FR-ex-orders-round-currency` — monetary amounts are rounded to the currency's minor unit | partial/ambiguous realization: rounding happens in one path but not another; hard to judge from source alone | **Fulfilled or Incorrectly fulfilled, marked low-confidence** |
 | *(no requirement)* — `applyLoyaltyPoints()` awards and redeems loyalty points, real product behavior | live, product-relevant code with no owning slug | **Undocumented** |
 | *(no requirement)* — `main.ts` framework bootstrap, `generated/schema.ts`, `orders.config.json`, `orders.test.ts` test-support | scaffolding / generated / config / test code | **Not flagged** (NFR precision) |

@@ -462,7 +462,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-living-spec-multi-phase-roadmap | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:57 |
 | FR-living-spec-temporal-audit-patterns | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2, scripts/audit-temporal.sh:24 |
 | FR-living-spec-temporal-audit-modes | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2 |
-| FR-living-spec-temporal-audit-rewording | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:134 |
+| FR-living-spec-temporal-audit-rewording | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:162 |
 | FR-living-spec-temporal-audit-exemptions | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:11 |
 | FR-living-spec-kickoff-temporal-check | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
 | FR-living-spec-template-guidance | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
@@ -494,13 +494,13 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-living-spec-check-mode-exit | TC | qa/cli/living-spec-discipline.md |  |  |
 | TC-living-spec-staged-mode | TC | qa/cli/living-spec-discipline.md |  |  |
 | FR-coverage-audit-code-signal | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:33 |
-| FR-coverage-audit-feature-grouping | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
-| FR-coverage-audit-status-check | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
-| FR-coverage-audit-block | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
-| FR-coverage-audit-terminal-statuses | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
+| FR-coverage-audit-feature-grouping | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:159 |
+| FR-coverage-audit-status-check | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:159 |
+| FR-coverage-audit-block | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:159 |
+| FR-coverage-audit-terminal-statuses | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:159 |
 | FR-coverage-audit-prose-skip | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:78 |
-| FR-coverage-audit-nfr-ac-best-effort | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:138 |
-| FR-coverage-audit-escape-hatch | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:138 |
+| FR-coverage-audit-nfr-ac-best-effort | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:159 |
+| FR-coverage-audit-escape-hatch | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | pdeq-rules/commands/pdeq-coverage.md:1, scripts/audit-coverage.py:159 |
 | FR-coverage-audit-reuse-parser | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:78 |
 | FR-coverage-audit-independent | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | .github/workflows/ci.yml:27, scripts/audit-coverage.sh:2 |
 | FR-coverage-audit-reads-index | FR | product/coverage-audit.md | engineering/cli/coverage-audit.md, qa/cli/coverage-audit.md | scripts/audit-coverage.py:33 |

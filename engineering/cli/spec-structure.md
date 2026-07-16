@@ -45,7 +45,7 @@ Each lane step in `pdeq-kickoff.md` gains an explicit opening instruction: *"Rea
 
 ### Prevention-only, no correction tooling (`NFR-spec-structure-prevention-first`, `AC-spec-structure-no-remap-tooling`)
 
-This feature ships **no** command or mode that renames, remaps, or provisionally stages requirement identifiers. Identifier permanence (root `AGENTS.md` §Slug-Based IDs) is preserved unchanged. A structural error caught *after* identifiers have propagated is handled by the existing manual retire-and-remint convention, not by new tooling (`AC-spec-structure-no-remap-tooling`). This is a deliberate scoping decision recorded in the decision log: prevention at authoring time is the sole mechanism, on the reasoning that a strong birth gate makes late correction rare enough that tooling it is not yet warranted.
+This feature ships **no** command or mode that renames, remaps, or provisionally stages requirement identifiers. Identifier permanence (root `AGENTS.md` §Slug-Based IDs) is preserved unchanged. A structural error caught *after* identifiers have propagated is handled by the existing manual retire-and-remint convention, not by new tooling (`AC-spec-structure-no-remap-tooling`). This is a deliberate scoping decision recorded in the decision log: prevention at authoring time is the sole mechanism, on the reasoning that a strong birth gate makes late correction rare enough that tooling it is not warranted.
 
 ## Code Map
 
