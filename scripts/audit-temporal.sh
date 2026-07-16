@@ -88,14 +88,50 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Load patterns from pdeq.json if present
+# Resolution order:
+#   1. Start with DEFAULT_PATTERNS
+#   2. If temporalAudit.patterns is a non-empty array, replace with those (skip 3-4)
+#   3. Remove any patterns listed in temporalAudit.exclude
+#   4. Add any patterns listed in temporalAudit.include
 PATTERNS=("${DEFAULT_PATTERNS[@]}")
 if [[ -f pdeq.json ]] && command -v jq &>/dev/null; then
   CUSTOM_PATTERNS=$(jq -r '.temporalAudit.patterns[]? // empty' pdeq.json 2>/dev/null || true)
   if [[ -n "$CUSTOM_PATTERNS" ]]; then
+    # Full replacement: ignores exclude/include
     PATTERNS=()
     while IFS= read -r pattern; do
       PATTERNS+=("$pattern")
     done <<< "$CUSTOM_PATTERNS"
+  else
+    # Apply exclude (remove matching patterns from defaults)
+    EXCLUDE_PATTERNS=$(jq -r '.temporalAudit.exclude[]? // empty' pdeq.json 2>/dev/null || true)
+    if [[ -n "$EXCLUDE_PATTERNS" ]]; then
+      declare -a EXCLUDE_LIST
+      while IFS= read -r exclude_pattern; do
+        EXCLUDE_LIST+=("$exclude_pattern")
+      done <<< "$EXCLUDE_PATTERNS"
+      NEW_PATTERNS=()
+      for pattern in "${PATTERNS[@]}"; do
+        EXCLUDED=false
+        for exclude in "${EXCLUDE_LIST[@]}"; do
+          if [[ "$pattern" == "$exclude" ]]; then
+            EXCLUDED=true
+            break
+          fi
+        done
+        if [[ "$EXCLUDED" == false ]]; then
+          NEW_PATTERNS+=("$pattern")
+        fi
+      done
+      PATTERNS=("${NEW_PATTERNS[@]}")
+    fi
+    # Apply include (add project-specific patterns on top)
+    INCLUDE_PATTERNS=$(jq -r '.temporalAudit.include[]? // empty' pdeq.json 2>/dev/null || true)
+    if [[ -n "$INCLUDE_PATTERNS" ]]; then
+      while IFS= read -r include_pattern; do
+        PATTERNS+=("$include_pattern")
+      done <<< "$INCLUDE_PATTERNS"
+    fi
   fi
 fi
 

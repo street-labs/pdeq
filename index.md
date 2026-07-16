@@ -462,7 +462,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-living-spec-multi-phase-roadmap | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:57 |
 | FR-living-spec-temporal-audit-patterns | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2, scripts/audit-temporal.sh:24 |
 | FR-living-spec-temporal-audit-modes | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2 |
-| FR-living-spec-temporal-audit-rewording | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:162 |
+| FR-living-spec-temporal-audit-rewording | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:198 |
 | FR-living-spec-temporal-audit-exemptions | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:11 |
 | FR-living-spec-kickoff-temporal-check | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
 | FR-living-spec-template-guidance | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md |  |
