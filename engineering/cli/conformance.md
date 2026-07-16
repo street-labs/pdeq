@@ -1,6 +1,6 @@
 ---
-product-hash: 388b024e9649caa2071e10d74599313a3e9988635ee891f5a6a7d251f60c704c
-product-slugs: [AC-conformance-evidence-cited, AC-conformance-exhaustive, AC-conformance-incorrect-detected, AC-conformance-no-plumbing, AC-conformance-non-blocking, AC-conformance-platform-isolation, AC-conformance-report-shape, AC-conformance-uncertainty-marked, AC-conformance-undocumented-detected, AC-conformance-unfulfilled-behavioral, FR-conformance-actionable, FR-conformance-advisory, FR-conformance-complements, FR-conformance-evidence, FR-conformance-four-quadrant, FR-conformance-fulfilled, FR-conformance-incorrect, FR-conformance-per-platform, FR-conformance-requirement-scope, FR-conformance-seeded, FR-conformance-single-verdict, FR-conformance-summary, FR-conformance-undocumented, FR-conformance-unfulfilled, NFR-conformance-precision, NFR-conformance-uncertainty, NFR-conformance-verifiable]
+product-hash: bfbc2af08f3f6e5fab1e9b5a59ede6f7b0998e18bb36656c0b0213d7c31998c9
+product-slugs: [AC-conformance-evidence-cited, AC-conformance-exhaustive, AC-conformance-incorrect-detected, AC-conformance-no-plumbing, AC-conformance-non-blocking, AC-conformance-platform-isolation, AC-conformance-report-shape, AC-conformance-temporal-flagged, AC-conformance-uncertainty-marked, AC-conformance-undocumented-detected, AC-conformance-unfulfilled-behavioral, FR-conformance-actionable, FR-conformance-advisory, FR-conformance-complements, FR-conformance-evidence, FR-conformance-four-quadrant, FR-conformance-fulfilled, FR-conformance-incorrect, FR-conformance-per-platform, FR-conformance-requirement-scope, FR-conformance-seeded, FR-conformance-single-verdict, FR-conformance-summary, FR-conformance-temporal-specs, FR-conformance-undocumented, FR-conformance-unfulfilled, NFR-conformance-precision, NFR-conformance-uncertainty, NFR-conformance-verifiable]
 ---
 # Platform Conformance Audit — CLI Technical Spec
 
@@ -113,7 +113,7 @@ The report opens with a one-line header naming the platform and (if narrowed) th
 
 `Requirements in scope` equals the sum of the three requirement verdicts and is asserted to equal the count of `FR-` (plus in-scope `NFR-`/`AC-`) slugs enumerated in Phase 1 — the exhaustiveness invariant behind `AC-conformance-exhaustive`. `Undocumented` is counted separately because it is a property of code, not of the requirement set.
 
-### The four sections
+### The five sections
 
 After the summary, four sections in fixed order. Each is either populated with a findings table or explicitly rendered empty (e.g. `_No incorrectly-fulfilled requirements found._`) — never omitted, so the report shape is stable (`AC-conformance-report-shape`).
 
@@ -136,6 +136,18 @@ After the summary, four sections in fixed order. Each is either populated with a
 | — | `scripts/y.sh:120-140` | Retries network calls 3× with backoff — product-relevant, no requirement describes it. | Specify as a requirement or remove. | medium |
 
 Recommended actions here are the reverse-traceability choices: *specify it* or *remove dead behavior* (`FR-conformance-actionable`).
+
+**Spec Temporal Violations section** (`FR-conformance-temporal-specs`, `AC-conformance-temporal-flagged`). One row per temporal/planning phrasing found in spec prose — the semantic complement to `scripts/audit-temporal.sh`, catching framing the grep list misses. The Slug column is `—` (these are spec-discipline violations, not requirement verdicts):
+
+| Slug | File:line | Offending prose | Suggested rewrite | Confidence |
+|---|---|---|---|---|
+
+- **File:line** — the exact location of the temporal prose.
+- **Offending prose** — the sentence or clause containing the temporal framing, truncated to ~100 chars.
+- **Suggested rewrite** — a present-tense rewrite that states what *is* rather than what is being established, introduced, or planned.
+- **Confidence** — `high` / `medium` / `low`. Reserve `high` for unambiguous temporal framing (present-tense creation verbs, explicit before-after narratives); down-rank borderline prose that *could* be read as descriptive meta-language.
+
+This section is always present (populated or explicitly empty). Its count is **not** included in `Requirements in scope` — it is a separate spec-health dimension, not a requirement verdict.
 
 ### Confidence marking (`NFR-conformance-uncertainty`, `AC-conformance-uncertainty-marked`)
 
@@ -184,7 +196,7 @@ Ordered so the contract is defined before the workflow that references it.
 2. **Author `pdeq-rules/commands/pdeq-conform.md`.** Rationale: the invocable driver; encodes phases 0–4, the scope resolution, and the report layout, referencing the role from step 1. Realizes the invocation/workflow half of `FR-conformance-per-platform`, `FR-conformance-requirement-scope`, `FR-conformance-seeded`, and the report-emitting FRs.
 3. **Verify harness materialization.** Rationale: confirm `init.sh` picks up the new command with no installer edit — run it and check `.claude/commands/pdeq-conform.md` appears. No code change expected; this is a confirmation step, not a build step.
 4. **Update `glossary.md` and `index.md`** (coordinator-owned per the task split) so the new terms and slugs are registered.
-5. **QA writes the conformance test plan** (`qa/cli/conformance.md`) with fixtures exercising `AC-conformance-incorrect-detected`, `AC-conformance-undocumented-detected`, `AC-conformance-unfulfilled-behavioral`, `AC-conformance-no-plumbing`, `AC-conformance-non-blocking`, and `AC-conformance-platform-isolation` against a seeded fixture repo.
+5. **QA writes the conformance test plan** (`qa/cli/conformance.md`) with fixtures exercising `AC-conformance-incorrect-detected`, `AC-conformance-undocumented-detected`, `AC-conformance-unfulfilled-behavioral`, `AC-conformance-temporal-flagged`, `AC-conformance-no-plumbing`, `AC-conformance-non-blocking`, and `AC-conformance-platform-isolation` against a seeded fixture repo.
 
 Open technical questions (resolve in review or during authoring):
 
@@ -222,6 +234,7 @@ Every slug defined in `product/conformance.md`, mapped to the section that addre
 | AC-conformance-incorrect-detected | §Workflow (Phase 3) | TC-conformance-incorrect-detected |
 | AC-conformance-undocumented-detected | §Workflow (Phase 3), §Precision | TC-conformance-undocumented-detected |
 | AC-conformance-unfulfilled-behavioral | §Workflow (Phase 3) | TC-conformance-unfulfilled-behavioral |
+| AC-conformance-temporal-flagged | §Report Format (Spec Temporal Violations section) | TC-conformance-temporal-flagged |
 | AC-conformance-exhaustive | §Report Format (summary invariant) | TC-conformance-exhaustive |
 | AC-conformance-evidence-cited | §Report Format (findings tables) | TC-conformance-evidence-cited |
 | AC-conformance-non-blocking | §Advisory never gating | TC-conformance-non-blocking |
