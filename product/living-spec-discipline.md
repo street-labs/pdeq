@@ -34,7 +34,15 @@ A new audit detects temporal and phasing language in authoritative specs and fla
   - **Phasing vocabulary**: "eventually", "upcoming", "next [release|version|phase|iteration]", "not yet"
   - **Setup/framing language**: "establishing", "groundwork", "sets the stage", "serves as the basis", "lays the groundwork", "paves the way"
   - **Work-in-progress markers**: "under development", "TODO", "FIXME"
-  Patterns exclude bare words like "future", "later", "next", or "established" (past tense) that are too common in legitimate meta-description. Projects that need narrower or broader coverage can override the full list via `temporalAudit.patterns` in `pdeq.json`. Each match is reported with file, line, and flagged text.
+  Patterns exclude bare words like "future", "later", "next", or "established" (past tense) that are too common in legitimate meta-description.
+
+  Projects configure which patterns apply via `pdeq.json`:
+  - `temporalAudit.patterns` (array): Fully replaces the default pattern list. Use when you want complete control.
+  - `temporalAudit.exclude` (array): Removes specific patterns from the defaults. Useful when a domain term (e.g., a product named "MVP", a methodology using "iteration") collides with a default pattern. Each entry is an exact string match against the default pattern list.
+  - `temporalAudit.include` (array): Adds project-specific patterns on top of the defaults. Each entry is a regex string matching the same format as the defaults.
+  - Resolution order: defaults → `exclude` (if `patterns` is not set) → `include`. If `patterns` is set (non-empty), it replaces all defaults and `exclude`/`include` are ignored.
+
+  Each match is reported with file, line, and flagged text.
 - **Audit runs in multiple modes** `FR-living-spec-temporal-audit-modes`: The audit can run on-demand (via a dedicated command), as part of the kickoff quality-check step, in CI, and at commit time. The commit-time mode blocks commits by default when temporal language is detected. Projects can opt out via `temporalAudit.blockCommit: false` in `pdeq.json` for incremental cleanup, but the default enforces pristine specs.
 - **Suggested rewordings** `FR-living-spec-temporal-audit-rewording`: For each flagged instance, the audit suggests how to reword it: either move the content to roadmap (if it describes future work), or rewrite it in present tense describing current state (if the work has shipped and the language is stale).
 - **Exempt roadmap and decisions log** `FR-living-spec-temporal-audit-exemptions`: The audit does not scan `roadmap/` (temporal language is expected there) or `decisions.md` / `decisions-pending.md` (historical context legitimately references past phases).
@@ -60,6 +68,9 @@ These are the testable conditions that define "done."
 - [ ] **Roadmap slugs exempt from traceability** `AC-living-spec-roadmap-slugs-exempt`: Requirements with roadmap slug prefixes (`FRR-`, `NFRR-`, `ACR-`) do not appear in `index.md` and do not trigger traceability warnings or blocks.
 - [ ] **Graduated roadmap content moves to authoritative specs** `AC-living-spec-graduation-moves-content`: When a roadmap section is implemented, its requirements are renumbered with authoritative slugs (`FR-`, `NFR-`, `AC-`) and moved into the product/design/engineering spec, and the roadmap section is deleted.
 - [ ] **Temporal audit detects common patterns** `AC-living-spec-temporal-patterns-detected`: The audit flags at least the following in authoritative specs: "MVP", "phase 1", "iteration 2", "V2", "initial release", "will be added", "to be implemented", "will support", "not yet", "establishing", "groundwork", "under development", "TODO".
+- [ ] **Exclude removes patterns from defaults** `AC-living-spec-exclude-removes-patterns`: Setting `temporalAudit.exclude: ["\\bMVP\\b"]` in `pdeq.json` prevents "MVP" from being flagged without affecting other default patterns.
+- [ ] **Include adds patterns on top of defaults** `AC-living-spec-include-adds-patterns`: Setting `temporalAudit.include: ["\\bmy-term\\b"]` in `pdeq.json` adds "my-term" to the list of flagged patterns alongside all defaults.
+- [ ] **Patterns replaces everything** `AC-living-spec-patterns-full-replacement`: Setting `temporalAudit.patterns: ["\\bmy-only-term\\b"]` in `pdeq.json` causes the audit to only flag "my-only-term" and ignore all defaults, exclude, and include.
 - [ ] **Temporal audit suggests fixes** `AC-living-spec-temporal-suggestions`: For each flagged instance, the audit output includes either a suggested rewording or a note to move the content to roadmap.
 - [ ] **Temporal audit runs in kickoff** `AC-living-spec-temporal-in-kickoff`: The kickoff workflow (Step 4) runs the temporal audit over created/updated specs and reports findings before completion.
 - [ ] **Temporal audit does not scan roadmap** `AC-living-spec-roadmap-not-scanned`: Running the temporal audit does not flag content in `roadmap/` files.
