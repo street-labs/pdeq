@@ -51,13 +51,14 @@ DEFAULT_PATTERNS=(
   "\\bupcoming\\b"
   "\\bnext (?:release|version|phase|iteration)\\b"
   # Setup / framing language — words that frame a feature as preparatory rather than
-  # describing present state. Catches active present-tense forms ("establishes",
+  # describing present state. Catches active present-tense forms ("establishes", "introduces")
   # "establishing") that frame features as becoming rather than being. Avoided: bare
   # "established" (past participle / adjective like "the pattern established in this
   # feature" is common in spec meta-description and not planning language), bare
   # "scaffold" (too common for generated-file descriptions).
   "\bestablishing\b"
   "\bestablishes\b"
+  "\bintroduces?\b"
   "\bgroundwork\b"
   "\bsets the stage\b"
   "\bserves as (?:a|the) basis\b"
@@ -220,7 +221,7 @@ for file in "${FILES_TO_SCAN[@]}"; do
       SUGGESTION="Move to roadmap/V2 section or rewrite in present tense"
     elif [[ "$matched_line" =~ ("will be added"|"to be implemented"|"planned for"|"will support"|"will include"|"will provide"|"will allow"|"will enable") ]]; then
       SUGGESTION="Rewrite in present tense describing what IS (not what will be)"
-    elif [[ "$matched_line" =~ (establishing|establishes|establish|foundation|groundwork|scaffold|sets the stage|serves as a basis|laying the groundwork|paves the way) ]]; then
+    elif [[ "$matched_line" =~ (establishing|establishes|establish|introduces?|foundation|groundwork|scaffold|sets the stage|serves as a basis|laying the groundwork|paves the way) ]]; then
       SUGGESTION="Rewrite in present tense describing current state, not setup/preparation for future work"
     elif [[ "$matched_line" =~ (future|later|eventually|upcoming|next) ]]; then
       SUGGESTION="Move to roadmap or rewrite in present tense"

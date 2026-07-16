@@ -4,7 +4,7 @@
 
 Pdeq evolves over time. Some of those changes are additive and harmless — adding a new folder or a new optional field. Others are breaking: a slug format changes, a config key is renamed, a required file moves. Without an explicit mechanism, consumer projects silently drift out of conformance with their pinned pdeq version whenever they bump the submodule.
 
-The migrations feature gives pdeq a first-class upgrade contract. Each pdeq release that introduces a breaking change ships a matching migration — a versioned, author-written transformation that brings a consumer's specs and config into conformance with the new version. Consumers track which pdeq version their project currently conforms to, bump the submodule when they are ready, and explicitly run a migration command to apply pending changes. Pdeq dogfoods this mechanism on its own specs via a bootstrap chain, so the framework can be used to manage itself.
+The migrations feature gives pdeq a first-class upgrade contract. Each pdeq release that ships a breaking change ships a matching migration — a versioned, author-written transformation that brings a consumer's specs and config into conformance with the new version. Consumers track which pdeq version their project currently conforms to, bump the submodule when they are ready, and explicitly run a migration command to apply pending changes. Pdeq dogfoods this mechanism on its own specs via a bootstrap chain, so the framework can be used to manage itself.
 
 ## User Stories
 
@@ -141,4 +141,4 @@ These cover the behavior QA will test directly. They are the testable observable
 
 - **Config schema (`pdeq.schema.json`):** must grow a `pdeqVersion` field to carry the recorded version.
 - **Submodule mechanism:** relies on the existing pdeq submodule symlinks for access to migration files and scripts.
-- **Glossary:** introduces the terms *Migration*, *Mechanical transform*, *Semantic transform*, *Breaking change*, and *Bootstrap chain* — see `../glossary.md`.
+- **Glossary:** defines the terms *Migration*, *Mechanical transform*, *Semantic transform*, *Breaking change*, and *Bootstrap chain* — see `../glossary.md`.

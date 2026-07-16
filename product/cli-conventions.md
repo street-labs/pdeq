@@ -36,4 +36,4 @@ These cover the observable outcomes QA will test directly.
 ## Dependencies
 
 - **Migration system (`product/migrations.md`):** the rename of existing commands is delivered via the migration system. Without the migration system, existing consumers would not pick up the rename.
-- **Glossary:** introduces the term *Pdeq command prefix* — see `../glossary.md`.
+- **Glossary:** defines the term *Pdeq command prefix* — see `../glossary.md`.
