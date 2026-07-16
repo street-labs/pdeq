@@ -342,7 +342,7 @@ new_ver=$(cat VERSION)
 #    If the maintainer asserts non-breaking via commit trailer, honor it.
 #    The commit-msg hook receives the path to COMMIT_EDITMSG as $1 — the
 #    pending commit's message. `git log -1` would read the PREVIOUS commit,
-#    which is wrong here (the new message is not yet in git log).
+#    which is wrong here (the new message is not in git log).
 COMMIT_MSG_FILE="${1:-}"
 if [[ -z "$COMMIT_MSG_FILE" || ! -f "$COMMIT_MSG_FILE" ]]; then
   echo "[pdeq gate] commit-msg hook invoked without message path; aborting." >&2
@@ -371,7 +371,7 @@ exit 0
 
 The trailer `pdeq-migration: none-required` (design Surface 8 option C) is extracted with a literal regex, not `git interpret-trailers` — the latter is not available everywhere. The trailer must appear on its own line in the commit message, exactly matching `^pdeq-migration:\s*none-required\s*$`. Case-sensitive. Any appearance is recorded in the hook's output (design's "The gate will log this and allow the commit") by echoing `[pdeq gate] pdeq-migration: none-required — commit allowed.` to stderr.
 
-The hook runs as a **`commit-msg` hook** because the trailer-override check needs the final commit message, which is only written to `.git/COMMIT_EDITMSG` by the time `commit-msg` fires (`pre-commit` runs earlier and cannot see message trailers reliably). Git invokes `commit-msg` with the path to `COMMIT_EDITMSG` as `$1`; the hook reads that file directly. `git log -1` would read the **previous** commit — wrong, since the new message is not yet in the log.
+The hook runs as a **`commit-msg` hook** because the trailer-override check needs the final commit message, which is only written to `.git/COMMIT_EDITMSG` by the time `commit-msg` fires (`pre-commit` runs earlier and cannot see message trailers reliably). Git invokes `commit-msg` with the path to `COMMIT_EDITMSG` as `$1`; the hook reads that file directly. `git log -1` would read the **previous** commit — wrong, since the new message is not in the log.
 
 This departs from the `pre-commit` convention used elsewhere in pdeq (e.g., `audit-traceability.sh`); the composed-hook documentation calls out the split explicitly.
 
@@ -392,14 +392,14 @@ Currently pdeq has no `.pdeq` submodule; it **is** pdeq. There is no previous-st
 The bootstrap plan:
 
 1. **Before this feature ships**, tag the current `main` as `v0.1.0`. This is the baseline — pdeq without migrations, without `pdeqVersion`, without a VERSION file.
-2. **This feature lands in `v0.2.0`** (or whatever the next version is). The merge introduces: `VERSION` file with `0.2.0`, the `pdeqVersion` schema field, `scripts/migrate.sh`, `scripts/audit-migrations.sh`, `.claude/commands/pdeq-migrate.md`, `migrations/` directory, and `migrations/0.2.0.md` — the first authored migration. The 0.2.0 migration's job is to tell consumers "add `pdeqVersion: 0.2.0` to your `pdeq.json`" — mechanical block edits the file directly.
+2. **This feature lands in `v0.2.0`** (or whatever the then-current version is). The merge introduces: `VERSION` file with `0.2.0`, the `pdeqVersion` schema field, `scripts/migrate.sh`, `scripts/audit-migrations.sh`, `.claude/commands/pdeq-migrate.md`, `migrations/` directory, and `migrations/0.2.0.md` — the first authored migration. The 0.2.0 migration's job is to tell consumers "add `pdeqVersion: 0.2.0` to your `pdeq.json`" — mechanical block edits the file directly.
 3. **After v0.2.0 is tagged**, the pdeq repo adds itself as a submodule: `git submodule add <self-url> .pdeq`, pinned to `v0.1.0`. The pdeq repo's own `pdeq.json` declares `pdeqVersion: 0.1.0` — the pdeq repo is now a consumer of pdeq-v0.1.0.
 4. **On release of v0.3.0**: the maintainer bumps `VERSION` to `0.3.0`, authors `migrations/0.3.0.md`, ensures the `commit-msg` gate passes, commits, tags `v0.3.0`. Then bumps `.pdeq` submodule pin from `v0.1.0` → `v0.2.0` (the previous release, not v0.3.0 — pdeq is always a consumer of N-1), runs `/pdeq-migrate` against its own specs, commits the resulting diff.
 
 ### Why N-1, not N-2 or N
 
 - **N (self-pinning to the in-development version).** Rejected — the whole point of the bootstrap chain is that the framework is managed by a **stable** version, not the version under active development. If pdeq pins itself to itself, every framework edit immediately takes effect for the maintainer's own kickoff runs, defeating the dogfood property (`FR-migrations-bootstrap-chain`).
-- **N-1 (chosen).** The maintainer works on `v(N).0` edits in the framework source (root `CLAUDE.md`, `scripts/`, `.claude/commands/`). Their own kickoff runs, status runs, etc., execute against `.pdeq/CLAUDE.md` — which is v(N-1). Framework edits under development do **not** affect the maintainer's own workflow until the next release cycle.
+- **N-1 (chosen).** The maintainer works on `v(N).0` edits in the framework source (root `CLAUDE.md`, `scripts/`, `.claude/commands/`). Their own kickoff runs, status runs, etc., execute against `.pdeq/CLAUDE.md` — which is v(N-1). Framework edits being authored do **not** affect the maintainer's own workflow until the following release cycle.
 - **N-2.** No benefit; lags the bootstrap chain further behind for no additional property.
 
 ### Filesystem layout during development
@@ -901,7 +901,7 @@ Every product slug is addressed by some piece of this engineering approach.
 
 Code locations for every functional requirement. Rows marked `implemented` have
 at least one inline marker in the listed file; `planned` rows point at files
-that do not yet exist (the /pdeq-migrate command file and audit-migrations.sh gate);
+that do not exist (the /pdeq-migrate command file and audit-migrations.sh gate);
 `unimplemented` rows are deliberately deferred.
 
 | Slug | Planned location | Status |

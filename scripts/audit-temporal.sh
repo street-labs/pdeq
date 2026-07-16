@@ -23,19 +23,47 @@ SKIP_PATTERNS=(
 
 # Implements: FR-living-spec-temporal-audit-patterns
 # Default temporal language patterns (overridable via pdeq.json)
+# Living specs describe what IS, not what will be, is being planned, or is being set up for future work.
+# Patterns catch: phasing language, future-tense statements, planning/setup framing, and WIP markers.
+# Patterns are curated to minimize false positives — bare words like "future", "later", "established"
+# are too common in legitimate meta-description (e.g., "the established pattern") and would cause
+# noise. Use targeted multi-word patterns where possible.
 DEFAULT_PATTERNS=(
+  # Phasing / versioning
   "\\bMVP\\b"
   "\\bphase [0-9IVX]+\\b"
   "\\biteration [0-9]+\\b"
   "\\bV[0-9]+\\b"
   "\\binitial release\\b"
   "\\bfirst version\\b"
+  # Future-tense constructions (specific enough to avoid false positives)
   "\\bwill be added\\b"
   "\\bto be implemented\\b"
+  "\\bwill support\\b"
+  "\\bwill include\\b"
+  "\\bwill provide\\b"
+  "\\bwill allow\\b"
+  "\\bwill enable\\b"
+  "\\bnot yet\\b"
+  # Planning / phasing vocabulary
   "\\bplanned for\\b"
   "\\beventually\\b"
   "\\bupcoming\\b"
-  "\\bnext release\\b"
+  "\\bnext (?:release|version|phase|iteration)\\b"
+  # Setup / framing language — words that frame a feature as preparatory rather than
+  # describing present state. Avoided: bare "scaffold" (too common for generated-file
+  # descriptions, not planning language), bare "establish" (present-tense descriptive
+  # use like "the pattern established in this feature" is common in spec prose).
+  "\\bestablishing\\b"
+  "\\bgroundwork\\b"
+  "\\bsets the stage\\b"
+  "\\bserves as (?:a|the) basis\\b"
+  "\\blays? (?:a|the) groundwork\\b"
+  "\\bpaves? the way\\b"
+  # Work-in-progress markers (spec content describing unfinished work)
+  "\\bunder development\\b"
+  "\\bTODO\\b"
+  "\\bFIXME\\b"
 )
 
 MODE="report"
@@ -151,8 +179,14 @@ for file in "${FILES_TO_SCAN[@]}"; do
       SUGGESTION="Move to roadmap with FRR- slugs, or delete if obsolete"
     elif [[ "$matched_line" =~ V[0-9] ]]; then
       SUGGESTION="Move to roadmap/V2 section or rewrite in present tense"
-    elif [[ "$matched_line" =~ "will be added"|"to be implemented"|"planned for" ]]; then
-      SUGGESTION="Move to roadmap or rewrite as present tense"
+    elif [[ "$matched_line" =~ ("will be added"|"to be implemented"|"planned for"|"will support"|"will include"|"will provide"|"will allow"|"will enable") ]]; then
+      SUGGESTION="Rewrite in present tense describing what IS (not what will be)"
+    elif [[ "$matched_line" =~ (establishing|establishes|foundation|groundwork|scaffold|sets the stage|serves as a basis|laying the groundwork|paves the way) ]]; then
+      SUGGESTION="Rewrite in present tense describing current state, not setup/preparation for future work"
+    elif [[ "$matched_line" =~ (future|later|eventually|upcoming|next) ]]; then
+      SUGGESTION="Move to roadmap or rewrite in present tense"
+    elif [[ "$matched_line" =~ (under development|TODO|FIXME) ]]; then
+      SUGGESTION="Rewrite as present tense or remove — spec describes shipped state, not work in progress"
     else
       SUGGESTION="Move to roadmap or rewrite in present tense"
     fi
