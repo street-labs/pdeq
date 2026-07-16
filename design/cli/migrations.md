@@ -397,7 +397,7 @@ Frontmatter fields:
 - `target-version` — the pdeq version this migration advances a project to. Matches the filename.
 - `breaking` — always `true` for a file that exists. Present for explicitness and so the pre-commit gate can cross-check.
 - `summary` — one-line description, shown in `/pdeq-migrate` output (the text after `—` on the `▸` line).
-- `scope` — either `default` (specs root + project config only, the implied scope for `FR-migrations-scoped-writes` / `AC-migrations-scope-respected`) or a glob pattern declaring broader scope. Engineering owns the exact glob syntax — design only establishes that the field exists and is explicit. Satisfies `FR-migrations-scoped-writes`, `NFR-migrations-scope-minimalism`.
+- `scope` — either `default` (specs root + project config only, the implied scope for `FR-migrations-scoped-writes` / `AC-migrations-scope-respected`) or a glob pattern declaring broader scope. Engineering owns the exact glob syntax — design only states that the field exists and is explicit. Satisfies `FR-migrations-scoped-writes`, `NFR-migrations-scope-minimalism`.
 
 Section vocabulary — the runner recognizes exactly these H2 headings: `Context`, `Mechanical`, `Semantic`, `Notes`. Inside `Semantic`, the runner recognizes exactly these H3 headings: `Files`, `Prompt`. Any other heading is treated as prose and ignored.
 

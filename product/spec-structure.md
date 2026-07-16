@@ -38,7 +38,7 @@ A new product spec is not created when its requirements already live in an exist
 
 A shared spec must genuinely be shared; single-platform content is a placement error.
 
-- **Shared specs are genuinely platform-neutral** `FR-spec-structure-shared-neutral`: A top-level (shared) product spec must describe behavior that holds across platforms. A shared spec that specifies behavior existing on only one platform is mis-placed: the platform-specific behavior belongs in a platform supplement, and any presentation or technical specifics belong in the design or engineering lanes. The mechanism that detects in-spec bleed is owned by the lane-discipline feature (see `lane-discipline.md`); this requirement establishes that mis-placement is a structural error, not merely a stylistic one.
+- **Shared specs are genuinely platform-neutral** `FR-spec-structure-shared-neutral`: A top-level (shared) product spec must describe behavior that holds across platforms. A shared spec that specifies behavior existing on only one platform is mis-placed: the platform-specific behavior belongs in a platform supplement, and any presentation or technical specifics belong in the design or engineering lanes. The mechanism that detects in-spec bleed is owned by the lane-discipline feature (see `lane-discipline.md`); this requirement states that mis-placement is a structural error, not merely a stylistic one.
 
 ### Lane-Context Guarantee
 
@@ -70,5 +70,5 @@ These are the testable conditions that define "done." QA writes test cases again
 ## Dependencies
 
 - The kickoff workflow hosts the structural triage gate, the overlap check, and the lane-context guarantee as steps in its flow.
-- The lane-discipline feature (`lane-discipline.md`) owns the deterministic mechanism that detects design, engineering, and platform bleed within a spec; this feature establishes that such bleed and mis-placement are *structural* errors and routes work to the correct lane, but it does not re-specify the detection mechanism.
+- The lane-discipline feature (`lane-discipline.md`) owns the deterministic mechanism that detects design, engineering, and platform bleed within a spec; this feature states that such bleed and mis-placement are *structural* errors and routes work to the correct lane, but it does not re-specify the detection mechanism.
 - Per-lane role definitions (the charters that govern each lane) are the artifacts the lane-context guarantee loads before authoring.
