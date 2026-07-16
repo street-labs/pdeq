@@ -302,7 +302,7 @@ PY
 # ─── Coverage + grace period ─────────────────────────────────────────────────
 
 # Returns integer: number of commits modifying the product spec file since the
-# slug's introductory commit. Implements: FR-code-mapping-audit-coverage-grace
+# Implements: FR-code-mapping-audit-coverage-grace
 grace_delta() {
   local slug="$1"
   local product_spec="$2"
@@ -330,6 +330,7 @@ grace_delta() {
 # Writes to stdout; caller handles mv into place.
 # Implements: FR-code-mapping-index-code-locations, FR-code-mapping-index-populated
 rewrite_index_code_column() {
+  # Implements: FR-code-mapping-index-removes-stale
   local markers_tsv="$1"
   INDEX_PATH="$INDEX" MARKERS_TSV="$markers_tsv" python3 << 'PY'
 import os, re, pathlib, collections
@@ -619,6 +620,7 @@ while IFS=$'\t' read -r slug file line; do
 done < "$markers_tsv"
 echo ""
 
+# Implements: FR-code-mapping-planned-paths-per-platform, FR-code-mapping-audit-validates-path
 # ─── Phase 7: Code Map validation ───────────────────────────────────────────
 
 echo "[7/9] Code Map validation..."
@@ -670,8 +672,8 @@ echo ""
 # ─── Phase 8: Coverage + grace period ────────────────────────────────────────
 
 echo "[8/9] Coverage + grace period..."
-# Implements: FR-code-mapping-audit-coverage, FR-code-mapping-audit-coverage-blocks,
-# FR-code-mapping-audit-coverage-grace
+# Implements: FR-code-mapping-acknowledged-unimplemented
+# Implements: FR-code-mapping-audit-coverage, FR-code-mapping-audit-coverage-blocks, FR-code-mapping-audit-coverage-grace
 if [ -n "$defined_slugs" ]; then
   while IFS= read -r slug; do
     [ -z "$slug" ] && continue
@@ -700,6 +702,7 @@ if [ -n "$defined_slugs" ]; then
 fi
 echo ""
 
+# Implements: FR-code-mapping-audit-escape-hatch
 # ─── Phase 9: Index Code column rewrite ─────────────────────────────────────
 
 if [ -n "$PDEQ_CODE_MAPPING_SKIP_INDEX_REWRITE" ]; then

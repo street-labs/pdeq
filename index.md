@@ -144,25 +144,25 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-migrations-update-symlink-prune | TC | qa/cli/migrations.md |  |  |
 | FR-code-mapping-marker-presence | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:183 |
 | FR-code-mapping-marker-multi | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-marker-scope | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:594 |
+| FR-code-mapping-marker-scope | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:595 |
 | FR-code-mapping-marker-language | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | FR-code-mapping-marker-slug-reference | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-marker-retirement-blocks | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:577 |
+| FR-code-mapping-marker-retirement-blocks | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:578 |
 | FR-code-mapping-planned-paths | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:266 |
 | FR-code-mapping-planned-paths-living | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:266 |
-| FR-code-mapping-planned-paths-per-platform | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-acknowledged-unimplemented | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
+| FR-code-mapping-planned-paths-per-platform | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:623 |
+| FR-code-mapping-acknowledged-unimplemented | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:675 |
 | FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:144, scripts/audit-traceability.sh:183, scripts/init.sh:644 |
-| FR-code-mapping-audit-validates-slug | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:577, scripts/audit-traceability.sh:73 |
-| FR-code-mapping-audit-validates-path | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-audit-coverage | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-audit-coverage-blocks | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-audit-coverage-grace | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-audit-escape-hatch | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| FR-code-mapping-audit-qa-status-evidence | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:450 |
+| FR-code-mapping-audit-validates-slug | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:578, scripts/audit-traceability.sh:73 |
+| FR-code-mapping-audit-validates-path | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:623 |
+| FR-code-mapping-audit-coverage | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:676 |
+| FR-code-mapping-audit-coverage-blocks | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:676 |
+| FR-code-mapping-audit-coverage-grace | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:305, scripts/audit-traceability.sh:676 |
+| FR-code-mapping-audit-escape-hatch | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:705 |
+| FR-code-mapping-audit-qa-status-evidence | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:451 |
 | FR-code-mapping-index-code-locations | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:331 |
-| FR-code-mapping-index-populated | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:331, scripts/audit-traceability.sh:734 |
-| FR-code-mapping-index-removes-stale | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
+| FR-code-mapping-index-populated | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:331, scripts/audit-traceability.sh:737 |
+| FR-code-mapping-index-removes-stale | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:333 |
 | NFR-code-mapping-audit-speed | NFR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | NFR-code-mapping-precision | NFR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:179 |
 | NFR-code-mapping-review-cost | NFR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
@@ -174,7 +174,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-code-mapping-uncovered-blocks | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-acknowledged-unimplemented | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-multi-slug-counted | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
-| AC-code-mapping-marker-scope-enforced | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:594 |
+| AC-code-mapping-marker-scope-enforced | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:595 |
 | AC-code-mapping-marker-syntax-per-type | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-planned-paths-living | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
 | AC-code-mapping-index-reflects-markers | AC | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md |  |
@@ -460,7 +460,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-conformance-unfulfilled-behavioral | TC | qa/cli/conformance.md |  |  |
 | FR-living-spec-roadmap-supplements | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:57 |
 | FR-living-spec-roadmap-graduation | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:95 |
-| FR-living-spec-roadmap-slug-prefix | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-traceability.sh:532, scripts/audit-traceability.sh:547, scripts/audit-traceability.sh:580 |
+| FR-living-spec-roadmap-slug-prefix | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-traceability.sh:533, scripts/audit-traceability.sh:548, scripts/audit-traceability.sh:581 |
 | FR-living-spec-multi-phase-roadmap | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | roadmap/AGENTS.md:57 |
 | FR-living-spec-temporal-audit-patterns | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2, scripts/audit-temporal.sh:27 |
 | FR-living-spec-temporal-audit-modes | FR | product/living-spec-discipline.md | engineering/cli/living-spec-discipline.md, qa/cli/living-spec-discipline.md | scripts/audit-temporal.sh:2 |
