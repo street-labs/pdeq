@@ -18,7 +18,7 @@ This file maps every requirement slug to all files that define or reference it. 
 
 | Slug | Type | Defined In | Referenced In | Code |
 |------|------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|
-| FR-migrations-version-field | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, pdeq.schema.json, VERSION | scripts/init.sh:551 |
+| FR-migrations-version-field | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, pdeq.schema.json, VERSION | scripts/init.sh:574 |
 | FR-migrations-version-readable | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:82, scripts/migrate.sh:95 |
 | FR-migrations-absent-version | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/migrate.sh:82 |
 | FR-migrations-one-per-version | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
@@ -26,7 +26,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-mechanical-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-semantic-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-order-within | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.12.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-explicit-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
 | FR-migrations-pending-detection | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-ordered-application | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
@@ -34,7 +34,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-nonbreaking-advance | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:301 |
 | FR-migrations-noop-when-current | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-dry-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.12.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-scoped-writes | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:354 |
 | FR-migrations-breaking-gate | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
 | FR-migrations-no-false-positive | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
@@ -152,7 +152,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-code-mapping-planned-paths-living | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:267 |
 | FR-code-mapping-planned-paths-per-platform | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:625 |
 | FR-code-mapping-acknowledged-unimplemented | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:677 |
-| FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:144, scripts/audit-traceability.sh:184, scripts/init.sh:644 |
+| FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:144, scripts/audit-traceability.sh:184, scripts/init.sh:667 |
 | FR-code-mapping-audit-validates-slug | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:580, scripts/audit-traceability.sh:73 |
 | FR-code-mapping-audit-validates-path | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:625 |
 | FR-code-mapping-audit-coverage | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:678 |
@@ -243,7 +243,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-cli-naming-listing | AC | product/cli-conventions.md |  |  |
 | AC-cli-naming-no-bare-name | AC | product/cli-conventions.md |  |  |
 | AC-cli-naming-migration-carries | AC | product/cli-conventions.md |  |  |
-| FR-harness-agnostic-config | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:129, scripts/init.sh:609, scripts/lib/harness.sh:77 |
+| FR-harness-agnostic-config | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:129, scripts/init.sh:632, scripts/lib/harness.sh:77 |
 | FR-harness-agnostic-v1-harness-set | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/lib/harness.sh:28 |
 | FR-harness-agnostic-multiple-per-install | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-unknown-rejected | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:138, scripts/lib/harness.sh:28 |
@@ -542,3 +542,20 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-coverage-audit-deterministic-two-runs | TC | qa/cli/coverage-audit.md |  |  |
 | TC-coverage-audit-no-code-passes | TC | qa/cli/coverage-audit.md |  |  |
 | TC-coverage-audit-non-fr-ignored | TC | qa/cli/coverage-audit.md |  |  |
+| FR-project-orientation-file | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:534, scripts/seed-project-md.sh:74 |
+| FR-project-orientation-living | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
+| FR-project-orientation-standing-spec | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
+| FR-project-orientation-standing-manifest | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
+| FR-project-orientation-session-read | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
+| FR-project-orientation-kickoff-maintains | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
+| FR-project-orientation-status-surfaces | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-status.md:36 |
+| FR-project-orientation-migration-seeds | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/seed-project-md.sh:74 |
+| FR-project-orientation-migration-pares | FR | product/project-orientation.md | engineering/cli/project-orientation.md | migrations/0.12.0.md:8 |
+| NFR-project-orientation-no-new-folder | NFR | product/project-orientation.md | engineering/cli/project-orientation.md |  |
+| NFR-project-orientation-cheap-read | NFR | product/project-orientation.md | engineering/cli/project-orientation.md |  |
+| NFR-project-orientation-llm-maintained | NFR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
+| AC-project-orientation-fresh-install | AC | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:534 |
+| AC-project-orientation-migration-idempotent | AC | product/project-orientation.md | engineering/cli/project-orientation.md |  |
+| AC-project-orientation-manifest-resolves | AC | product/project-orientation.md | engineering/cli/project-orientation.md |  |
+| AC-project-orientation-kickoff-adds | AC | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
+| AC-project-orientation-migration-consolidates | AC | product/project-orientation.md | engineering/cli/project-orientation.md |  |

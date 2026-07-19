@@ -177,4 +177,34 @@ This is an append-only log of key architectural, product, and design decisions a
 ## 2025-01-23 — Coverage audit: Pass/Fail as sole terminal statuses
 **Decision.** Only "Pass" and "Fail" are treated as terminal coverage statuses for the blocking gate. Rationale: a row marked "Fail" means QA was actually executed and a failure was recorded — that is evidence of execution, not of missing coverage. Any other value ("Not started", "In progress", "planned", "Skipped", "N/A", empty, or unrecognized) is non-terminal. This aligns with the existing traceability audit's status vocabulary in phase 7b.
 
+# Decision Log
+## Entry Format
+Append new entries below using this format. The pre-commit hook merges this
+file into `decisions.md` at commit time and then deletes it.
+---
+## 2025-07-19 — Project orientation: project.md + standing specs
+**Context:** Pdeq had no lightweight "what is THIS project" entry point for a
+fresh agent session, and no structurally correct home for cross-cutting specs
+(style guide, architecture baseline, security baseline) that apply to every
+feature rather than to one feature. Cross-cutting concerns were either
+shoe-horned into a fake feature file, dumped into the framework AGENTS.md, or
+left unspecified.
+**Decision:** Add `project.md` at the specs root — a short, living, authored
+orientation file (identity, platforms, tech stack, a standing-specs manifest,
+how to operate) — and a first-class **standing spec** concept: a spec marked
+`standing: true` (+ `governs:`) in its frontmatter that applies project-wide
+and lives in its correct lane. The coordinator reads `project.md` at session
+start; `/pdeq-kickoff` maintains the manifest; `/pdeq-status` surfaces it; a
+0.12.0 advisory migration seeds `project.md` for existing projects and
+consolidates project-specific clutter out of the framework agent file.
+**Alternatives considered:**
+- A new top-level folder for orientation. Rejected — `project.md` at the specs
+  root alongside `index.md`/`glossary.md` is enough; no new folder needed.
+- A deterministic audit cross-checking the manifest against `standing: true`
+  flags. Deferred to a fast-follow — v1 relies on LLM maintenance + the
+  kickoff manifest step; an audit backstop can be added without disrupting v1.
+- Generating the authored sections mechanically. Rejected — identity/stack
+  prose is maintained by the agent as facts change; only the manifest is
+  structured/cross-checkable.
+
 <!-- Decision entries appear below, oldest first. -->

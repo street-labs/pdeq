@@ -31,6 +31,15 @@ Roadmap files are not slug-tracked — skip slug counting for them.
 
 Run `./scripts/audit-traceability.sh` and capture the results.
 
+## Step 4b: Project Orientation
+
+<!-- Implements: FR-project-orientation-status-surfaces -->
+Read `project.md` at the specs root. Report:
+- Whether `project.md` exists.
+- If it exists: the **What this is** one-liner (first sentence), the **Platforms** list, and the **Standing specs** table (name + path for each row).
+- If any standing-spec path in the table does not resolve to a file, flag it as a gap.
+- If `project.md` does not exist, note that the project is not yet oriented and that the project-orientation migration will seed it.
+
 ## Step 5: Present Dashboard
 
 ```
@@ -60,6 +69,11 @@ Features with roadmap entries but no product spec yet (pre-kickoff vision):
 
 ### Audit Results
 [Output from audit-traceability.sh]
+
+### Orientation
+- project.md: <exists? one-liner of what the project is>
+- Platforms: <list>
+- Standing specs: <table or none>
 ```
 
 If there are no features yet, just say the project is empty and ready for its first `/pdeq-kickoff`.
