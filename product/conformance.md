@@ -1,3 +1,8 @@
+---
+standing: true
+governs: the semantic code-vs-spec review contract
+---
+
 # Platform Conformance Audit
 
 ## Overview

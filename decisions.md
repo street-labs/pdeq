@@ -177,12 +177,7 @@ This is an append-only log of key architectural, product, and design decisions a
 ## 2025-01-23 — Coverage audit: Pass/Fail as sole terminal statuses
 **Decision.** Only "Pass" and "Fail" are treated as terminal coverage statuses for the blocking gate. Rationale: a row marked "Fail" means QA was actually executed and a failure was recorded — that is evidence of execution, not of missing coverage. Any other value ("Not started", "In progress", "planned", "Skipped", "N/A", empty, or unrecognized) is non-terminal. This aligns with the existing traceability audit's status vocabulary in phase 7b.
 
-# Decision Log
-## Entry Format
-Append new entries below using this format. The pre-commit hook merges this
-file into `decisions.md` at commit time and then deletes it.
----
-## 2025-07-19 — Project orientation: project.md + standing specs
+## 2026-07-19 — Project orientation: project.md + standing specs
 **Context:** Pdeq had no lightweight "what is THIS project" entry point for a
 fresh agent session, and no structurally correct home for cross-cutting specs
 (style guide, architecture baseline, security baseline) that apply to every

@@ -66,9 +66,28 @@ test_seed_respects_specs_root() {
   cat > "$dir/pdeq.json" <<'JSON'
 { "pdeqVersion": "0.11.0", "specsRoot": "apps/api", "platforms": ["web"] }
 JSON
+  mkdir -p "$dir/apps/api"  # init.sh creates the specs root before seeding
 
   ( cd "$dir" && "$SEED" >/dev/null 2>&1 )
   [[ -f "$dir/apps/api/project.md" ]] || { echo "  FAIL: project.md not created at specsRoot" >&2; return 1; }
+
+  rm -rf "$dir"
+}
+
+test_seed_bails_on_missing_specs_root() {
+  local dir
+  dir=$(mktemp -d 2>/dev/null || mktemp -d -t projorient)
+  ( cd "$dir" && git init -q )
+  cat > "$dir/pdeq.json" <<'JSON'
+{ "pdeqVersion": "0.11.0", "specsRoot": "typo/path", "platforms": ["cli"] }
+JSON
+
+  local out rc
+  out=$(cd "$dir" && "$SEED" 2>&1)
+  rc=$?
+  [[ "$rc" -ne 0 ]] || { echo "  FAIL: seed did not bail on missing specs root" >&2; return 1; }
+  assert_contains "$out" "does not exist" "seed reports missing specs root"
+  [[ ! -f "$dir/typo/path/project.md" ]] || { echo "  FAIL: seed created file in nonexistent path" >&2; return 1; }
 
   rm -rf "$dir"
 }

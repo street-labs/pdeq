@@ -1,3 +1,8 @@
+---
+standing: true
+governs: inline Implements: markers and the requirement-to-code link
+---
+
 # Requirement ↔ Code Mapping
 
 ## Overview

@@ -1,3 +1,8 @@
+---
+standing: true
+governs: the version-upgrade contract between pdeq and consumer projects
+---
+
 # Migrations
 
 ## Overview

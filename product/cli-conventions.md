@@ -1,3 +1,8 @@
+---
+standing: true
+governs: the pdeq- command prefix and naming rules every shipped command follows
+---
+
 # CLI Conventions
 
 ## Overview

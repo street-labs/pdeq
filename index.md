@@ -542,14 +542,14 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-coverage-audit-deterministic-two-runs | TC | qa/cli/coverage-audit.md |  |  |
 | TC-coverage-audit-no-code-passes | TC | qa/cli/coverage-audit.md |  |  |
 | TC-coverage-audit-non-fr-ignored | TC | qa/cli/coverage-audit.md |  |  |
-| FR-project-orientation-file | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:534, scripts/seed-project-md.sh:74 |
+| FR-project-orientation-file | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:534, scripts/seed-project-md.sh:78 |
 | FR-project-orientation-living | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
 | FR-project-orientation-standing-spec | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
 | FR-project-orientation-standing-manifest | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
 | FR-project-orientation-session-read | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
 | FR-project-orientation-kickoff-maintains | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
 | FR-project-orientation-status-surfaces | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-status.md:36 |
-| FR-project-orientation-migration-seeds | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/seed-project-md.sh:74 |
+| FR-project-orientation-migration-seeds | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/seed-project-md.sh:78 |
 | FR-project-orientation-migration-pares | FR | product/project-orientation.md | engineering/cli/project-orientation.md | migrations/0.12.0.md:8 |
 | NFR-project-orientation-no-new-folder | NFR | product/project-orientation.md | engineering/cli/project-orientation.md |  |
 | NFR-project-orientation-cheap-read | NFR | product/project-orientation.md | engineering/cli/project-orientation.md |  |

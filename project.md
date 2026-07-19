@@ -14,11 +14,11 @@ Cross-cutting specs every builder MUST respect, regardless of feature.
 
 | Spec | Lane / Path | Governs |
 |---|---|---|
-| CLI conventions | product/cli-conventions.md | the `pdeq-` command prefix and naming rules every shipped command follows |
+| CLI conventions | product/cli-conventions.md | the pdeq- command prefix and naming rules every shipped command follows |
 | Spec structure | product/spec-structure.md | how to triage and place specs so the graph stays internally consistent |
 | Lane discipline | product/lane-discipline.md | keeping product specs platform-neutral; the two-layer enforcement model |
 | Living spec discipline | product/living-spec-discipline.md | specs describe current state; future plans live in roadmap; temporal language audit |
-| Code mapping | product/code-mapping.md | inline `Implements:` markers and the requirement↔code link |
+| Code mapping | product/code-mapping.md | inline Implements: markers and the requirement-to-code link |
 | Migrations | product/migrations.md | the version-upgrade contract between pdeq and consumer projects |
 | Conformance | product/conformance.md | the semantic code-vs-spec review contract |
 | Harness-agnostic | product/harness-agnostic.md | how pdeq installs and behaves identically across Claude Code, Codex CLI, and Pi |
