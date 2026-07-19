@@ -529,6 +529,29 @@ for tmpl in index.md glossary.md decisions.md; do
 done
 
 # ---------------------------------------------------------------------------
+# Step 7b: Seed project.md (orientation file)
+# ---------------------------------------------------------------------------
+# Implements: FR-project-orientation-file, AC-project-orientation-fresh-install
+# project.md is project-specific, so it is seeded from a skeleton rather than
+# copied from pdeq's own (self-host) project.md. The seed script is idempotent.
+SEED_SCRIPT="$PDEQ_PATH/scripts/seed-project-md.sh"
+# Self-host fallback: pdeq's own repo keeps scripts at <root>/scripts.
+[[ -f "$SEED_SCRIPT" ]] || SEED_SCRIPT="$GIT_ROOT/scripts/seed-project-md.sh"
+if [[ -f "$SEED_SCRIPT" ]]; then
+  out="$("$SEED_SCRIPT" "$OPT_SPECS_ROOT" 2>&1)" || true
+  if echo "$out" | grep -q "Created project.md"; then
+    green "Created project.md (orientation file)"
+    ((CREATED++))
+  else
+    skip "project.md already exists"
+    ((SKIPPED++))
+  fi
+else
+  skip "seed-project-md.sh not found — skipping project.md seed"
+  ((SKIPPED++))
+fi
+
+# ---------------------------------------------------------------------------
 # Step 8: .gitignore (at git root)
 # ---------------------------------------------------------------------------
 GITIGNORE="$GIT_ROOT/.gitignore"

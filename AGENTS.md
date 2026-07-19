@@ -523,10 +523,25 @@ Plus a fourth, code-side category — **Undocumented behavior**: product-relevan
 
 It is **advisory — never a commit-time gate**, exactly like the Lane Reviewer. Nothing in the commit path invokes it; acting on a finding is always a human or agent decision. Invoke it via `/pdeq-conform` on demand.
 
+## Project Orientation
+
+<!-- Implements: FR-project-orientation-session-read, FR-project-orientation-standing-spec, FR-project-orientation-living, NFR-project-orientation-llm-maintained -->
+
+Every pdeq project has a `project.md` at its specs root — the **orientation file**. It is the skinny on what the project is, which platforms it targets, its tech stack, the **standing specs** every builder must respect, and how to operate within it.
+
+**Session start.** At the start of any implementation session, read `project.md` before doing feature work, and respect every standing spec it lists. This is the always-on orientation path — it requires no command. `project.md` is short by construction; comprehensive detail lives in the standing specs it points at, not in the file itself.
+
+**Standing specs.** A *standing spec* is a spec that applies project-wide rather than to a single feature — a style guide, an architecture baseline, a security baseline, API conventions. It lives in its correct lane (a style guide is engineering; a security baseline's "what" is product NFRs and its "how" is engineering) and is marked in its YAML frontmatter with `standing: true` and a `governs:` one-line description. `project.md`'s **Standing specs** table is the manifest of every standing spec in the project: its name, lane-relative path, and `governs:` line. Every path in the manifest must resolve; every `standing: true` spec must appear in the manifest.
+
+**Keeping it current.** `project.md` is a living document. The authored sections (identity, platforms, stack, how to operate) are updated in place when the underlying facts change. The Standing specs manifest is maintained structurally: `/pdeq-kickoff` adds a row when it mints a `standing: true` spec and removes a row when one is retired. `/pdeq-status` reports whether the project is oriented and which standing specs are in force. The project-orientation migration seeds `project.md` for existing projects and consolidates project-specific clutter out of this framework file.
+
+See `product/project-orientation.md` for the requirements and `engineering/cli/project-orientation.md` for the technical contract.
+
 ## Shared Project Files
 
 | File | Purpose |
 |---|---|
+| `project.md` | Project orientation — the skinny: what the project is, platforms, tech stack, the standing-specs manifest, and how to operate. Read at session start. |
 | `index.md` | Traceability index — maps every slug to all references |
 | `glossary.md` | Shared vocabulary — all agents must use consistent terminology |
 | `decisions.md` | Append-only decision log — records key decisions and rationale. Provides historical context for how the project evolved (specs show current state; this shows *why*). **Do not edit directly during a session — write to `decisions-pending.md` instead (see below).** |

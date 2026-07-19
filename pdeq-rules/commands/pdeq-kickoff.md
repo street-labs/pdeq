@@ -175,7 +175,10 @@ These post-processing steps are independent — order among them does not matter
 
 7. **Graduate roadmap items** — If this kickoff consumed any roadmap entry (per Step 0 B.1), remove the graduated item(s) from `roadmap/<feature>.md`. Delete the file entirely if no items remain.
 
-8. **Temporal language audit** <!-- Implements: FR-living-spec-kickoff-temporal-check --> — Run `./scripts/audit-temporal.sh` over newly created or updated specs. Report any findings (temporal/phasing language like "MVP", "phase 1", "V2", "iteration 2"). This is advisory (does not block kickoff). Findings should be moved to roadmap or rewritten in present tense before implementation.
+8. **Maintain project.md standing-specs manifest** — If this kickoff created or updated any spec whose YAML frontmatter carries `standing: true`, ensure `project.md` exists at the specs root and add (or refresh) a row in its **Standing specs** table for each: columns are the spec's human-readable name, its lane-relative path (e.g. `engineering/cli/style-guide.md`), and the `governs:` one-liner copied from the spec's frontmatter. If a standing spec was retired in this kickoff, remove its row. Do not touch `project.md`'s authored sections (identity, platforms, stack, how to operate) in this step — those are maintained when the underlying facts change, not on every kickoff. If no `standing: true` spec was touched, skip this step.
+   <!-- Implements: FR-project-orientation-standing-manifest, FR-project-orientation-kickoff-maintains, AC-project-orientation-kickoff-adds -->
+
+9. **Temporal language audit** <!-- Implements: FR-living-spec-kickoff-temporal-check --> — Run `./scripts/audit-temporal.sh` over newly created or updated specs. Report any findings (temporal/phasing language like "MVP", "phase 1", "V2", "iteration 2"). This is advisory (does not block kickoff). Findings should be moved to roadmap or rewritten in present tense before implementation.
 
 ### After the parallel batch completes:
 
