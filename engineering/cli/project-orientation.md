@@ -66,7 +66,7 @@ product-slugs: [...]
 ---
 ```
 
-`standing: true` is the signal kickoff uses to decide whether to add a manifest row. `governs:` is a short human-readable phrase copied into the manifest's third column. A standing spec otherwise follows all the same rules as a feature spec: it lives in its correct lane, carries slugs, is traceable, and is stamped with `product-hash`/`product-slugs` from its upstream product spec (a standing product spec stamps from itself is not applicable — a standing engineering/QA spec stamps from the product spec that defines its "what", which may itself be a standing product spec). (`FR-project-orientation-standing-spec`)
+`standing: true` is the signal kickoff uses to decide whether to add a manifest row. `governs:` is a short human-readable phrase copied into the manifest's third column. A standing spec otherwise follows all the same rules as a feature spec: it lives in its correct lane, carries slugs, is traceable, and is stamped with `product-hash`/`product-slugs` from its upstream product spec. A standing engineering/QA spec stamps from the product spec that defines its "what" (which may itself be a standing product spec). (`FR-project-orientation-standing-spec`)
 
 ### Session-start directive (coordinator agent file)
 

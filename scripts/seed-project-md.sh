@@ -63,7 +63,11 @@ else
   SPECS_DIR="$SPECS_ROOT"
 fi
 
-mkdir -p "$SPECS_DIR"
+if [[ ! -d "$SPECS_DIR" ]]; then
+  echo "Error: specs root '$SPECS_ROOT' does not exist (resolved to '$SPECS_DIR')." >&2
+  echo "       Create it first, or check pdeq.json's specsRoot for a typo." >&2
+  exit 1
+fi
 DEST="$SPECS_DIR/project.md"
 
 if [[ -f "$DEST" ]]; then

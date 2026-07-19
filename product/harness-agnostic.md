@@ -1,3 +1,8 @@
+---
+standing: true
+governs: how pdeq installs and behaves identically across Claude Code, Codex CLI, and Pi
+---
+
 # Harness-Agnostic Install
 
 ## Overview

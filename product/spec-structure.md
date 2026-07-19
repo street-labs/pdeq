@@ -1,3 +1,8 @@
+---
+standing: true
+governs: how to triage and place specs so the graph stays internally consistent
+---
+
 # Structural Spec-Graph Validation
 
 ## Overview

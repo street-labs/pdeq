@@ -1,3 +1,8 @@
+---
+standing: true
+governs: keeping product specs platform-neutral; the two-layer enforcement model
+---
+
 # Lane Discipline Enforcement
 
 ## Overview

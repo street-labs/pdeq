@@ -1,3 +1,8 @@
+---
+standing: true
+governs: specs describe current state; future plans live in roadmap; temporal language audit
+---
+
 # Living Spec Discipline
 
 ## Overview
