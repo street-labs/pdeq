@@ -6,6 +6,35 @@ All notable changes to pdeq are documented here. The format is based on
 (lineage-breaking) release ships a matching migration under `migrations/<version>.md`;
 run `/pdeq-migrate` (or `/pdeq-update`) to advance a project.
 
+## [0.12.0] — 2026-07-19
+
+### Added
+- **Project orientation.** Every pdeq project gets a `project.md` at its specs root: the skinny on what the project is, its platforms and tech stack, the **standing specs** every builder must respect, and how to operate within it. A *standing spec* is a cross-cutting spec (style guide, architecture baseline, security baseline) marked `standing: true` in its frontmatter; `project.md`'s Standing specs table is the manifest. The coordinator reads `project.md` at the start of every implementation session.
+- `scripts/seed-project-md.sh` — idempotent skeleton seeder for `project.md`, installed automatically on submodule bump.
+- Advisory migration `migrations/0.12.0.md` (`breaking: false`) seeds `project.md` and offers a semantic pass consolidating project-specific clutter out of the framework agent file.
+
+### Changed
+- Reviewer stamps `standing: true` frontmatter and `governs:` on standing specs; `decisions.md` boilerplate fixed.
+
+## [0.11.0] — 2026-07-15
+
+### Added
+- **QA Coverage Audit** (`scripts/audit-coverage.sh` + `scripts/audit-coverage.py`) — joins the marker-derived Code column from the traceability index against each feature's QA Coverage Matrix and blocks commits when a feature has realizing code but its coverage rows are non-terminal. The inverse of the requirement↔code mapping: where the traceability audit blocks on "code doesn't exist yet," this blocks on "QA hasn't been run yet."
+- `scripts/lib/qa-matrix.sh` — shared QA parser extracted from `audit-traceability.sh`.
+- `pdeq-rules/commands/pdeq-coverage.md` — slash command for interactive coverage checks.
+- Advisory migration `migrations/0.11.0.md` (`breaking: false`); scripts install on submodule bump but do not run automatically — consumers opt in via CI/pre-commit.
+
+## [0.10.0] — 2026-07-12
+
+### Added
+- **Living spec discipline.** Specs describe the current state of features, not versioned plans or phased roadmaps. `scripts/audit-temporal.sh` detects temporal language ("MVP", "phase 1", "V2", "iteration 2") and **blocks at commit time by default**. Projects opt out via `temporalAudit.blockCommit: false` in `pdeq.json`, or tune with `temporalAudit.exclude`/`temporalAudit.include`.
+- **Roadmap spec supplements** — optional forward-looking content in `roadmap/` with reserved slug prefixes (`FRR-`, `NFRR-`, `ACR-`) for multi-phase planning, exempt from traceability.
+- Breaking migration `migrations/0.10.0.md`: consumers must clean up temporal language or opt out.
+
+### Changed
+- `scripts/audit-traceability.sh` skips roadmap slug prefixes.
+- `pdeq-rules/commands/pdeq-kickoff.md` runs the temporal audit in Step 4.
+
 ## [0.5.0] — 2026-07-01
 
 ### Added
@@ -31,6 +60,9 @@ run `/pdeq-migrate` (or `/pdeq-update`) to advance a project.
 ### Added
 - `pdeqVersion` field in `pdeq.json` and the migrations feature — the on-ramp from pre-migrations projects.
 
+[0.12.0]: https://github.com/street-labs/pdeq/compare/v0.11.0...v0.12.0
+[0.11.0]: https://github.com/street-labs/pdeq/compare/v0.10.0...v0.11.0
+[0.10.0]: https://github.com/street-labs/pdeq/compare/v0.9.0...v0.10.0
 [0.5.0]: https://github.com/street-labs/pdeq/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/street-labs/pdeq/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/street-labs/pdeq/compare/v0.2.0...v0.3.0
