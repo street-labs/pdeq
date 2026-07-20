@@ -202,4 +202,13 @@ consolidates project-specific clutter out of the framework agent file.
   prose is maintained by the agent as facts change; only the manifest is
   structured/cross-checkable.
 
+## 2026-07-20 — Implement: spec-diff-driven implementation entry point
+**Context:** Kickoff ended at "specs reviewed, now add markers when you build" with no owned step to turn reviewed specs into code. Builders manually gathered spec files and code locations and hand-fed context to an implementing agent, burning calls on gathering pdeq already knew. The owner wanted a plans surface and floated using git history to drive it, including a commit-range replay/re-implement mode.
+**Decision:** Add a `/pdeq-implement` command and a `scripts/implement-context.sh` context producer. Scope is derived from spec-tree changes relative to a base (default `git merge-base main HEAD`, the branch point) — git diff on specs says *what* changed, the traceability index says *where the code is*. The context bundle is produced by a single script invocation (not a sequence of agent toolcalls) and is ephemeral: never committed, slugged, audited, or indexed. A feature/slug argument is a fallback for the redo case where specs are unchanged. After the agent implements and adds markers, `audit-traceability.sh` is the done-check. Replay/cherry-pick of historical code diffs was explicitly dropped — re-implementing means generating code from current specs, not reconstructing a past range.
+**Alternatives considered:**
+- A standalone `/pdeq-plan` reporting command. Rejected — a report nobody acts on rots; the join belongs inside implement as context prep, not a user-facing view.
+- Stored plans / a plan index. Rejected — the moment a plan is persisted it becomes a second spec system that rots and contradicts living specs. Durable ideas graduate to `roadmap/` or a real spec.
+- Commit-range code replay. Rejected — a new model produces differently-structured code, so cherry-pick breaks, and git already does rebase. The range is only a scope filter, never the source of truth for code.
+- Walking back from HEAD to find the pre-spec commit as the default base. Rejected — `git merge-base main HEAD` does the same job and is robust in the Buzz worktree setup (branch off main, commit/push specs).
+
 <!-- Decision entries appear below, oldest first. -->
