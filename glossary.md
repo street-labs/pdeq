@@ -80,6 +80,12 @@ This file defines shared vocabulary for the project. All agents must use consist
 
 **Temporal language** — Phasing, versioning, or future-oriented qualifiers in specs: "MVP", "phase 1", "V2", "initial release", "will be added", "iteration 2", etc. This language is flagged by the temporal audit in authoritative specs and belongs in roadmap instead. It makes a spec read as a plan (what will happen) rather than a living document (what is).
 
+**Context bundle** — The single-pass stdout output of `scripts/implement-context.sh`: the changed specs, in-scope slug inventory, index rows, engineering Code Map rows, and current code state for a given scope and base. Consumed once by the implementing agent to write code without gathering context piece by piece. Ephemeral — never committed, slugged, audited, or indexed.
+
+**Spec-diff scope** — The default scope mode for `/pdeq-implement`: in-scope requirements are every slug defined in spec files that are new or modified relative to the base (default the branch point). File-level over-inclusion is preferred to hunk-level slug diffing. The complement of fallback scope.
+
+**Fallback scope** — The `/pdeq-implement` scope mode used when the spec tree has no changes relative to the base: the user passes a feature or slug, and the script resolves the in-scope spec set from that argument directly. Covers the redo case where specs are unchanged but code is regenerated from current specs.
+
 **Roadmap spec supplement** — A forward-looking, spec-shaped section in a `roadmap/<feature>.md` file, organized by phase or iteration, with requirements using reserved slug prefixes (`FRR-`, `NFRR-`, `ACR-`). Non-authoritative; exempt from traceability audits. Used for multi-phase planning when detailed future scoping is needed before implementation begins. When a section is ready to implement, its content is renumbered with authoritative slugs and moved to the product/design/engineering spec.
 
 **Roadmap slug prefixes** — Reserved slug prefixes (`FRR-` for functional requirements, `NFRR-` for non-functional requirements, `ACR-` for acceptance criteria) used in roadmap spec supplements to distinguish forward-looking requirements from authoritative ones. Traceability audits skip these prefixes; they become authoritative (`FR-`, `NFR-`, `AC-`) only when graduated from roadmap into product specs.
