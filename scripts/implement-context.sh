@@ -146,7 +146,7 @@ changed_specs=()
 while IFS= read -r line; do
   [ -n "$line" ] && changed_specs+=("$line")
 done < <(
-  git diff --name-status --diff-filter=AM "$BASE_REF" -- "${spec_pathspecs[@]}" 2>/dev/null \
+  git diff --name-status --diff-filter=AM "$BASE_REF" -- "${spec_pathspecs[@]+"${spec_pathspecs[@]}"}" 2>/dev/null \
     | awk '{print $2}' | sort
 )
 
@@ -198,7 +198,7 @@ resolve_fallback_scope() {
 # Implements: FR-implement-no-arg-default
 if [[ ${#changed_specs[@]} -gt 0 ]]; then
   SCOPE_SOURCE="spec-diff"
-  for f in "${changed_specs[@]}"; do in_scope_specs+=("$f"); done
+  for f in "${changed_specs[@]+"${changed_specs[@]}"}"; do in_scope_specs+=("$f"); done
 elif [[ -n "$POSITIONAL" ]]; then
   SCOPE_SOURCE="fallback"
   resolve_fallback_scope "$POSITIONAL"
@@ -211,7 +211,7 @@ fi
 # ─── slug extraction ─────────────────────────────────────────────────────────
 # Implements: FR-implement-slug-inventory
 {
-  for f in "${in_scope_specs[@]}"; do
+  for f in "${in_scope_specs[@]+"${in_scope_specs[@]}"}"; do
     grep -hoE "$SLUG_REGEX" "$ROOT/$f" 2>/dev/null || true
   done
 } | sort -u > "$SLUGS_TMP"
@@ -222,7 +222,7 @@ while IFS= read -r s; do
 done < "$SLUGS_TMP"
 
 FR_SLUGS=()
-for s in "${SLUGS[@]}"; do
+for s in "${SLUGS[@]+"${SLUGS[@]}"}"; do
   [[ "$s" =~ ^FR- ]] && FR_SLUGS+=("$s")
 done
 
@@ -237,7 +237,7 @@ HAS_INDEX="yes"
 # Implements: FR-implement-current-code
 collect_code_files() {
   if [ "$HAS_INDEX" = "yes" ]; then
-    for slug in "${SLUGS[@]}"; do
+    for slug in "${SLUGS[@]+"${SLUGS[@]}"}"; do
       local pat; pat="$(grep_escape "$slug")"
       grep -E "^\| \`?$pat\`? \|" "$INDEX_FILE" 2>/dev/null | awk -F'|' '{
         gsub(/^ +| +$/,"",$(NF-1))
@@ -250,14 +250,14 @@ collect_code_files() {
       }'
     done
   fi
-  for f in "${in_scope_specs[@]}"; do
+  for f in "${in_scope_specs[@]+"${in_scope_specs[@]}"}"; do
     case "$f" in
       engineering/*)
         local abs="$ROOT/$f"; [ -f "$abs" ] || continue
         awk -F'|' '
           /^## Code Map/ { in_map=1; next }
           /^## / { in_map=0 }
-          in_map && /^\|/ && !/^\| *Slug/ && !/^\|[- ]/ {
+          in_map && /^\|/ && !/^\| *Slug/ && !/^\|--/ {
             gsub(/^ +| +$/,"",$3)
             n=split($3, parts, "; ")
             for (i=1;i<=n;i++) {
@@ -280,7 +280,7 @@ emit_bundle() {
 
   echo "## Changed spec files"
   if [[ ${#in_scope_specs[@]} -gt 0 ]]; then
-    for f in "${in_scope_specs[@]}"; do echo "$f"; done
+    for f in "${in_scope_specs[@]+"${in_scope_specs[@]}"}"; do echo "$f"; done
   else
     echo "(none)"
   fi
@@ -288,14 +288,14 @@ emit_bundle() {
 
   echo "## In-scope slugs"
   if [[ ${#SLUGS[@]} -gt 0 ]]; then
-    for s in "${SLUGS[@]}"; do echo "$s"; done
+    for s in "${SLUGS[@]+"${SLUGS[@]}"}"; do echo "$s"; done
   else
     echo "(none)"
   fi
   echo ""
 
   echo "## Spec contents"
-  for f in $(printf '%s\n' "${in_scope_specs[@]}" | sort); do
+  for f in $(printf '%s\n' "${in_scope_specs[@]+"${in_scope_specs[@]}"}" | sort); do
     echo "### $f"
     if [ -f "$ROOT/$f" ]; then cat "$ROOT/$f"; else echo "(file not found)"; fi
     echo ""
@@ -304,7 +304,7 @@ emit_bundle() {
   echo "## Index rows"
   if [ "$HAS_INDEX" = "yes" ]; then
     local printed=0
-    for slug in "${SLUGS[@]}"; do
+    for slug in "${SLUGS[@]+"${SLUGS[@]}"}"; do
       local pat; pat="$(grep_escape "$slug")"
       local row
       row="$(grep -E "^\| \`?$pat\`? \|" "$INDEX_FILE" 2>/dev/null | head -n1 || true)"
@@ -318,9 +318,9 @@ emit_bundle() {
 
   echo "## Code map"
   local cm_printed=0
-  for slug in "${FR_SLUGS[@]}"; do
+  for slug in "${FR_SLUGS[@]+"${FR_SLUGS[@]}"}"; do
     local pat; pat="$(grep_escape "$slug")"
-    for f in "${in_scope_specs[@]}"; do
+    for f in "${in_scope_specs[@]+"${in_scope_specs[@]}"}"; do
       case "$f" in
         engineering/*)
           local abs="$ROOT/$f"; [ -f "$abs" ] || continue

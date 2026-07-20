@@ -42,6 +42,8 @@ jobs:
         run: ./engineering/apps/cli/tests/migrations/run-all.sh
       - name: Code-mapping suite
         run: ./engineering/apps/cli/tests/code-mapping/run-all.sh
+      - name: Implement suite
+        run: ./engineering/apps/cli/tests/implement/run-all.sh
       - name: Lane-discipline regression
         run: ./engineering/apps/cli/tests/lane-discipline/regression-coffee-auth.sh
       - name: Lane-discipline structural check (Layer 1b)
