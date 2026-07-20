@@ -27,13 +27,27 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   exit 1
 fi
 
+# Refuse to tag off main: fetch the canonical tip and require HEAD to be on it.
+# Tags a release marker only at a commit that has actually landed on main.
+git fetch --quiet origin main
+if ! git merge-base --is-ancestor HEAD origin/main; then
+  echo "release: HEAD is not on origin/main. Checkout main and pull first." >&2
+  exit 1
+fi
+
+# Idempotent re-run guard: a prior push leaves the tag; fail clearly, never overwrite.
+if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+  echo "release: ${tag} already exists locally. Not overwriting." >&2
+  exit 1
+fi
+
 head="$(git rev-parse --short HEAD)"
 echo "release: tagging ${head} as ${tag}"
 git tag -a "$tag" -m "pdeq ${ver}"
 git push origin "$tag"
 
 echo "release: verifying remote..."
-if ! git ls-remote --tags origin | grep -q "refs/tags/${tag}$"; then
+if ! git ls-remote --tags origin "refs/tags/${tag}" | grep -q .; then
   echo "release: FAILED to verify ${tag} on remote." >&2
   exit 1
 fi
