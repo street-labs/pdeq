@@ -47,6 +47,28 @@ A pre-commit hook (installed by `scripts/init.sh`) runs the traceability audit, 
 - **Decisions** go in `decisions-pending.md` during a change (the pre-commit hook merges them into `decisions.md`), never directly into `decisions.md`.
 - **Breaking (MINOR/MAJOR) releases** ship a migration under `migrations/<version>.md`; the enforcement gate blocks a version bump that lacks one. See `product/migrations.md`.
 
+## Releasing
+
+Releases are tagged `v<VERSION>` (e.g. `v0.13.0`) on `main`, following [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The release commit bumps `VERSION`, `pdeq.json` (`pdeqVersion`), the `CHANGELOG.md` entry, and — for a MINOR/MAJOR (lineage-breaking) release — ships `migrations/<version>.md`. The commit-message gate (`scripts/audit-migrations.sh`) blocks a breaking bump that has no matching migration, so author the migration first.
+
+**Release steps** (run after the version-bump PR is merged to `main`):
+
+1. `git checkout main && git pull --ff-only origin main` — land the bump.
+2. Confirm `cat VERSION` matches the version you're releasing.
+3. Cut and push the annotated tag, then verify it landed:
+   ```bash
+   scripts/release.sh 0.13.0        # tag at HEAD, push, verify via ls-remote
+   # or, by hand:
+   # git tag -a v0.13.0 -m "pdeq 0.13.0: <one-line summary>"
+   # git push origin v0.13.0
+   # git ls-remote --tags origin | grep v0.13.0
+   ```
+4. Confirm the `git ls-remote` line dereferences to the release commit's SHA.
+
+The tag is the release marker — consumers pin the `.pdeq` submodule to it, and `git ls-remote --tags` / release-notes tooling read from it. A version bump merged without its tag (the `v0.13.0` gap) leaves consumers seeing the bump with no resolvable release point, so don't skip step 3.
+
+`scripts/release.sh <version>` is bash (no extra toolchain — `just` is not a repo dependency). It asserts `VERSION` matches, tags HEAD, pushes, and verifies the remote in one step.
+
 ## Code of Conduct
 
 By participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
