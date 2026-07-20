@@ -182,20 +182,20 @@ Authoritative planned code locations for every functional requirement this spec 
 
 | Slug | Planned location | Status |
 |---|---|---|
-| FR-implement-command | pdeq-rules/commands/pdeq-implement.md:1 | planned |
-| FR-implement-no-arg-default | scripts/implement-context.sh | planned |
-| FR-implement-spec-diff-scope | scripts/implement-context.sh | planned |
-| FR-implement-default-base | scripts/implement-context.sh | planned |
-| FR-implement-base-options | scripts/implement-context.sh | planned |
-| FR-implement-fallback-scope | scripts/implement-context.sh | planned |
-| FR-implement-empty-scope | scripts/implement-context.sh | planned |
-| FR-implement-single-pass-context | scripts/implement-context.sh | planned |
-| FR-implement-changed-specs | scripts/implement-context.sh | planned |
-| FR-implement-slug-inventory | scripts/implement-context.sh | planned |
-| FR-implement-index-rows | scripts/implement-context.sh | planned |
-| FR-implement-code-map | scripts/implement-context.sh | planned |
-| FR-implement-current-code | scripts/implement-context.sh | planned |
-| FR-implement-implements-requirements | pdeq-rules/commands/pdeq-implement.md | planned |
-| FR-implement-runs-loop | pdeq-rules/commands/pdeq-implement.md | planned |
-| FR-implement-audit-done-check | pdeq-rules/commands/pdeq-implement.md | planned |
-| FR-implement-context-ephemeral | pdeq-rules/commands/pdeq-implement.md; scripts/implement-context.sh | planned |
+| FR-implement-command | pdeq-rules/commands/pdeq-implement.md:1 | implemented |
+| FR-implement-no-arg-default | scripts/implement-context.sh | implemented |
+| FR-implement-spec-diff-scope | scripts/implement-context.sh | implemented |
+| FR-implement-default-base | scripts/implement-context.sh | implemented |
+| FR-implement-base-options | scripts/implement-context.sh | implemented |
+| FR-implement-fallback-scope | scripts/implement-context.sh | implemented |
+| FR-implement-empty-scope | scripts/implement-context.sh | implemented |
+| FR-implement-single-pass-context | scripts/implement-context.sh | implemented |
+| FR-implement-changed-specs | scripts/implement-context.sh | implemented |
+| FR-implement-slug-inventory | scripts/implement-context.sh | implemented |
+| FR-implement-index-rows | scripts/implement-context.sh | implemented |
+| FR-implement-code-map | scripts/implement-context.sh | implemented |
+| FR-implement-current-code | scripts/implement-context.sh | implemented |
+| FR-implement-implements-requirements | pdeq-rules/commands/pdeq-implement.md | implemented |
+| FR-implement-runs-loop | pdeq-rules/commands/pdeq-implement.md | implemented |
+| FR-implement-audit-done-check | pdeq-rules/commands/pdeq-implement.md | implemented |
+| FR-implement-context-ephemeral | pdeq-rules/commands/pdeq-implement.md; scripts/implement-context.sh | implemented |
