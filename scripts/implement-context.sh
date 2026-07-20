@@ -129,7 +129,9 @@ resolve_base() {
 
 BASE_REF="$(resolve_base)"
 BASE_DISPLAY="${BASE:-main}"
-if [[ "$BASE_DISPLAY" != "main" && "$BASE_DISPLAY" != "HEAD" && "$BASE_DISPLAY" != "working" ]]; then
+# working is a synonym for HEAD; display the canonical form.
+[[ "$BASE_DISPLAY" == "working" ]] && BASE_DISPLAY="HEAD"
+if [[ "$BASE_DISPLAY" != "main" && "$BASE_DISPLAY" != "HEAD" ]]; then
   BASE_DISPLAY="$BASE_REF"
 fi
 
