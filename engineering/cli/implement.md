@@ -1,5 +1,5 @@
 ---
-product-hash: d8165b1fdd09d7b72bec024e1c9188472de068cc3d387ea3e2d1109d32904008
+product-hash: 0223f4ba114b1142b1bcebfe3fb7442e8a95ab6e88ee5afe555cc50eaca77f36
 product-slugs: [AC-implement-base-option, AC-implement-context-not-persisted, AC-implement-default-base, AC-implement-empty-scope, AC-implement-fallback-scope, AC-implement-markers-audit, AC-implement-no-arg-scope, AC-implement-single-pass, FR-implement-audit-done-check, FR-implement-base-options, FR-implement-changed-specs, FR-implement-code-map, FR-implement-command, FR-implement-context-ephemeral, FR-implement-current-code, FR-implement-default-base, FR-implement-empty-scope, FR-implement-fallback-scope, FR-implement-implements-requirements, FR-implement-index-rows, FR-implement-no-arg-default, FR-implement-runs-loop, FR-implement-single-pass-context, FR-implement-slug-inventory, FR-implement-spec-diff-scope, NFR-implement-determinism]
 ---
 # Implement — CLI Technical Spec
@@ -33,7 +33,7 @@ The second shaping decision: **git diff on the spec tree drives scope; the index
 
 ### `scripts/implement-context.sh` — the context producer
 
-A POSIX bash script (`set -euo pipefail`, bash 3.2 compatible — no associative arrays, no `mapfile`). No new install dependency; it uses `git`, `grep`/`rg` (optional), standard coreutils, and `awk` for index parsing. Reads `pdeq.json` for `specsRoot`.
+A POSIX bash script (`set -euo pipefail`, bash 3.2 compatible — no associative arrays, no `mapfile`). No new install dependency; it uses `git`, plain `grep` (the same tool `audit-traceability.sh` uses, so output ordering stays consistent with the rest of the audit pipeline), standard coreutils, and `awk` for index parsing. Reads `pdeq.json` for `specsRoot`.
 
 **Argument parsing.**
 
@@ -62,7 +62,7 @@ If `main` does not exist as a local ref, fall back to `origin/main`; if neither 
 2. If the list is non-empty, those files are the in-scope spec set. Every slug defined in them is in scope (file-level over-inclusion, per `FR-implement-spec-diff-scope`).
 3. If the list is empty and a positional `feature|slug` was given, resolve scope from it instead (fallback):
    - **Feature** → in-scope spec files are `<specsRoot>/product/<feature>.md` plus `<specsRoot>/design/*/<feature>.md`, `<specsRoot>/engineering/*/<feature>.md`, `<specsRoot>/qa/*/<feature>.md` (globbed across platform subfolders). Missing files are skipped with a note.
-   - **Slug** → find the product spec file that defines the slug (`grep -rl "<slug>" <specsRoot>/product/`), then resolve its feature and proceed as above.
+   - **Slug** → find the product spec file that *defines* the slug, not merely mentions it. A definition is the backtick-wrapped slug token that follows a bold requirement label (the `**Label** \`<slug>\`:` shape product specs use); a bare mention elsewhere is a cross-reference, not a definition. The script matches the definition pattern rather than bare `grep -rl`, so a slug cross-referenced in another feature's product spec does not resolve to the wrong feature. If no defining file is found, error and exit non-zero.
 4. If the list is empty and no positional was given → print `implement: nothing to implement (no spec changes since <base> and no feature/slug given)` to stderr, exit 0. This is `FR-implement-empty-scope`.
 
 **Slug extraction.**
@@ -170,7 +170,7 @@ The script runs `git diff` and reads files under the spec tree and `index.md`. I
 
 Ordered steps. Each unlocks the next.
 
-1. **Write `scripts/implement-context.sh`** — the context producer. This is the core; without it nothing else is testable. Implement arg parsing, base resolution, spec-scope derivation, slug extraction, index lookup, code-map extraction, current-code-state, and deterministic bundle assembly. Add a `--check` mode that prints the resolved base + in-scope slug set without the full bundle, for fast testing.
+1. **Write `scripts/implement-context.sh`** — the context producer. This is the core; without it nothing else is testable. Implement arg parsing, base resolution, spec-scope derivation, slug extraction, index lookup, code-map extraction, current-code-state, and deterministic bundle assembly.
 2. **Write `pdeq-rules/commands/pdeq-implement.md`** — the command prompt that shells out to the script and instructs the agent. Depends on the script's stdout contract being fixed (step 1).
 3. **Materialize into `.claude/commands/` and `.pi/prompts/`** — run the existing installer sync (or `scripts/sync-symlinks.sh`) so the command appears in Claude and Pi. No installer code changes.
 4. **Run the engineering/QA loop** — execute the QA test plan against the script and command, fix failures, iterate to green.

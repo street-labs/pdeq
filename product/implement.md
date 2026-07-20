@@ -84,7 +84,7 @@ The following are deliberately out of scope. They are listed here so future requ
 
 ## Open Questions
 
-- **QA loop scope:** Does implement run the engineering/QA loop inline to completion (one command, one session), or stop after code and markers and hand the test loop to a separate verify step? Leaning inline. Engineering decision — both satisfy `FR-implement-runs-loop` if the loop runs to green.
+(None — the QA-loop-scope question was resolved inline in the engineering spec: implement runs the engineering/QA loop to green in one session.)
 
 ## Dependencies
 

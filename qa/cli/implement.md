@@ -1,5 +1,5 @@
 ---
-product-hash: d8165b1fdd09d7b72bec024e1c9188472de068cc3d387ea3e2d1109d32904008
+product-hash: 0223f4ba114b1142b1bcebfe3fb7442e8a95ab6e88ee5afe555cc50eaca77f36
 product-slugs: [AC-implement-base-option, AC-implement-context-not-persisted, AC-implement-default-base, AC-implement-empty-scope, AC-implement-fallback-scope, AC-implement-markers-audit, AC-implement-no-arg-scope, AC-implement-single-pass, FR-implement-audit-done-check, FR-implement-base-options, FR-implement-changed-specs, FR-implement-code-map, FR-implement-command, FR-implement-context-ephemeral, FR-implement-current-code, FR-implement-default-base, FR-implement-empty-scope, FR-implement-fallback-scope, FR-implement-implements-requirements, FR-implement-index-rows, FR-implement-no-arg-default, FR-implement-runs-loop, FR-implement-single-pass-context, FR-implement-slug-inventory, FR-implement-spec-diff-scope, NFR-implement-determinism]
 ---
 # Implement — CLI Test Plan
@@ -55,11 +55,11 @@ Script-behavior cases are `[auto]`. The two cases that exercise the full agent-i
 | Requirement | Test Cases | Status |
 |---|---|---|
 | AC-implement-no-arg-scope | TC-implement-no-arg-scope | Not started |
-| AC-implement-default-base | TC-implement-default-base | Not started |
-| AC-implement-base-option | TC-implement-base-head, TC-implement-base-explicit | Not started |
-| AC-implement-fallback-scope | TC-implement-fallback-feature, TC-implement-fallback-slug | Not started |
+| AC-implement-default-base | TC-implement-default-base, TC-implement-missing-main | Not started |
+| AC-implement-base-option | TC-implement-base-head, TC-implement-base-explicit, TC-implement-bad-base | Not started |
+| AC-implement-fallback-scope | TC-implement-fallback-feature, TC-implement-fallback-slug, TC-implement-fallback-no-match | Not started |
 | AC-implement-empty-scope | TC-implement-empty-scope | Not started |
-| AC-implement-single-pass | TC-implement-single-pass, TC-implement-bundle-sections, TC-implement-slug-inventory, TC-implement-index-rows, TC-implement-code-map, TC-implement-current-code, TC-implement-tc-included | Not started |
+| AC-implement-single-pass | TC-implement-single-pass, TC-implement-bundle-sections, TC-implement-slug-inventory, TC-implement-index-rows, TC-implement-code-map, TC-implement-current-code, TC-implement-current-code-absent, TC-implement-tc-included, TC-implement-missing-index | Not started |
 | AC-implement-markers-audit | TC-implement-markers-audit | Not started |
 | AC-implement-context-not-persisted | TC-implement-context-not-persisted, TC-implement-context-not-persisted-end-to-end | Not started |
 | NFR-implement-determinism | TC-implement-determinism | Not started |
