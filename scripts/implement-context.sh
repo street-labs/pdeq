@@ -149,7 +149,7 @@ while IFS= read -r line; do
   [ -n "$line" ] && changed_specs+=("$line")
 done < <(
   git diff --name-status --diff-filter=AM "$BASE_REF" -- "${spec_pathspecs[@]+"${spec_pathspecs[@]}"}" 2>/dev/null \
-    | awk '{print $2}' | sort
+    | awk '{print $2}' | LC_ALL=C sort
 )
 
 SCOPE_SOURCE=""
@@ -172,7 +172,7 @@ resolve_fallback_scope() {
       if grep -qE "\*\*[^*]+\*\* \`$pat\`" "$ROOT/$f" 2>/dev/null; then
         defining_file="$f"; break
       fi
-    done < <(find "$SPECS_ROOT/product" -name '*.md' ! -name 'AGENTS.md' ! -name 'CLAUDE.md' 2>/dev/null | sed "s|^$ROOT/||" | sort)
+    done < <(find "$SPECS_ROOT/product" -name '*.md' ! -name 'AGENTS.md' ! -name 'CLAUDE.md' 2>/dev/null | sed "s|^$ROOT/||" | LC_ALL=C sort)
     if [ -z "$defining_file" ]; then
       echo "implement: no spec found defining slug '$arg'" >&2; exit 1
     fi
@@ -190,7 +190,7 @@ resolve_fallback_scope() {
     [ -d "$SPECS_ROOT/$lane" ] || continue
     while IFS= read -r f; do
       [ -n "$f" ] && { in_scope_specs+=("$(rel_path "$f")"); found=1; }
-    done < <(find "$SPECS_ROOT/$lane" -name "$feature.md" ! -name 'AGENTS.md' ! -name 'CLAUDE.md' 2>/dev/null | sort)
+    done < <(find "$SPECS_ROOT/$lane" -name "$feature.md" ! -name 'AGENTS.md' ! -name 'CLAUDE.md' 2>/dev/null | LC_ALL=C sort)
   done
   if [ "$found" -eq 0 ]; then
     echo "implement: no spec found for feature '$feature'" >&2; exit 1
@@ -216,7 +216,7 @@ fi
   for f in "${in_scope_specs[@]+"${in_scope_specs[@]}"}"; do
     grep -hoE "$SLUG_REGEX" "$ROOT/$f" 2>/dev/null || true
   done
-} | sort -u > "$SLUGS_TMP"
+} | LC_ALL=C sort -u > "$SLUGS_TMP"
 
 SLUGS=()
 while IFS= read -r s; do
@@ -297,7 +297,7 @@ emit_bundle() {
   echo ""
 
   echo "## Spec contents"
-  for f in $(printf '%s\n' "${in_scope_specs[@]+"${in_scope_specs[@]}"}" | sort); do
+  for f in $(printf '%s\n' "${in_scope_specs[@]+"${in_scope_specs[@]}"}" | LC_ALL=C sort); do
     echo "### $f"
     if [ -f "$ROOT/$f" ]; then cat "$ROOT/$f"; else echo "(file not found)"; fi
     echo ""
@@ -342,7 +342,7 @@ emit_bundle() {
 
   echo "## Current code state"
   local code_files
-  code_files="$(collect_code_files | sort -u)"
+  code_files="$(collect_code_files | LC_ALL=C sort -u)"
   if [ -z "$code_files" ]; then
     echo "(no code locations referenced)"
   else
