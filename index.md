@@ -560,23 +560,23 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-project-orientation-kickoff-adds | AC | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
 | AC-project-orientation-migration-consolidates | AC | product/project-orientation.md | engineering/cli/project-orientation.md |  |
 | FR-implement-command | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | pdeq-rules/commands/pdeq-implement.md:1 |
-| FR-implement-no-arg-default | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:198 |
-| FR-implement-spec-diff-scope | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:137 |
+| FR-implement-no-arg-default | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:200 |
+| FR-implement-spec-diff-scope | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:139 |
 | FR-implement-default-base | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:102 |
 | FR-implement-base-options | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:102 |
-| FR-implement-fallback-scope | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:157 |
-| FR-implement-empty-scope | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:206 |
-| FR-implement-single-pass-context | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:276 |
-| FR-implement-changed-specs | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:276 |
-| FR-implement-slug-inventory | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:212 |
-| FR-implement-index-rows | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:234 |
-| FR-implement-code-map | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:234 |
-| FR-implement-current-code | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:237 |
+| FR-implement-fallback-scope | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:159 |
+| FR-implement-empty-scope | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:208 |
+| FR-implement-single-pass-context | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:278 |
+| FR-implement-changed-specs | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:278 |
+| FR-implement-slug-inventory | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:214 |
+| FR-implement-index-rows | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:236 |
+| FR-implement-code-map | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:236 |
+| FR-implement-current-code | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:239 |
 | FR-implement-implements-requirements | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | pdeq-rules/commands/pdeq-implement.md:1 |
 | FR-implement-runs-loop | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | pdeq-rules/commands/pdeq-implement.md:1 |
 | FR-implement-audit-done-check | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | pdeq-rules/commands/pdeq-implement.md:1 |
-| FR-implement-context-ephemeral | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | pdeq-rules/commands/pdeq-implement.md:1, scripts/implement-context.sh:276 |
-| NFR-implement-determinism | NFR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:276 |
+| FR-implement-context-ephemeral | FR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | pdeq-rules/commands/pdeq-implement.md:1, scripts/implement-context.sh:278 |
+| NFR-implement-determinism | NFR | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md | scripts/implement-context.sh:278 |
 | AC-implement-no-arg-scope | AC | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md |  |
 | AC-implement-default-base | AC | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md |  |
 | AC-implement-base-option | AC | product/implement.md | engineering/cli/implement.md, qa/cli/implement.md |  |

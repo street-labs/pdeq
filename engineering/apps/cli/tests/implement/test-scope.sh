@@ -52,6 +52,7 @@ test_base_head_restricts_to_uncommitted() {
 
 - **Placeholder** `FR-ex-widget-uncommitted`: placeholder.
 MD
+  git -C "$fx" add product/uncommitted.md
   local out
   out=$(run_context "$fx" --base HEAD)
   assert_contains "$out" "FR-ex-widget-uncommitted" "uncommitted file in HEAD scope"
@@ -68,6 +69,7 @@ test_base_working_alias() {
 
 - **Placeholder** `FR-ex-widget-uncommitted`: placeholder.
 MD
+  git -C "$fx" add product/uncommitted.md
   local head_out working_out
   head_out=$(run_context "$fx" --base HEAD)
   working_out=$(run_context "$fx" --base working)
