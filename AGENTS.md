@@ -537,6 +537,18 @@ Every pdeq project has a `project.md` at its specs root — the **orientation fi
 
 See `product/project-orientation.md` for the requirements and `engineering/cli/project-orientation.md` for the technical contract.
 
+## Lane Guides
+
+<!-- Implements: FR-lane-guides-per-lane-context, FR-lane-guides-distinct-from-standing, FR-lane-guides-framework-surfaces, FR-lane-guides-harness-agnostic, NFR-lane-guides-survives-template-update -->
+
+A **lane guide** is a consumer-authored markdown document of skills, architecture, or guidelines that applies to one lane's spec-writing work. It is not a feature spec; it is context the lane agent reads before authoring in that lane. Lane guides are distinct from standing specs: standing specs are project-wide and surfaced once at session start via `project.md`; lane guides are lane-scoped and surfaced at authoring time. A single file may be both.
+
+A consumer declares a lane guide in `pdeq.json` under the `laneGuides` object, mapping a lane identifier (`product`, `design`, `engineering`, `qa`, `roadmap`) to a file path relative to `specsRoot`. The installer validates each path resolves and warns on a miss (without creating a stub); `/pdeq-status` reports the configured guides and their resolve status.
+
+**When delegating to a lane, the coordinator reads that lane's configured guide** before the lane agent authors, so the delegate follows the project's lane-specific conventions in addition to the generic lane template. If `laneGuides` is absent, or the lane has no entry, or the configured path does not resolve, proceed without a guide — a missing guide is non-fatal and signals drift to surface via status, not a hard stop.
+
+Because this rule lives in the canonical framework template (not in consumer-appended prose), it reaches every harness through the normal template load with no consumer append: symlink harnesses (Codex, Pi) get the same per-lane customization as import harnesses (Claude). See `product/lane-guides.md` for the requirements and `engineering/cli/lane-guides.md` for the technical contract.
+
 ## Shared Project Files
 
 | File | Purpose |

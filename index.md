@@ -18,7 +18,7 @@ This file maps every requirement slug to all files that define or reference it. 
 
 | Slug | Type | Defined In | Referenced In | Code |
 |------|------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|
-| FR-migrations-version-field | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, pdeq.schema.json, VERSION | scripts/init.sh:574 |
+| FR-migrations-version-field | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, pdeq.schema.json, VERSION | scripts/init.sh:620 |
 | FR-migrations-version-readable | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:82, scripts/migrate.sh:95 |
 | FR-migrations-absent-version | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/migrate.sh:82 |
 | FR-migrations-one-per-version | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
@@ -152,7 +152,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-code-mapping-planned-paths-living | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:267 |
 | FR-code-mapping-planned-paths-per-platform | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:625 |
 | FR-code-mapping-acknowledged-unimplemented | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:677 |
-| FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:144, scripts/audit-traceability.sh:184, scripts/init.sh:667 |
+| FR-code-mapping-audit-scan | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:144, scripts/audit-traceability.sh:184, scripts/init.sh:713 |
 | FR-code-mapping-audit-validates-slug | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:580, scripts/audit-traceability.sh:73 |
 | FR-code-mapping-audit-validates-path | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:625 |
 | FR-code-mapping-audit-coverage | FR | product/code-mapping.md | engineering/cli/code-mapping.md, qa/cli/code-mapping.md | scripts/audit-traceability.sh:678 |
@@ -243,17 +243,17 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-cli-naming-listing | AC | product/cli-conventions.md |  |  |
 | AC-cli-naming-no-bare-name | AC | product/cli-conventions.md |  |  |
 | AC-cli-naming-migration-carries | AC | product/cli-conventions.md |  |  |
-| FR-harness-agnostic-config | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:129, scripts/init.sh:632, scripts/lib/harness.sh:77 |
+| FR-harness-agnostic-config | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:129, scripts/init.sh:678, scripts/lib/harness.sh:77 |
 | FR-harness-agnostic-v1-harness-set | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/lib/harness.sh:28 |
 | FR-harness-agnostic-multiple-per-install | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-unknown-rejected | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:138, scripts/lib/harness.sh:28 |
 | FR-harness-agnostic-canonical-agents-file | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-content-portable | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-no-import-in-canonical | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
-| FR-harness-agnostic-per-harness-install | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:152, scripts/init.sh:437, scripts/init.sh:457 |
+| FR-harness-agnostic-per-harness-install | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:152, scripts/init.sh:478, scripts/init.sh:498 |
 | FR-harness-agnostic-claude-import | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | CLAUDE.md:1, scripts/init.sh:153, scripts/lib/harness.sh:65 |
 | FR-harness-agnostic-symlink-include | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:154, scripts/lib/harness.sh:65 |
-| FR-harness-agnostic-commands-per-harness | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:191, scripts/init.sh:507, scripts/lib/harness.sh:50 |
+| FR-harness-agnostic-commands-per-harness | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:191, scripts/init.sh:548, scripts/lib/harness.sh:50 |
 | FR-harness-agnostic-commands-source-path | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | FR-harness-agnostic-bootstrap-inline | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | pdeq-rules/commands/pdeq-bootstrap.md:3 |
 | FR-harness-agnostic-no-subagent-files | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | pdeq-rules/commands/pdeq-bootstrap.md:3 |
@@ -264,7 +264,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-harness-agnostic-migration-idempotent | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | migrations/0.4.0.md:8 |
 | FR-harness-agnostic-migration-removes-subagents | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | migrations/0.4.0.md:8 |
 | FR-harness-agnostic-harness-change-reinstall | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
-| FR-harness-agnostic-removed-harness-cleaned | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:226, scripts/init.sh:296, scripts/init.sh:513 |
+| FR-harness-agnostic-removed-harness-cleaned | FR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:226, scripts/init.sh:296, scripts/init.sh:554 |
 | NFR-harness-agnostic-no-new-deps | NFR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md |  |
 | NFR-harness-agnostic-installer-reporting | NFR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:155 |
 | NFR-harness-agnostic-symlink-portability | NFR | product/harness-agnostic.md | engineering/cli/harness-agnostic.md, qa/cli/harness-agnostic.md | scripts/init.sh:192 |
@@ -354,21 +354,21 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-lane-discipline-update-review-no-edit | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-slug-not-flagged | TC | qa/cli/lane-discipline.md |  |  |
 | FR-lane-guides-config | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
-| FR-lane-guides-distinct-from-standing | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| FR-lane-guides-framework-surfaces | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| FR-lane-guides-harness-agnostic | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| FR-lane-guides-installer-no-stub | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| FR-lane-guides-installer-validates | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| FR-lane-guides-missing-non-fatal | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-distinct-from-standing | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542 |
+| FR-lane-guides-framework-surfaces | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542, design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
+| FR-lane-guides-harness-agnostic | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542, design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
+| FR-lane-guides-installer-no-stub | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
+| FR-lane-guides-installer-validates | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
+| FR-lane-guides-missing-non-fatal | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137, scripts/init.sh:324 |
 | FR-lane-guides-paths-relative-to-specsroot | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
-| FR-lane-guides-per-lane-context | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-per-lane-context | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542 |
 | FR-lane-guides-project-local | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| FR-lane-guides-reinstall-reconciles | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| FR-lane-guides-status-reports | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-reinstall-reconciles | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
+| FR-lane-guides-status-reports | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | pdeq-rules/commands/pdeq-status.md:45 |
 | FR-lane-guides-unknown-lane-rejected | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
-| NFR-lane-guides-cheap-read | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| NFR-lane-guides-no-new-deps | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
-| NFR-lane-guides-survives-template-update | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| NFR-lane-guides-cheap-read | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
+| NFR-lane-guides-no-new-deps | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
+| NFR-lane-guides-survives-template-update | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542 |
 | AC-lane-guides-agent-reads | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | AC-lane-guides-installer-no-stub | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | AC-lane-guides-installer-warns | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
@@ -578,7 +578,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-coverage-audit-deterministic-two-runs | TC | qa/cli/coverage-audit.md |  |  |
 | TC-coverage-audit-no-code-passes | TC | qa/cli/coverage-audit.md |  |  |
 | TC-coverage-audit-non-fr-ignored | TC | qa/cli/coverage-audit.md |  |  |
-| FR-project-orientation-file | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:534, scripts/seed-project-md.sh:78 |
+| FR-project-orientation-file | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:580, scripts/seed-project-md.sh:78 |
 | FR-project-orientation-living | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
 | FR-project-orientation-standing-spec | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
 | FR-project-orientation-standing-manifest | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
@@ -590,7 +590,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | NFR-project-orientation-no-new-folder | NFR | product/project-orientation.md | engineering/cli/project-orientation.md |  |
 | NFR-project-orientation-cheap-read | NFR | product/project-orientation.md | engineering/cli/project-orientation.md |  |
 | NFR-project-orientation-llm-maintained | NFR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
-| AC-project-orientation-fresh-install | AC | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:534 |
+| AC-project-orientation-fresh-install | AC | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:580 |
 | AC-project-orientation-migration-idempotent | AC | product/project-orientation.md | engineering/cli/project-orientation.md |  |
 | AC-project-orientation-manifest-resolves | AC | product/project-orientation.md | engineering/cli/project-orientation.md |  |
 | AC-project-orientation-kickoff-adds | AC | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |

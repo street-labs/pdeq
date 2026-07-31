@@ -321,6 +321,47 @@ _cleanup_removed_harnesses() {
   return 0
 }
 
+# Implements: FR-lane-guides-installer-validates, FR-lane-guides-installer-no-stub, FR-lane-guides-reinstall-reconciles, FR-lane-guides-missing-non-fatal, NFR-lane-guides-no-new-deps
+# Reads pdeq.json laneGuides (lane id -> path relative to specsRoot), resolves
+# each against SPECS_DIR, and warns on a miss. Never creates or modifies a
+# guide file. Idempotent by construction: re-running re-validates; removing a
+# lane key stops validation for that lane and leaves the authored file alone.
+# Pure bash (grep/tr extraction, no language toolchain) so the installer stays
+# on the git + bash floor — NFR-lane-guides-no-new-deps.
+_validate_lane_guides() {
+  local config="$INSTALL_DIR/pdeq.json"
+  [[ -f "$config" ]] || return 0
+  # Extract the laneGuides object body, the same grep/tr approach the harness
+  # resolver uses for the harnesses array — no language-toolchain dependency.
+  local raw inner
+  raw=$(tr -d '\n' < "$config" \
+        | grep -oE '"laneGuides"[[:space:]]*:[[:space:]]*\{[^}]*\}' | head -n1)
+  if [ -z "$raw" ]; then
+    info 'Lane guides: none configured'
+    return 0
+  fi
+  inner="${raw#*\{}"; inner="${inner%\}}"
+  [ -z "${inner// }" ] && { info 'Lane guides: none configured'; return 0; }
+  # Pull each "<lane>": "<path>" pair out of the object body.
+  local pair lane path resolved
+  while IFS= read -r pair; do
+    [ -z "$pair" ] && continue
+    # pair looks like: "qa": "qa/snapshot-testing.md"
+    lane=$(echo "$pair" | grep -oE '"[a-z]+"' | head -n1 | tr -d '"')
+    path=$(echo "$pair" | grep -oE '"[^"]*"' | tail -n1 | tr -d '"')
+    [ -z "$lane" ] || [ -z "$path" ] && continue
+    resolved="$SPECS_DIR/$path"
+    if [[ -f "$resolved" ]]; then
+      green "validate $lane guide: $path (ok)"
+    else
+      # Warn-on-miss is non-fatal; the consumer stages the file later.
+      # FR-lane-guides-installer-no-stub: no file is created here.
+      printf '\033[0;33m!\033[0m validate %s guide: %s (MISSING — non-fatal)\n' "$lane" "$path"
+    fi
+  done < <(echo "$inner" | grep -oE '"[a-z]+"[[:space:]]*:[[:space:]]*"[^"]*"')
+  return 0
+}
+
 # Compute the relative path depth from INSTALL_DIR back to GIT_ROOT
 # Used to build correct @ import prefixes for AGENTS.md files
 _rel_depth() {
@@ -512,6 +553,11 @@ _materialize_commands
 # ---------------------------------------------------------------------------
 # Implements: FR-harness-agnostic-removed-harness-cleaned
 _cleanup_removed_harnesses
+
+# ---------------------------------------------------------------------------
+# Step 6c: Validate lane guides (config-driven, harness-agnostic)
+# ---------------------------------------------------------------------------
+_validate_lane_guides
 
 # ---------------------------------------------------------------------------
 # Step 7: Copy template files (index.md, glossary.md, decisions.md)

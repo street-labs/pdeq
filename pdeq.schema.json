@@ -129,6 +129,41 @@
         }
       }
     },
+    "laneGuides": {
+      "type": "object",
+      "description": "Per-lane guide files that the framework surfaces to a lane agent before it authors specs in that lane. Maps a lane identifier (product, design, engineering, qa, roadmap) to a file path relative to specsRoot. Omitting the field or a lane key means that lane has no guide. Absolute paths are rejected. The installer validates each path resolves and warns on a miss; it never creates or modifies a guide file. Realizes FR-lane-guides-config, FR-lane-guides-unknown-lane-rejected, FR-lane-guides-paths-relative-to-specsroot.",
+      "additionalProperties": false,
+      "properties": {
+        "product": {
+          "type": "string",
+          "description": "Guide file path relative to specsRoot, surfaced to the product lane agent.",
+          "pattern": "^[^/].*$"
+        },
+        "design": {
+          "type": "string",
+          "description": "Guide file path relative to specsRoot, surfaced to the design lane agent.",
+          "pattern": "^[^/].*$"
+        },
+        "engineering": {
+          "type": "string",
+          "description": "Guide file path relative to specsRoot, surfaced to the engineering lane agent.",
+          "pattern": "^[^/].*$"
+        },
+        "qa": {
+          "type": "string",
+          "description": "Guide file path relative to specsRoot, surfaced to the QA lane agent.",
+          "pattern": "^[^/].*$"
+        },
+        "roadmap": {
+          "type": "string",
+          "description": "Guide file path relative to specsRoot, surfaced to the roadmap lane agent.",
+          "pattern": "^[^/].*$"
+        }
+      },
+      "examples": [
+        { "qa": "qa/snapshot-testing.md", "engineering": "engineering/architecture.md" }
+      ]
+    },
     "nested": {
       "type": "object",
       "description": "Configuration for nested installs (inside a monorepo package or feature subdirectory). Omit for root-level installs.",
@@ -170,6 +205,10 @@
         "protocols": ["OAuth", "PKCE"],
         "platforms": ["CLI", "BFF"],
         "libraries": ["Vapor", "argument-parser"]
+      },
+      "laneGuides": {
+        "qa": "qa/snapshot-testing.md",
+        "engineering": "engineering/architecture.md"
       }
     },
     {

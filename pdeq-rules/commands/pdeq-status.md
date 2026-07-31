@@ -40,6 +40,12 @@ Read `project.md` at the specs root. Report:
 - If any standing-spec path in the table does not resolve to a file, flag it as a gap.
 - If `project.md` does not exist, note that the project is not yet oriented and that the project-orientation migration will seed it.
 
+## Step 4c: Lane Guides
+
+<!-- Implements: FR-lane-guides-status-reports -->
+
+Read `pdeq.json` for a `laneGuides` object. If absent, report "none configured." If present, for each lane key (`product`, `design`, `engineering`, `qa`, `roadmap`) → path (relative to `specsRoot`), resolve the path against `specsRoot` and record whether the file exists. Paths that do not resolve are flagged as gaps (non-fatal — the installer also warns on these at install time).
+
 ## Step 5: Present Dashboard
 
 ```
@@ -74,6 +80,14 @@ Features with roadmap entries but no product spec yet (pre-kickoff vision):
 - project.md: <exists? one-liner of what the project is>
 - Platforms: <list>
 - Standing specs: <table or none>
+
+### Lane Guides
+| Lane | Path | Resolves |
+|---|---|---|
+| qa | qa/snapshot-testing.md | yes |
+| engineering | engineering/architecture.md | no — flagged |
+
+If `laneGuides` is absent or empty, report "none configured" here.
 ```
 
 If there are no features yet, just say the project is empty and ready for its first `/pdeq-kickoff`.
