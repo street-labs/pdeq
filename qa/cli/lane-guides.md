@@ -174,7 +174,7 @@ Verifies editing `laneGuides` and re-running the installer reconciles without er
 
 ### Guide path escapes specsRoot via `..`
 - **Trigger**: `"laneGuides": { "qa": "../outside.md" }`.
-- **Expected behavior**: Schema permits relative `..` paths (they are relative to specsRoot); installer resolves and validates existence. Documented as allowed but discouraged. No separate test case unless schema forbids it (decision deferred — see Open Questions in the product spec).
+- **Expected behavior**: Schema permits relative `..` paths (they are relative to specsRoot); installer resolves and validates existence. Allowed: a nested install may point at a guide above `specsRoot` (e.g. a package-root architecture doc). See `engineering/cli/lane-guides.md` §Security Considerations for the threat model. No separate test case — covered by the installer's general path-resolution behavior.
 
 ## Regression Considerations
 
