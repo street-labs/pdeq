@@ -353,6 +353,42 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-lane-discipline-update-seed-idempotent | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-update-review-no-edit | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-slug-not-flagged | TC | qa/cli/lane-discipline.md |  |  |
+| FR-lane-guides-config | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
+| FR-lane-guides-distinct-from-standing | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-framework-surfaces | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-harness-agnostic | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-installer-no-stub | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-installer-validates | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-missing-non-fatal | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-paths-relative-to-specsroot | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
+| FR-lane-guides-per-lane-context | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-project-local | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-reinstall-reconciles | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-status-reports | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| FR-lane-guides-unknown-lane-rejected | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
+| NFR-lane-guides-cheap-read | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| NFR-lane-guides-no-new-deps | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| NFR-lane-guides-survives-template-update | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-agent-reads | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-installer-no-stub | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-installer-warns | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-reinstall-reconciles | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-schema-accepts | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-schema-rejects-unknown | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-status-reports | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-symlink-harness | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| TC-lane-guides-schema-accepts-valid | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-schema-accepts-omitted | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-schema-rejects-unknown-lane | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-schema-rejects-absolute-path | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-installer-warns-missing | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-installer-silent-present | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-installer-no-stub | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-framework-prose-present | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-agent-reads-conformance | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-symlink-harness-no-submodule-edit | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-status-reports-table | TC | qa/cli/lane-guides.md |  |  |
+| TC-lane-guides-reinstall-add-then-remove | TC | qa/cli/lane-guides.md |  |  |
 | FR-migrations-advisory-class | FR | product/migrations.md | engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
 | AC-migrations-advisory-applied | AC | product/migrations.md | engineering/cli/migrations.md, qa/cli/migrations.md |  |
 | AC-migrations-advisory-conformant | AC | product/migrations.md | engineering/cli/migrations.md, qa/cli/migrations.md |  |
