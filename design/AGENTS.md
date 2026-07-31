@@ -122,6 +122,12 @@ If `pdeq.json` is found, read it and apply:
 
 If `pdeq.json` is absent, assume upstream specs are at `../../product/` and the traceability index is at `../../index.md`.
 
+## Lane Guides
+
+<!-- Implements: FR-lane-guides-framework-surfaces, FR-lane-guides-harness-agnostic, FR-lane-guides-missing-non-fatal, NFR-lane-guides-cheap-read -->
+
+Before writing specs in this lane, check `pdeq.json` for a `laneGuides` entry keyed to `design`. If present and the path resolves (relative to `specsRoot`), read that file first — it holds this project's lane-specific skills, architecture, or guidelines for design work. If `laneGuides` is absent, the `design` key is missing, or the configured path does not resolve, proceed without a guide — a missing guide is non-fatal.
+
 ---
 
 ## Guidelines

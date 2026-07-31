@@ -15,14 +15,14 @@ The `laneGuides` config field and its support across the installer, the framewor
 
 | Requirement | Test Cases | Status |
 |---|---|---|
-| `AC-lane-guides-schema-accepts` | `TC-lane-guides-schema-accepts-valid`, `TC-lane-guides-schema-accepts-omitted` | Not started |
-| `AC-lane-guides-schema-rejects-unknown` | `TC-lane-guides-schema-rejects-unknown-lane`, `TC-lane-guides-schema-rejects-absolute-path` | Not started |
-| `AC-lane-guides-installer-warns` | `TC-lane-guides-installer-warns-missing`, `TC-lane-guides-installer-silent-present` | Not started |
-| `AC-lane-guides-installer-no-stub` | `TC-lane-guides-installer-no-stub` | Not started |
-| `AC-lane-guides-agent-reads` | `TC-lane-guides-framework-prose-present`, `TC-lane-guides-agent-reads-conformance` | Not started |
-| `AC-lane-guides-symlink-harness` | `TC-lane-guides-symlink-harness-no-submodule-edit` | Not started |
-| `AC-lane-guides-status-reports` | `TC-lane-guides-status-reports-table` | Not started |
-| `AC-lane-guides-reinstall-reconciles` | `TC-lane-guides-reinstall-add-then-remove` | Not started |
+| `AC-lane-guides-schema-accepts` | `TC-lane-guides-schema-accepts-valid`, `TC-lane-guides-schema-accepts-omitted` | Pass |
+| `AC-lane-guides-schema-rejects-unknown` | `TC-lane-guides-schema-rejects-unknown-lane`, `TC-lane-guides-schema-rejects-absolute-path` | Pass |
+| `AC-lane-guides-installer-warns` | `TC-lane-guides-installer-warns-missing`, `TC-lane-guides-installer-silent-present` | Pass |
+| `AC-lane-guides-installer-no-stub` | `TC-lane-guides-installer-no-stub` | Pass |
+| `AC-lane-guides-agent-reads` | `TC-lane-guides-framework-prose-present`, `TC-lane-guides-agent-reads-conformance` | In progress |
+| `AC-lane-guides-symlink-harness` | `TC-lane-guides-symlink-harness-no-submodule-edit` | Pass |
+| `AC-lane-guides-status-reports` | `TC-lane-guides-status-reports-table` | Pass |
+| `AC-lane-guides-reinstall-reconciles` | `TC-lane-guides-reinstall-add-then-remove` | Pass |
 
 ## Test Cases
 

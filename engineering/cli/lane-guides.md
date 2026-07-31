@@ -126,16 +126,18 @@ Guide paths are relative to `specsRoot`. Absolute paths are rejected by the sche
 | FR-lane-guides-config | pdeq.schema.json | planned |
 | FR-lane-guides-unknown-lane-rejected | pdeq.schema.json | planned |
 | FR-lane-guides-paths-relative-to-specsroot | pdeq.schema.json | planned |
-| FR-lane-guides-per-lane-context | AGENTS.md (root + lane templates) | planned |
+| FR-lane-guides-per-lane-context | AGENTS.md; product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | implemented |
 | FR-lane-guides-project-local | scripts/init.sh | planned |
-| FR-lane-guides-distinct-from-standing | AGENTS.md (root) | planned |
-| FR-lane-guides-framework-surfaces | AGENTS.md (root + lane templates) | planned |
-| FR-lane-guides-harness-agnostic | AGENTS.md (root + lane templates) | planned |
-| FR-lane-guides-missing-non-fatal | AGENTS.md (lane templates); scripts/init.sh | planned |
-| FR-lane-guides-installer-validates | scripts/init.sh | planned |
-| FR-lane-guides-installer-no-stub | scripts/init.sh | planned |
-| FR-lane-guides-reinstall-reconciles | scripts/init.sh | planned |
-| FR-lane-guides-status-reports | pdeq-rules/commands/pdeq-status.md | planned |
-| NFR-lane-guides-no-new-deps | scripts/init.sh | planned |
-| NFR-lane-guides-cheap-read | AGENTS.md (lane templates) | planned |
-| NFR-lane-guides-survives-template-update | AGENTS.md (root + lane templates) | planned |
+| FR-lane-guides-distinct-from-standing | AGENTS.md | implemented |
+| FR-lane-guides-framework-surfaces | AGENTS.md; product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | implemented |
+| FR-lane-guides-harness-agnostic | AGENTS.md; product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | implemented |
+| FR-lane-guides-missing-non-fatal | product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md; scripts/init.sh | implemented |
+| FR-lane-guides-installer-validates | scripts/init.sh | implemented |
+| FR-lane-guides-installer-no-stub | scripts/init.sh | implemented |
+| FR-lane-guides-reinstall-reconciles | scripts/init.sh | implemented |
+| FR-lane-guides-status-reports | pdeq-rules/commands/pdeq-status.md | implemented |
+| NFR-lane-guides-no-new-deps | scripts/init.sh | implemented |
+| NFR-lane-guides-cheap-read | product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | implemented |
+| NFR-lane-guides-survives-template-update | AGENTS.md; product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | implemented |
+
+The three schema-backed slugs (`FR-lane-guides-config`, `FR-lane-guides-unknown-lane-rejected`, `FR-lane-guides-paths-relative-to-specsroot`) remain `planned` in the Code Map because `pdeq.schema.json` is JSON and carries no `Implements:` marker — the deterministic audit verifies them via the schema-accepts/rejects test cases in `qa/cli/lane-guides.md` instead. `FR-lane-guides-project-local` is a design property (guide files live in the consumer repo; the installer never writes them) verified by `TC-lane-guides-installer-no-stub` and `TC-lane-guides-symlink-harness-no-submodule-edit`, so it has no single marker cite.
