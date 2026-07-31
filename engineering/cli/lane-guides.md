@@ -54,12 +54,11 @@ Add a top-level `laneGuides` property:
     "engineering": { "type": "string" },
     "qa": { "type": "string" },
     "roadmap": { "type": "string" }
-  },
-  "patternProperties": { "^[a-z]+$": { "type": "string" } }
+  }
 }
 ```
 
-`additionalProperties: false` with explicit per-lane properties rejects unknown lane keys (`AC-lane-guides-schema-rejects-unknown`). Absolute-path rejection is enforced by a `pattern` forbidding a leading `/` on each value (pattern: `^[^/].*$`), or by an install-time check; schema-level is preferred so it is caught at validation, not at install.
+`additionalProperties: false` with explicit per-lane properties rejects unknown lane keys (`AC-lane-guides-schema-rejects-unknown`) — there is no `patternProperties` entry, since one matching `^[a-z]+$` would admit any lowercase key and override `additionalProperties: false` for those keys, defeating the unknown-lane gate. Absolute-path rejection is enforced by a `pattern` forbidding a leading `/` on each value (pattern: `^[^/].*$`), or by an install-time check; schema-level is preferred so it is caught at validation, not at install.
 
 ### Installer (`scripts/init.sh`)
 
@@ -110,7 +109,7 @@ One file existence check per configured guide at install/status time. Negligible
 
 ## Security Considerations
 
-Guide paths are relative to `specsRoot` and resolved within the project tree. Absolute paths are rejected. No path is executed or parsed as code; guides are markdown read as context. No elevation beyond reading a committed project file.
+Guide paths are relative to `specsRoot`. Absolute paths are rejected by the schema; relative paths including `..` are permitted (a nested install may point at a guide above `specsRoot`, e.g. a package-root architecture doc). No path is executed or parsed as code; guides are markdown read as context. The threat model is that `pdeq.json` and the guide files are both consumer-authored and committed in the consumer's own repo, so reading a guide crosses no privilege boundary — the consumer already controls both files. The installer's path resolution does not write, so symlink traversal is a read only.
 
 ## Implementation Plan
 
