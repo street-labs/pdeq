@@ -131,6 +131,9 @@ fi
 header "Installer validation"
 
 # TC-lane-guides-installer-warns-missing
+# Also covers the directory-path edge case the plan describes as an extension
+# of this TC: a laneGuides value that resolves to a directory (not a file)
+# must also warn, since the [ -f ] check fails for a directory.
 mkfixture
 cat > pdeq.json << 'EOF'
 {
@@ -138,14 +141,17 @@ cat > pdeq.json << 'EOF'
   "codeRoot": ".",
   "platforms": ["cli"],
   "harnesses": ["pi"],
-  "laneGuides": { "qa": "qa/no-such-file.md" }
+  "laneGuides": { "qa": "qa/no-such-file.md", "engineering": "engineering" }
 }
 EOF
+mkdir -p engineering
 out=$(bash "$INIT" --skip-hooks 2>&1); ec=$?
-if [ "$ec" -eq 0 ] && echo "$out" | grep -qi "qa.*no-such-file.*MISSING\|MISSING.*qa.*no-such-file"; then
+if [ "$ec" -eq 0 ] \
+   && echo "$out" | grep -qi "qa.*no-such-file.*MISSING\|MISSING.*qa.*no-such-file" \
+   && echo "$out" | grep -qi "engineering.*MISSING\|MISSING.*engineering"; then
   record_pass "TC-lane-guides-installer-warns-missing"
 else
-  record_fail "TC-lane-guides-installer-warns-missing" "expected exit 0 + MISSING warning naming qa (ec=$ec)"
+  record_fail "TC-lane-guides-installer-warns-missing" "expected exit 0 + MISSING for both missing file and directory path (ec=$ec)"
 fi
 
 # TC-lane-guides-installer-silent-present
@@ -187,25 +193,6 @@ else
   record_fail "TC-lane-guides-installer-no-stub" "installer created a stub at engineering/arch.md"
 fi
 
-# TC-lane-guides-installer-warns-directory (edge: path is a directory)
-mkfixture
-cat > pdeq.json << 'EOF'
-{
-  "specsRoot": ".",
-  "codeRoot": ".",
-  "platforms": ["cli"],
-  "harnesses": ["pi"],
-  "laneGuides": { "qa": "qa" }
-}
-EOF
-mkdir -p qa
-out=$(bash "$INIT" --skip-hooks 2>&1); ec=$?
-if [ "$ec" -eq 0 ] && echo "$out" | grep -qi "MISSING"; then
-  record_pass "TC-lane-guides-installer-warns-directory"
-else
-  record_fail "TC-lane-guides-installer-warns-directory" "expected MISSING warning for a directory path (ec=$ec)"
-fi
-
 # ─── Framework Surfacing ──────────────────────────────────────────────────
 
 header "Framework surfacing"
@@ -234,20 +221,20 @@ cat > pdeq.json << 'EOF'
 EOF
 mkdir -p qa && echo "# snapshot testing strategy" > qa/snapshot-testing.md
 git add qa/snapshot-testing.md pdeq.json
+# Snapshot the framework tree (whole-tree, no path filter) BEFORE init so the
+# assertion is real: if the installer writes anything inside .pdeq (e.g. a guide
+# stub), this status changes. The prior path-scoped diff was vacuous — the path
+# only existed in the fixture, never in the framework tree.
+framework_dirty_before=$(git -C "$PDEQ_REPO" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
 out=$(bash "$INIT" --skip-hooks 2>&1)
-# The .pdeq symlink points at the real pdeq repo (not a submodule here), so
-# verify no lane-guide file was written inside the framework tree and the
-# guide survives in the parent repo.
-submod_dirty=0
-if [ -d "$PDEQ_REPO/.git" ] && ! git -C "$PDEQ_REPO" diff --quiet -- qa/snapshot-testing.md 2>/dev/null; then
-  submod_dirty=1
-fi
-if [ "$submod_dirty" = "0" ] && [ -f qa/snapshot-testing.md ] \
+framework_dirty_after=$(git -C "$PDEQ_REPO" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+if [ "$framework_dirty_before" = "$framework_dirty_after" ] \
+   && [ -f qa/snapshot-testing.md ] \
    && echo "$out" | grep -qi "validate qa guide.*ok" \
    && [ -L ./qa/AGENTS.md ]; then
   record_pass "TC-lane-guides-symlink-harness-no-submodule-edit"
 else
-  record_fail "TC-lane-guides-symlink-harness-no-submodule-edit" "submodule dirty=$submod_dirty, guide present=$([ -f qa/snapshot-testing.md ] && echo y || echo n)"
+  record_fail "TC-lane-guides-symlink-harness-no-submodule-edit" "framework dirty before=$framework_dirty_before after=$framework_dirty_after, guide present=$([ -f qa/snapshot-testing.md ] && echo y || echo n)"
 fi
 
 # ─── Re-install Reconciliation ────────────────────────────────────────────
