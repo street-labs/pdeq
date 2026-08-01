@@ -6,6 +6,23 @@ All notable changes to pdeq are documented here. The format is based on
 (lineage-breaking) release ships a matching migration under `migrations/<version>.md`;
 run `/pdeq-migrate` (or `/pdeq-update`) to advance a project.
 
+## [0.14.0] — 2026-08-01
+
+### Added
+- **Lane guides.** A config-driven, harness-agnostic way to attach a per-lane "guide" file of skills, architecture, or guidelines that the lane agent reads before authoring in that lane. A consumer declares guides in `pdeq.json` under a `laneGuides` object (lane id → path relative to `specsRoot`); the installer validates each path and warns on a miss; `/pdeq-status` reports configured guides and their resolve status. Lane guides are distinct from standing specs (project-wide) — they are lane-scoped, surfaced at authoring time, and a single file may be both. Because the rule lives in the canonical framework template, it reaches every harness through the normal template load with no consumer append.
+- `scripts/test-lane-guides.sh` — installer-validation and status test suite.
+- Advisory migration `migrations/0.14.0.md` (`breaking: false`) — scans a project for existing lane-specific content (append-slot prose in project-owned lane override files, standalone non-spec lane docs, lane-scoped standing specs) and consolidates it into declarative `laneGuides` files.
+
+### Changed
+- **Release runbook.** Documented the release procedure in `CONTRIBUTING.md` §Releasing and added `scripts/release.sh` — the mechanical tagger that asserts `VERSION` matches, refuses a dirty tree, refuses to tag off `origin/main`, cuts an annotated `v<version>` tag, pushes it, and verifies via `ls-remote`. Closes the "bumped but never tagged" gap.
+
+## [0.13.0] — 2026-07-20
+
+### Added
+- **Implement command.** `/pdeq-implement` and `scripts/implement-context.sh` turn reviewed specs into implementing code in one step: joins git spec-diff scope against the traceability index, emits one deterministically-ordered context bundle to the implementing agent, which writes code, adds inline markers, runs the engineering/QA loop, and re-runs the traceability audit as the done-check.
+- `engineering/apps/cli/tests/implement/` — 22-case shell test suite (runs in CI, no consumer action needed).
+- Advisory migration `migrations/0.13.0.md` (`breaking: false`); the new script, command, and test suite install automatically on submodule bump. No consumer spec or config changes required.
+
 ## [0.12.0] — 2026-07-19
 
 ### Added
