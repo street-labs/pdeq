@@ -1,6 +1,6 @@
 ---
-product-hash: 702ebccbedc4866a1c385c6460af91e99a71f599934f7ef3170431963ce5d40f
-product-slugs: [AC-lane-guides-agent-reads, AC-lane-guides-installer-no-stub, AC-lane-guides-installer-warns, AC-lane-guides-reinstall-reconciles, AC-lane-guides-schema-accepts, AC-lane-guides-schema-rejects-unknown, AC-lane-guides-status-reports, AC-lane-guides-symlink-harness, FR-lane-guides-config, FR-lane-guides-distinct-from-standing, FR-lane-guides-framework-surfaces, FR-lane-guides-harness-agnostic, FR-lane-guides-installer-no-stub, FR-lane-guides-installer-validates, FR-lane-guides-missing-non-fatal, FR-lane-guides-paths-relative-to-specsroot, FR-lane-guides-per-lane-context, FR-lane-guides-project-local, FR-lane-guides-reinstall-reconciles, FR-lane-guides-status-reports, FR-lane-guides-unknown-lane-rejected, NFR-lane-guides-cheap-read, NFR-lane-guides-no-new-deps, NFR-lane-guides-survives-template-update]
+product-hash: fb176eed2d13d994644a5c2239980962255699ef8828be9849e44d7117660d4a
+product-slugs: [AC-lane-guides-agent-reads, AC-lane-guides-installer-no-stub, AC-lane-guides-installer-warns, AC-lane-guides-migration-consolidates, AC-lane-guides-migration-idempotent, AC-lane-guides-reinstall-reconciles, AC-lane-guides-schema-accepts, AC-lane-guides-schema-rejects-unknown, AC-lane-guides-status-reports, AC-lane-guides-symlink-harness, FR-lane-guides-config, FR-lane-guides-distinct-from-standing, FR-lane-guides-framework-surfaces, FR-lane-guides-harness-agnostic, FR-lane-guides-installer-no-stub, FR-lane-guides-installer-validates, FR-lane-guides-migration-advisory, FR-lane-guides-migration-consolidates, FR-lane-guides-migration-idempotent, FR-lane-guides-migration-scans, FR-lane-guides-missing-non-fatal, FR-lane-guides-paths-relative-to-specsroot, FR-lane-guides-per-lane-context, FR-lane-guides-project-local, FR-lane-guides-reinstall-reconciles, FR-lane-guides-status-reports, FR-lane-guides-unknown-lane-rejected, NFR-lane-guides-cheap-read, NFR-lane-guides-no-new-deps, NFR-lane-guides-survives-template-update]
 ---
 # Lane Guides — Test Plan
 
@@ -23,6 +23,8 @@ The `laneGuides` config field and its support across the installer, the framewor
 | `AC-lane-guides-symlink-harness` | `TC-lane-guides-symlink-harness-no-submodule-edit` | Pass |
 | `AC-lane-guides-status-reports` | `TC-lane-guides-status-reports-table` | Pass |
 | `AC-lane-guides-reinstall-reconciles` | `TC-lane-guides-reinstall-add-then-remove` | Pass |
+| `AC-lane-guides-migration-consolidates` | `TC-lane-guides-migration-consolidates` | Not started |
+| `AC-lane-guides-migration-idempotent` | `TC-lane-guides-migration-idempotent` | Not started |
 
 ## Test Cases
 
@@ -159,6 +161,28 @@ Verifies editing `laneGuides` and re-running the installer reconciles without er
   2. Remove the `qa` key, re-run init. Confirm no `qa` validation runs.
   3. Check `qa/guide.md` still exists on disk.
 - **Expected Result**: Step 1 silent on `qa`; step 2 no `qa` validation; step 3 the authored file is untouched.
+
+### Migration Consolidation
+
+Verifies the advisory migration scans a consumer project for existing lane-specific content, consolidates it into `<lane>/GUIDE.md`, declares it in `pdeq.json` `laneGuides`, and pares the source. These are manual/semantic TCs (agent-run migration) verified via a conformance check, mirroring how `migrations/0.12.0.md` is tested.
+
+#### Migration consolidates existing lane content `TC-lane-guides-migration-consolidates`
+- **Type**: Manual / Conformance
+- **Covers**: `AC-lane-guides-migration-consolidates`, `FR-lane-guides-migration-advisory`, `FR-lane-guides-migration-scans`, `FR-lane-guides-migration-consolidates`
+- **Preconditions**: A consumer project with a project-owned `qa/CLAUDE.md` whose first line is `@<framework import>` and has project-specific testing-strategy prose appended below it; no `laneGuides` in `pdeq.json`.
+- **Steps**:
+  1. Run the `migrations/0.14.0.md` semantic pass (via `/pdeq-migrate` or a manual agent run of the prompt).
+  2. Inspect the resulting diff.
+- **Expected Result**: A `qa/GUIDE.md` is created holding the appended testing-strategy content; `pdeq.json` gains `"laneGuides": { "qa": "qa/GUIDE.md" }`; `qa/CLAUDE.md` is reduced to its single `@import` line.
+
+#### Migration is idempotent `TC-lane-guides-migration-idempotent`
+- **Type**: Manual / Conformance
+- **Covers**: `AC-lane-guides-migration-idempotent`, `FR-lane-guides-migration-idempotent`
+- **Preconditions**: A consumer project that has already been consolidated by the 0.14.0 migration (`laneGuides` configured, override file reduced to its import).
+- **Steps**:
+  1. Re-run the `migrations/0.14.0.md` semantic pass.
+  2. Inspect the resulting diff.
+- **Expected Result**: No changes — `GUIDE.md` files are not rewritten, `laneGuides` entries are not duplicated, override files are left alone. Summary line reports zero candidates.
 
 ## Edge Cases & Error Scenarios
 

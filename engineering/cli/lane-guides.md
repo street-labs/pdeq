@@ -1,6 +1,6 @@
 ---
-product-hash: 702ebccbedc4866a1c385c6460af91e99a71f599934f7ef3170431963ce5d40f
-product-slugs: [AC-lane-guides-agent-reads, AC-lane-guides-installer-no-stub, AC-lane-guides-installer-warns, AC-lane-guides-reinstall-reconciles, AC-lane-guides-schema-accepts, AC-lane-guides-schema-rejects-unknown, AC-lane-guides-status-reports, AC-lane-guides-symlink-harness, FR-lane-guides-config, FR-lane-guides-distinct-from-standing, FR-lane-guides-framework-surfaces, FR-lane-guides-harness-agnostic, FR-lane-guides-installer-no-stub, FR-lane-guides-installer-validates, FR-lane-guides-missing-non-fatal, FR-lane-guides-paths-relative-to-specsroot, FR-lane-guides-per-lane-context, FR-lane-guides-project-local, FR-lane-guides-reinstall-reconciles, FR-lane-guides-status-reports, FR-lane-guides-unknown-lane-rejected, NFR-lane-guides-cheap-read, NFR-lane-guides-no-new-deps, NFR-lane-guides-survives-template-update]
+product-hash: fb176eed2d13d994644a5c2239980962255699ef8828be9849e44d7117660d4a
+product-slugs: [AC-lane-guides-agent-reads, AC-lane-guides-installer-no-stub, AC-lane-guides-installer-warns, AC-lane-guides-migration-consolidates, AC-lane-guides-migration-idempotent, AC-lane-guides-reinstall-reconciles, AC-lane-guides-schema-accepts, AC-lane-guides-schema-rejects-unknown, AC-lane-guides-status-reports, AC-lane-guides-symlink-harness, FR-lane-guides-config, FR-lane-guides-distinct-from-standing, FR-lane-guides-framework-surfaces, FR-lane-guides-harness-agnostic, FR-lane-guides-installer-no-stub, FR-lane-guides-installer-validates, FR-lane-guides-migration-advisory, FR-lane-guides-migration-consolidates, FR-lane-guides-migration-idempotent, FR-lane-guides-migration-scans, FR-lane-guides-missing-non-fatal, FR-lane-guides-paths-relative-to-specsroot, FR-lane-guides-per-lane-context, FR-lane-guides-project-local, FR-lane-guides-reinstall-reconciles, FR-lane-guides-status-reports, FR-lane-guides-unknown-lane-rejected, NFR-lane-guides-cheap-read, NFR-lane-guides-no-new-deps, NFR-lane-guides-survives-template-update]
 ---
 # Lane Guides — Technical Spec
 
@@ -118,6 +118,11 @@ Guide paths are relative to `specsRoot`. Absolute paths are rejected by the sche
 3. **Framework prose** — add the "Lane guides" section to the six canonical `AGENTS.md` templates. Unlocks the agent-reads behavior and the harness-agnostic AC.
 4. **Status command** — extend `pdeq-rules/commands/pdeq-status.md` with the Lane Guides table step.
 5. **Tests** — extend `scripts/test-harness-agnostic.sh` (or a new `scripts/test-lane-guides.sh`) with the schema-accepts/rejects, installer-warns/no-stub, and status-reports cases.
+6. **Migration** — author `migrations/0.14.0.md` (advisory, `breaking: false`) whose semantic pass scans project-owned lane override files, non-spec lane docs, and lane-scoped standing specs, then consolidates lane-specific content into `<lane>/GUIDE.md` files declared in `pdeq.json` `laneGuides` and pares the sources. Unlocks the migration ACs.
+
+## Migration
+
+The lane-guides release ships `migrations/0.14.0.md` (advisory). It has no mechanical block — lane guides require no scaffolding (the installer never stubs a guide). Its semantic pass scans three sources for lane-specific content: (1) project-owned lane agent override files (real, non-symlink `<lane>/CLAUDE.md` or `<lane>/AGENTS.md`) for content appended below the framework import; (2) non-spec markdown docs in a lane folder (no `FR-`/`NFR-`/`AC-` slugs) that read as guides, architecture, or conventions; (3) lane-scoped standing specs from `project.md`'s manifest. It consolidates into `<lane>/GUIDE.md` (merging into an existing configured guide), declares the guide in `pdeq.json` `laneGuides`, and pares the source override file to its import line. A lane-scoped standing spec is added to `laneGuides` and left in the standing-specs manifest (a file may be both). Idempotent: a lane already in `laneGuides` with a resolving guide is not re-processed.
 
 ## Code Map
 
@@ -136,6 +141,10 @@ Guide paths are relative to `specsRoot`. Absolute paths are rejected by the sche
 | FR-lane-guides-installer-no-stub | scripts/init.sh | implemented |
 | FR-lane-guides-reinstall-reconciles | scripts/init.sh | implemented |
 | FR-lane-guides-status-reports | pdeq-rules/commands/pdeq-status.md | implemented |
+| FR-lane-guides-migration-advisory | migrations/0.14.0.md | implemented |
+| FR-lane-guides-migration-scans | migrations/0.14.0.md | implemented |
+| FR-lane-guides-migration-consolidates | migrations/0.14.0.md | implemented |
+| FR-lane-guides-migration-idempotent | migrations/0.14.0.md | implemented |
 | NFR-lane-guides-no-new-deps | scripts/init.sh | implemented |
 | NFR-lane-guides-cheap-read | product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | implemented |
 | NFR-lane-guides-survives-template-update | AGENTS.md; product/AGENTS.md; design/AGENTS.md; engineering/AGENTS.md; qa/AGENTS.md; roadmap/AGENTS.md | implemented |
