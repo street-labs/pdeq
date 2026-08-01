@@ -26,7 +26,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-mechanical-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-semantic-block | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:155 |
 | FR-migrations-order-within | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.12.0.md:8, migrations/0.13.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-author-written | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.12.0.md:8, migrations/0.13.0.md:8, migrations/0.14.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-explicit-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
 | FR-migrations-pending-detection | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-ordered-application | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
@@ -34,7 +34,7 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-migrations-nonbreaking-advance | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:301 |
 | FR-migrations-noop-when-current | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:110 |
 | FR-migrations-dry-run | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | pdeq-rules/commands/pdeq-migrate.md:1 |
-| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.12.0.md:8, migrations/0.13.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
+| FR-migrations-idempotent | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | migrations/0.10.0.md:8, migrations/0.11.0.md:10, migrations/0.11.0.md:8, migrations/0.12.0.md:8, migrations/0.13.0.md:8, migrations/0.14.0.md:8, migrations/0.4.0.md:8, migrations/0.5.0.md:8, migrations/0.6.0.md:8, migrations/0.7.0.md:8, migrations/0.8.0.md:8, migrations/0.9.0.md:8, migrations/TEMPLATE.md:8 |
 | FR-migrations-scoped-writes | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md, scripts/migrate.sh | scripts/migrate.sh:354 |
 | FR-migrations-breaking-gate | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
 | FR-migrations-no-false-positive | FR | product/migrations.md | design/cli/migrations.md, engineering/cli/migrations.md, qa/cli/migrations.md | scripts/audit-migrations.sh:45 |
@@ -359,6 +359,10 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-lane-guides-harness-agnostic | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542, design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
 | FR-lane-guides-installer-no-stub | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
 | FR-lane-guides-installer-validates | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
+| FR-lane-guides-migration-advisory | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, migrations/0.14.0.md | migrations/0.14.0.md:8 |
+| FR-lane-guides-migration-consolidates | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, migrations/0.14.0.md | migrations/0.14.0.md:8 |
+| FR-lane-guides-migration-idempotent | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, migrations/0.14.0.md | migrations/0.14.0.md:8 |
+| FR-lane-guides-migration-scans | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, migrations/0.14.0.md | migrations/0.14.0.md:8 |
 | FR-lane-guides-missing-non-fatal | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137, scripts/init.sh:324 |
 | FR-lane-guides-paths-relative-to-specsroot | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
 | FR-lane-guides-per-lane-context | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542 |
@@ -372,6 +376,8 @@ This file maps every requirement slug to all files that define or reference it. 
 | AC-lane-guides-agent-reads | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | AC-lane-guides-installer-no-stub | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | AC-lane-guides-installer-warns | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
+| AC-lane-guides-migration-consolidates | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, migrations/0.14.0.md |  |
+| AC-lane-guides-migration-idempotent | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, migrations/0.14.0.md |  |
 | AC-lane-guides-reinstall-reconciles | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | AC-lane-guides-schema-accepts | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | AC-lane-guides-schema-rejects-unknown | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |

@@ -47,6 +47,15 @@ The framework makes the lane agent aware of its guide at authoring time, on ever
 - **Re-install reconciles** `FR-lane-guides-reinstall-reconciles`: Editing `laneGuides` (adding, removing, or repointing a lane) and re-running the installer's validation step reconciles without error. Removing a lane key stops the installer from validating that path; the previously-authored guide file is left untouched on disk.
 - **Status reports lane guides** `FR-lane-guides-status-reports`: `/pdeq-status` reports which lanes have a guide configured, the path each points at, and whether the path currently resolves. This gives a maintainer an at-a-glance view of per-lane customization alongside the standing-specs manifest.
 
+### Migration
+
+The lane-guides release ships an advisory migration (`breaking: false`) that brings a consumer's existing lane-specific content into the lane-guides mechanism, so a project that already customized lanes the old way (appended below an `@import`, or via a standalone doc) adopts the declarative path without re-authoring.
+
+- **Advisory migration ships with lane guides** `FR-lane-guides-migration-advisory`: The lane-guides lineage-breaking release carries one advisory migration that seeds no scaffolding (the installer never stubs a guide) and whose semantic pass is optional and idempotent. A consumer who skips it stays conformant.
+- **Migration scans for lane-specific content** `FR-lane-guides-migration-scans`: The migration's semantic pass scans three sources for lane-specific content: (1) project-owned lane agent override files (a real, non-symlink `<lane>/CLAUDE.md` or `<lane>/AGENTS.md`) for content appended below the framework import; (2) non-spec markdown docs in a lane folder that read as guides, architecture, or conventions rather than feature specs (no `FR-`/`NFR-`/`AC-` slugs); (3) standing specs whose `governs:` scope is a single lane rather than the whole project.
+- **Migration consolidates into lane guides** `FR-lane-guides-migration-consolidates`: For each identified candidate, the migration moves the lane-specific content into a `<lane>/GUIDE.md` (merging into an existing guide when one is already configured for that lane), declares the guide in `pdeq.json` `laneGuides`, and pares the source so the agent override file holds only the framework import (or the standalone doc is removed when its full content moved into the guide). A standing spec promoted to a lane guide is added to `laneGuides` and left in the standing-specs manifest — a file may be both.
+- **Migration is idempotent** `FR-lane-guides-migration-idempotent`: Re-running the migration against a project that has already consolidated is a no-op: a lane already in `laneGuides` with a resolving guide is not re-processed, and an agent override file already reduced to its import line is left alone.
+
 ## Non-Functional Requirements
 
 - **No new install dependencies** `NFR-lane-guides-no-new-deps`: The feature adds no install dependency. Path validation is plain bash test (`[ -f ]`); schema validation extends the existing JSON schema. The install dependency floor stays `git + bash + python3`.
@@ -65,6 +74,8 @@ These cover the observable outcomes QA will test directly.
 - [ ] **Works on symlink harness** `AC-lane-guides-symlink-harness`: A project on `harnesses: ["pi"]` (symlink materialization, no append slot) can configure and surface a lane guide without editing any file inside `.pdeq`. The guide file is committed in the parent repo and survives a fresh checkout.
 - [ ] **Status reports guides** `AC-lane-guides-status-reports`: `/pdeq-status` lists each configured lane guide with its lane, path, and resolve status.
 - [ ] **Reconciles on re-install** `AC-lane-guides-reinstall-reconciles`: Adding a `laneGuides` entry and re-running the installer's validation step warns on the new path if missing and is silent if present; removing an entry stops validation for that lane and leaves the authored file on disk.
+- [ ] **Migration consolidates existing lane content** `AC-lane-guides-migration-consolidates`: Running the advisory migration against a consumer project with project-specific content appended below the framework import in a lane agent override file moves that content into a `<lane>/GUIDE.md`, declares it in `pdeq.json` `laneGuides`, and leaves the override file holding only the framework import.
+- [ ] **Migration is idempotent** `AC-lane-guides-migration-idempotent`: Re-running the migration against an already-consolidated project makes no changes and exits cleanly.
 
 ## Open Questions
 
