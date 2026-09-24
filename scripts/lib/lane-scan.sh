@@ -41,6 +41,25 @@ except Exception:
 " "$cfg" "${1:-}" 2>/dev/null || true
 }
 
+# ─── Boolean lane-audit flags (from pdeq.json) ─────────────────────────────
+# Prints "true" only when laneAudit.<key> is JSON true. Missing file, missing
+# key, or any other value prints nothing. Tolerant and silent, like
+# read_lane_terms. Honors PDEQ_CONFIG_PATH for fixture pointing.
+# Implements: NFR-lane-discipline-jev-opt-in
+read_lane_flags() {
+  local cfg="${PDEQ_CONFIG_PATH:-}"
+  if [ -z "$cfg" ] || [ ! -f "$cfg" ]; then return; fi
+  python3 -c "
+import json, sys
+try:
+    with open(sys.argv[1]) as f:
+        la = (json.load(f).get('laneAudit') or {})
+    print('true' if la.get(sys.argv[2]) is True else '')
+except Exception:
+    pass
+" "$cfg" "$1" 2>/dev/null || true
+}
+
 # ─── Portable line scanner (python3 re, not grep -P) ───────────────────────
 # Prints "<lineno>:<line>" for every line of $2 matching python regex $1.
 # $3 (optional): flag string; contains "i" for case-insensitive matching.

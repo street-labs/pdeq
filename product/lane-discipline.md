@@ -26,6 +26,7 @@ Alongside the noisy, warn-only keyword backstop, a higher-precision **determinis
 - As a **design or engineering spec author**, I want the deterministic check to run on my lane too — flagging engineering detail in a design spec, or product behavior redefined in an engineering spec — so that lane discipline protects every lane, not just product.
 - As an **author hitting a rare false positive**, I want a documented, single-commit escape hatch that demotes the block to a warning and names what it suppressed, so that a heuristic mistake never permanently wedges a legitimate change.
 - As a **maintainer of a project whose domain legitimately includes a default red-flag term** — a code-review tool that names the languages it supports, or a desktop app that must state the operating systems it runs on — I want to declare those terms in-lane for my project so they stop blocking, without rewording correct specs or reaching for the escape hatch on every commit.
+- As a **project that runs the backstop in continuous integration**, I want an optional automated triage that clears obvious allowed mentions at high confidence, so the advisory review and I only look at findings that actually need judgment.
 
 ## Requirements
 
@@ -58,6 +59,14 @@ A higher-precision deterministic check targets structural content classes and is
 Deterministic bleed detection is not limited to product specs; each downstream lane is checked for content that belongs to another lane.
 
 - **Downstream scan** `FR-lane-discipline-downstream-scan`: The deterministic checks extend beyond product specs to the downstream lanes. A design spec is scanned for engineering-lane content (how it is built — components, algorithms, interface contracts); an engineering spec is scanned for product-lane content (redefining *what* the feature does rather than *how* it is built). Bleed detected downstream is enforced at the same strength as the product content-class check, so a lane boundary is protected wherever specs are written.
+
+### Automated Finding Triage (Optional Middle Tier)
+
+Between the deterministic backstop and the advisory review sits an optional, automated triage step. When a project enables it, each lexical-backstop finding is additionally classified by a low-cost external judgment service, applying the same severity vocabulary the advisory review uses. The triage never has the final word: it can only reclassify a finding from violation to allowed when the service is confident; anything else leaves the finding exactly as the backstop reported it.
+
+- **Automated triage** `FR-lane-discipline-jev-triage`: When enabled in project configuration, every finding reported by the lexical backstop is additionally classified by an external low-cost automated judgment service as either a lane violation or an allowed mention (overview context, or a per-host constraint in a non-functional requirement), using the same severity vocabulary as the advisory review. Triage is off by default; enabling it is a per-project decision, because it adds an external service dependency and a small per-finding cost to the audit.
+- **Fail-safe classification** `FR-lane-discipline-jev-failsafe`: Triage can only downgrade a finding, never upgrade or hide one. A finding is reclassified as allowed only when the service answers allowed with high confidence; a violation answer, an unavailable or erroring service, or a low-confidence answer all leave the finding reported exactly as the backstop produced it.
+- **Labeled demotions** `FR-lane-discipline-jev-labeled`: A finding reclassified by triage remains visible in the audit output, labeled as allowed with the reason and marked as an automated judgment, so a human or the advisory review can override it. A run in which every finding is demoted to allowed reports no violations and signals success, while still showing what was demoted and why.
 
 ### Prompt-Guided Lane Review
 
@@ -93,6 +102,7 @@ When an existing project adopts a version of the framework that includes lane di
 - **Consistent enforcement across lanes** `NFR-lane-discipline-cross-lane-consistency`: The deterministic content checks apply the same enforcement strength wherever a lane boundary exists — product, design, and engineering — rather than protecting only the product lane, so no lane is a privileged place to hide bleed.
 - **Exclusion is surgical and optional** `NFR-lane-discipline-exclude-surgical`: Excluding a term removes only that exact term from matching; a line that also contains a non-excluded flagged term still flags on the remaining term, so exclusion cannot be used to blanket-silence a line. A project that declares no exclusions behaves exactly as before — exclusion is purely additive configuration.
 - **Back-compatibility** `NFR-lane-discipline-backcompat`: A project that has not configured any custom terms continues to work unchanged, using the built-in default term set. Adding the term-list configuration is optional and additive.
+- **Triage is opt-in and off the default path** `NFR-lane-discipline-jev-opt-in`: With automated triage not enabled, the audits produce the same output as before the feature existed and make no external calls, so the deterministic backstop's no-network guarantee holds wherever it is not explicitly opted in. Triage is advisory in spirit: it pre-clears obvious legitimate mentions, but the prompt-guided lane review remains the authoritative judgment of context.
 
 ## Acceptance Criteria
 
@@ -120,6 +130,10 @@ These are the testable conditions that define "done." QA writes test cases again
 - [ ] **Excluded term does not block** `AC-lane-discipline-exclude-passes`: With a term declared in the project's exclusion list, a spec whose only flagged content on a line is that term is neither warned nor blocked by the deterministic checks.
 - [ ] **Exclusion is surgical** `AC-lane-discipline-exclude-surgical`: A line containing both an excluded term and a non-excluded flagged term is still flagged on the non-excluded term — exclusion removes only the named term, not the whole line.
 - [ ] **No exclusion changes nothing** `AC-lane-discipline-exclude-optional`: A project with no exclusion list produces exactly the same deterministic results it would produce without the feature present.
+- [ ] **Triage off changes nothing** `AC-lane-discipline-jev-off-unchanged`: With automated triage not enabled, the audit's output and exit status are identical to a run without the feature, and no external service is contacted.
+- [ ] **High-confidence allowed demotes** `AC-lane-discipline-jev-demotes`: With triage enabled and the service answering allowed with high confidence, a flagged finding is reported as allowed with the reason, does not count as a violation, and the run signals success.
+- [ ] **Violation or low confidence keeps the finding** `AC-lane-discipline-jev-keeps`: With triage enabled, a finding the service answers as a violation — or answers with low confidence, or fails to answer — is still reported as a violation and the run still signals failure.
+- [ ] **Missing service fails safe** `AC-lane-discipline-jev-missing`: With triage enabled but the judgment service unavailable in the environment, the audit behaves exactly as with triage disabled: every finding reported, no errors surfaced about the service itself.
 
 ## Open Questions
 
