@@ -29,9 +29,51 @@ PDEQ_EXCLUDE_RX="$(read_lane_terms "exclude")"
 export PDEQ_EXCLUDE_RX
 
 warn() {
+  # Layer 1.5 — automated finding triage (laneAudit.jevTriage, opt-in).
+  # A high-confidence "allowed" answer from the judgment service demotes the
+  # finding to a labeled note; every other answer keeps the ⚠ verbatim.
+  # Implements: FR-lane-discipline-jev-triage, FR-lane-discipline-jev-labeled
+  if [ "$PDEQ_JEV_TRIAGE" = "1" ] && jev_triage_allowed "$1"; then
+    demoted+=("$1")
+    echo "  ✓ allowed (jev triage: legitimate mention) $1"
+    return
+  fi
   violations+=("$1")
   echo "  ⚠  $1"
 }
+
+# ─── Layer 1.5: automated finding triage ───────────────────────────────────
+# Asks the jev CLI to classify one finding. Returns 0 only when the answer is
+# "allowed" at confidence >= 0.85; any failure (missing binary, non-zero exit,
+# unparsable output, low confidence) returns 1, keeping the finding — triage
+# can only demote, never hide (FR-lane-discipline-jev-failsafe).
+# ponytail: 0.85 threshold is a hardcoded constant; promote to a config key only if a project needs a different one.
+# Implements: FR-lane-discipline-jev-failsafe, FR-lane-discipline-jev-triage
+jev_triage_allowed() {
+  local resp
+  resp=$(printf '%s' "$1" | jev --json choice \
+    "Classify this product-spec line flagged for lane-discipline bleed" \
+    "violation=The line prescribes implementation, platform, or technical detail as a requirement" \
+    "allowed=Legitimate mention: orientation in an overview, or a per-host constraint in a non-functional requirement" \
+    2>/dev/null) || return 1
+  python3 -c "
+import json, sys
+try:
+    c = json.loads(sys.argv[1])['answers']['choice']
+    sys.exit(0 if c.get('choice') == 'allowed' and float(c.get('confidence', 0)) >= 0.85 else 1)
+except Exception:
+    sys.exit(1)
+" "$resp"
+}
+
+# Triage is opt-in and off the default path: only when laneAudit.jevTriage is
+# true AND jev is installed does any external call happen.
+# Implements: NFR-lane-discipline-jev-opt-in
+PDEQ_JEV_TRIAGE=0
+demoted=()
+if [ "$(read_lane_flags jevTriage)" = "true" ] && command -v jev >/dev/null 2>&1; then
+  PDEQ_JEV_TRIAGE=1
+fi
 
 echo "Auditing lane discipline in product specs..."
 echo ""
@@ -127,6 +169,9 @@ echo ""
 
 if [ ${#violations[@]} -eq 0 ]; then
   echo "✓ No lane discipline violations found in product specs."
+  if [ ${#demoted[@]} -gt 0 ]; then
+    echo "  (${#demoted[@]} finding(s) pre-cleared by automated triage — see the ✓ lines above; the advisory lane review remains authoritative.)"
+  fi
   exit 0
 else
   echo "✗ Found ${#violations[@]} potential lane violation(s) in product specs."

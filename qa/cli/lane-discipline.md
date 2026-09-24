@@ -1,6 +1,6 @@
 ---
-product-hash: 0610979f7ee1820c6ae602957be7efc295ce8b10101364399c538080592cb1bc
-product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-content-clean-passes, AC-lane-discipline-content-construction-blocks, AC-lane-discipline-content-incidental-passes, AC-lane-discipline-content-platform-blocks, AC-lane-discipline-content-presentation-blocks, AC-lane-discipline-default-catches-known, AC-lane-discipline-downstream-design-blocks, AC-lane-discipline-downstream-eng-blocks, AC-lane-discipline-escape-hatch-demotes, AC-lane-discipline-exclude-optional, AC-lane-discipline-exclude-passes, AC-lane-discipline-exclude-surgical, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-blocking-at-commit, FR-lane-discipline-blocking-enforcement, FR-lane-discipline-blocking-escape-hatch, FR-lane-discipline-content-class-check, FR-lane-discipline-content-class-precision, FR-lane-discipline-default-terms, FR-lane-discipline-downstream-scan, FR-lane-discipline-exclude-terms, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-blocking-precision, NFR-lane-discipline-cross-lane-consistency, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-exclude-surgical, NFR-lane-discipline-nonblocking-backstop]
+product-hash: 45cc1579b6ff57597fb9be17f944b28f4161524019526d61bc0f9ec91451831d
+product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-content-clean-passes, AC-lane-discipline-content-construction-blocks, AC-lane-discipline-content-incidental-passes, AC-lane-discipline-content-platform-blocks, AC-lane-discipline-content-presentation-blocks, AC-lane-discipline-default-catches-known, AC-lane-discipline-downstream-design-blocks, AC-lane-discipline-downstream-eng-blocks, AC-lane-discipline-escape-hatch-demotes, AC-lane-discipline-exclude-optional, AC-lane-discipline-exclude-passes, AC-lane-discipline-exclude-surgical, AC-lane-discipline-jev-demotes, AC-lane-discipline-jev-keeps, AC-lane-discipline-jev-missing, AC-lane-discipline-jev-off-unchanged, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-blocking-at-commit, FR-lane-discipline-blocking-enforcement, FR-lane-discipline-blocking-escape-hatch, FR-lane-discipline-content-class-check, FR-lane-discipline-content-class-precision, FR-lane-discipline-default-terms, FR-lane-discipline-downstream-scan, FR-lane-discipline-exclude-terms, FR-lane-discipline-jev-failsafe, FR-lane-discipline-jev-labeled, FR-lane-discipline-jev-triage, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-blocking-precision, NFR-lane-discipline-cross-lane-consistency, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-exclude-surgical, NFR-lane-discipline-jev-opt-in, NFR-lane-discipline-nonblocking-backstop]
 ---
 # Lane Discipline Enforcement — CLI Test Plan
 
@@ -51,6 +51,7 @@ Layer 1 cases are `[auto]`. Layer 2 cases are `[manual]` (agent-run + human conf
 | `content-incidental/` | **Layer 1b negative.** Class terms only in fences/slugs. | `product/x.md` whose only `swipe`/`dropdown` occurrences are inside a fenced code block and inside a `` `FR-ex-swipe-gesture` `` slug token. |
 | `downstream-design-bleed/` | **Layer 1b.** Design spec with engineering bleed. | `design/cli/x.md` naming `React` and a `GET /api/x` contract. |
 | `downstream-eng-bleed/` | **Layer 1b.** Engineering spec defining product requirements. | `engineering/cli/x.md` containing a requirement **definition** line `- **Label** ` `` `FR-ex-x-y`: … `` ` and an `- [ ] **…** ` `` `AC-ex-x-y` `` ` checkbox; plus a legitimate Code-Map reference row and inline slug citation that must NOT trip. |
+| `jev-triage/` | **Layer 1.5.** One flagged line under automated triage. | `pdeq.json` with `laneAudit.jevTriage: true`; `product/x.md` naming `React` on one line. The test injects a stub `jev` on `PATH` per case. |
 
 ---
 
@@ -80,8 +81,12 @@ Layer 1 cases are `[auto]`. Layer 2 cases are `[manual]` (agent-run + human conf
 | AC-lane-discipline-exclude-passes | TC-lane-discipline-exclude-passes | 1b | auto | Not started |
 | AC-lane-discipline-exclude-surgical | TC-lane-discipline-exclude-surgical | 1b | auto | Not started |
 | AC-lane-discipline-exclude-optional | TC-lane-discipline-exclude-optional | 1b | auto | Not started |
+| AC-lane-discipline-jev-demotes | TC-lane-discipline-jev-demotes | 1.5 | auto | Not started |
+| AC-lane-discipline-jev-keeps | TC-lane-discipline-jev-keeps | 1.5 | auto | Not started |
+| AC-lane-discipline-jev-missing | TC-lane-discipline-jev-missing | 1.5 | auto | Not started |
+| AC-lane-discipline-jev-off-unchanged | TC-lane-discipline-jev-off-unchanged | 1.5 | auto | Not started |
 
-Supporting cases (no direct AC, cover FR/NFR behavior): `TC-lane-discipline-extend-not-replace` (FR-lane-discipline-default-terms), `TC-lane-discipline-literal-escape` (FR-lane-discipline-project-terms precision), `TC-lane-discipline-no-pcre-grep` (NFR-lane-discipline-deterministic-backstop), `TC-lane-discipline-slug-not-flagged` (FR-lane-discipline-lexical-backstop precision — slug identifiers are excluded).
+Supporting cases (no direct AC, cover FR/NFR behavior): `TC-lane-discipline-extend-not-replace` (FR-lane-discipline-default-terms), `TC-lane-discipline-literal-escape` (FR-lane-discipline-project-terms precision), `TC-lane-discipline-no-pcre-grep` (NFR-lane-discipline-deterministic-backstop), `TC-lane-discipline-slug-not-flagged` (FR-lane-discipline-lexical-backstop precision — slug identifiers are excluded), `TC-lane-discipline-jev-low-confidence` (FR-lane-discipline-jev-failsafe), `TC-lane-discipline-jev-structure-unaffected` (NFR-lane-discipline-blocking-precision — triage never touches the blocking check).
 
 ---
 
@@ -134,7 +139,41 @@ Fixture with `hooks/pre-commit` installed and a staged product spec containing d
 
 ---
 
-## Layer 1b Test Cases (blocking structural check — auto)
+## Layer 1.5 Test Cases (automated finding triage — auto)
+
+All Layer 1.5 cases run `scripts/audit-lanes.sh` against the `jev-triage/` fixture with a **stub `jev`** placed first on `PATH`; the stub reads the flag set in `JEV_STUB_MODE` and emits a canned `jev --json` response (or exits non-zero / does not exist at all).
+
+### TC-lane-discipline-jev-demotes
+> Covers `AC-lane-discipline-jev-demotes`.
+Stub answers `allowed` with confidence 0.95. Run `audit-lanes.sh`.
+- **Expect**: exit 0; the flagged line appears once prefixed `✓ allowed (jev triage:`; no `⚠` warning for it; the stub was invoked exactly once.
+
+### TC-lane-discipline-jev-keeps
+> Covers `AC-lane-discipline-jev-keeps`.
+Three stub behaviors, one run each: answers `violation` (confidence 0.95); answers `allowed` with confidence 0.4 (below threshold); exits 1 without output (service error).
+- **Expect**: all three runs exit 1 with the original `⚠` warning intact — a violation answer, low confidence, and an erroring service all keep the finding verbatim.
+
+### TC-lane-discipline-jev-missing
+> Covers `AC-lane-discipline-jev-missing`.
+`jevTriage: true` but `PATH` contains no `jev`. Run `audit-lanes.sh`.
+- **Expect**: output and exit status identical to the triage-off run (warning present, exit 1); no error text about triage.
+
+### TC-lane-discipline-jev-off-unchanged
+> Covers `AC-lane-discipline-jev-off-unchanged`, `NFR-lane-discipline-jev-opt-in`.
+Two runs with `jevTriage` absent, then `false`, with a stub `jev` installed that **fails the test if invoked** (marker file check).
+- **Expect**: both runs identical to each other and to the baseline Layer-1 result; the stub is never invoked — no external call is made when triage is off.
+
+### TC-lane-discipline-jev-low-confidence
+> Covers `FR-lane-discipline-jev-failsafe` boundary.
+Stub answers `allowed` at exactly the demotion threshold minus epsilon (0.84) and at exactly 0.85.
+- **Expect**: 0.84 keeps the finding (exit 1); 0.85 demotes (exit 0) — the threshold is inclusive.
+
+### TC-lane-discipline-jev-structure-unaffected
+> Covers `NFR-lane-discipline-blocking-precision`, `NFR-lane-discipline-jev-opt-in`.
+`jevTriage: true`, stub installed. Run `scripts/audit-structure.sh` against the `content-presentation/` fixture.
+- **Expect**: identical result to a run without the flag — exit 1, same violation lines; the stub is never invoked. The blocking check never consults the judgment service.
+
+---
 
 All Layer 1b cases exercise `scripts/audit-structure.sh` against fixture repos. New assertion helpers: `assert_structure_exit <code>`, `assert_structure_blocks <relpath:lineno>` (asserts a violation line for that location and a non-zero exit), `assert_structure_clean` (✓ + exit 0), `assert_structure_no_flag <term>`.
 

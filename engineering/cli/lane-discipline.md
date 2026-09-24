@@ -1,6 +1,6 @@
 ---
-product-hash: 0610979f7ee1820c6ae602957be7efc295ce8b10101364399c538080592cb1bc
-product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-content-clean-passes, AC-lane-discipline-content-construction-blocks, AC-lane-discipline-content-incidental-passes, AC-lane-discipline-content-platform-blocks, AC-lane-discipline-content-presentation-blocks, AC-lane-discipline-default-catches-known, AC-lane-discipline-downstream-design-blocks, AC-lane-discipline-downstream-eng-blocks, AC-lane-discipline-escape-hatch-demotes, AC-lane-discipline-exclude-optional, AC-lane-discipline-exclude-passes, AC-lane-discipline-exclude-surgical, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-blocking-at-commit, FR-lane-discipline-blocking-enforcement, FR-lane-discipline-blocking-escape-hatch, FR-lane-discipline-content-class-check, FR-lane-discipline-content-class-precision, FR-lane-discipline-default-terms, FR-lane-discipline-downstream-scan, FR-lane-discipline-exclude-terms, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-blocking-precision, NFR-lane-discipline-cross-lane-consistency, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-exclude-surgical, NFR-lane-discipline-nonblocking-backstop]
+product-hash: 45cc1579b6ff57597fb9be17f944b28f4161524019526d61bc0f9ec91451831d
+product-slugs: [AC-lane-discipline-backstop-exit-status, AC-lane-discipline-backstop-nonblocking, AC-lane-discipline-content-clean-passes, AC-lane-discipline-content-construction-blocks, AC-lane-discipline-content-incidental-passes, AC-lane-discipline-content-platform-blocks, AC-lane-discipline-content-presentation-blocks, AC-lane-discipline-default-catches-known, AC-lane-discipline-downstream-design-blocks, AC-lane-discipline-downstream-eng-blocks, AC-lane-discipline-escape-hatch-demotes, AC-lane-discipline-exclude-optional, AC-lane-discipline-exclude-passes, AC-lane-discipline-exclude-surgical, AC-lane-discipline-jev-demotes, AC-lane-discipline-jev-keeps, AC-lane-discipline-jev-missing, AC-lane-discipline-jev-off-unchanged, AC-lane-discipline-no-config-no-break, AC-lane-discipline-project-terms-applied, AC-lane-discipline-review-allows-legit, AC-lane-discipline-review-flags-structural, AC-lane-discipline-review-output-shape, AC-lane-discipline-review-suggests-terms, AC-lane-discipline-update-review-no-edit, AC-lane-discipline-update-seed-idempotent, FR-lane-discipline-backstop-at-commit, FR-lane-discipline-blocking-at-commit, FR-lane-discipline-blocking-enforcement, FR-lane-discipline-blocking-escape-hatch, FR-lane-discipline-content-class-check, FR-lane-discipline-content-class-precision, FR-lane-discipline-default-terms, FR-lane-discipline-downstream-scan, FR-lane-discipline-exclude-terms, FR-lane-discipline-jev-failsafe, FR-lane-discipline-jev-labeled, FR-lane-discipline-jev-triage, FR-lane-discipline-lexical-backstop, FR-lane-discipline-project-terms, FR-lane-discipline-review-in-workflow, FR-lane-discipline-severity, FR-lane-discipline-structural-review, FR-lane-discipline-structured-output, FR-lane-discipline-taxonomy, FR-lane-discipline-term-suggestions, FR-lane-discipline-two-layer, FR-lane-discipline-update-reviews-specs, FR-lane-discipline-update-seeds-config, NFR-lane-discipline-advisory-review, NFR-lane-discipline-backcompat, NFR-lane-discipline-blocking-precision, NFR-lane-discipline-cross-lane-consistency, NFR-lane-discipline-deterministic-backstop, NFR-lane-discipline-exclude-surgical, NFR-lane-discipline-jev-opt-in, NFR-lane-discipline-nonblocking-backstop]
 ---
 # Lane Discipline Enforcement — CLI Technical Spec
 
@@ -134,6 +134,26 @@ No new `pdeq.json` keys are strictly required — `audit-structure.sh` reuses th
 - **Both scripts wire it.** `audit-structure.sh` (blocking) and `audit-lanes.sh` (warn-only) each compute the exclude regex from config and `export PDEQ_EXCLUDE_RX` before scanning, so an excluded term neither blocks nor warns (`AC-lane-discipline-exclude-passes`). The advisory Layer-2 review is unaffected — it reads specs directly and reasons about context, so a project's exclusions never blind it.
 - **Schema.** `pdeq.schema.json` gains `laneAudit.exclude` as an `array` of `string`.
 
+### Layer 1.5 — automated finding triage (`laneAudit.jevTriage`)
+
+Realizes `FR-lane-discipline-jev-triage`, `FR-lane-discipline-jev-failsafe`, `FR-lane-discipline-jev-labeled`, `NFR-lane-discipline-jev-opt-in`. An optional middle tier between the lexical backstop and the advisory review: after `audit-lanes.sh` collects its findings, each is classified by the `jev` CLI (a low-cost structured-judgment tool, ~450 input tokens and ~300 ms per finding). This is the mechanized answer to Layer 1's documented blind spot — a grep cannot tell a real violation from a legitimate mention; one cheap judgment call per finding can.
+
+- **Config.** `laneAudit.jevTriage` (boolean, default false — absent means off). Read by a new `read_lane_flags()` in `scripts/lib/lane-scan.sh` (same `python3`-reads-`pdeq.json` pattern as `read_lane_terms`, but returning booleans). `pdeq.schema.json` gains the property, `additionalProperties: false` still enforced.
+- **Gating.** Triage runs only when enabled AND at least one finding exists AND `jev` is on `PATH`. It applies **only to the warn-only lexical backstop** — never to `audit-structure.sh` or the downstream scan, which are commit-blocking and must stay deterministic (`NFR-lane-discipline-blocking-precision`).
+- **Invocation.** One call per finding, options mirroring the Layer-2 severity vocabulary:
+  ```shell
+  jev --json choice \
+    "Classify this product-spec line flagged for lane-discipline bleed" \
+    violation="The line prescribes implementation, platform, or technical detail as a requirement" \
+    allowed="Legitimate mention: orientation in an overview, or a per-host constraint in a non-functional requirement" \
+    -s "$relpath:$line: $text"
+  ```
+  The JSON response's `answers.choice.choice` and `answers.choice.confidence` are parsed with `python3` (already a dependency of the lib).
+- **Decision rule.** Demote only when `choice == "allowed"` AND `confidence >= 0.85` (`# ponytail:` single hardcoded constant; promote to config only if a project actually needs a different threshold). Demoted findings print as `  ✓ allowed (jev triage: legitimate mention) <finding>` and do not drive the exit status (`FR-lane-discipline-jev-labeled`). Every other answer keeps the finding unchanged.
+- **Fail-safe.** Missing binary, non-zero exit, unparsable output, or low confidence all keep the finding verbatim; the audit never errors because of triage and never silently drops a finding (`FR-lane-discipline-jev-failsafe`).
+- **Auth.** Entirely the `jev` CLI's own concern (its standard key resolution applies); the audit passes no credentials and stores nothing.
+- **Determinism.** With triage off, output and exit status are byte-identical to before the feature (`AC-lane-discipline-jev-off-unchanged`). With triage on, the grep scan itself is unchanged — triage only ever demotes existing findings, never creates or rewords them.
+
 ### Layer 2 — the review contract
 
 The review is defined once and referenced from two host workflows. The canonical definition lives in the root `AGENTS.md` §"Quality Subagents" as a new **Lane Reviewer** role; the kickoff prompt's Step 4 references it as pass #7. The contract has three parts.
@@ -218,6 +238,9 @@ Authoritative planned code locations for every FR defined in `product/lane-disci
 | FR-lane-discipline-downstream-scan | scripts/audit-structure.sh | implemented |
 | FR-lane-discipline-blocking-at-commit | hooks/pre-commit | planned |
 | FR-lane-discipline-exclude-terms | scripts/lib/lane-scan.sh:pcre_scan | implemented |
+| FR-lane-discipline-jev-triage | scripts/audit-lanes.sh | implemented |
+| FR-lane-discipline-jev-failsafe | scripts/audit-lanes.sh | implemented |
+| FR-lane-discipline-jev-labeled | scripts/audit-lanes.sh | implemented |
 
 Layer-2 rows point at Markdown prompt/agent files; their inline markers use the `<!-- Implements: <slug> -->` form. Layer-1 rows point at shell and use `# Implements: <slug>`.
 
