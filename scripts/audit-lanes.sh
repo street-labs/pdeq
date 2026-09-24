@@ -34,7 +34,7 @@ warn() {
   # finding to a labeled note; every other answer keeps the ⚠ verbatim.
   # Implements: FR-lane-discipline-jev-triage, FR-lane-discipline-jev-labeled
   if [ "$PDEQ_JEV_TRIAGE" = "1" ] && jev_triage_allowed "$1"; then
-    demoted+=("$1")
+    demoted_count=$((demoted_count + 1))
     echo "  ✓ allowed (jev triage: legitimate mention) $1"
     return
   fi
@@ -70,7 +70,7 @@ except Exception:
 # true AND jev is installed does any external call happen.
 # Implements: NFR-lane-discipline-jev-opt-in
 PDEQ_JEV_TRIAGE=0
-demoted=()
+demoted_count=0
 if [ "$(read_lane_flags jevTriage)" = "true" ] && command -v jev >/dev/null 2>&1; then
   PDEQ_JEV_TRIAGE=1
 fi
@@ -169,8 +169,8 @@ echo ""
 
 if [ ${#violations[@]} -eq 0 ]; then
   echo "✓ No lane discipline violations found in product specs."
-  if [ ${#demoted[@]} -gt 0 ]; then
-    echo "  (${#demoted[@]} finding(s) pre-cleared by automated triage — see the ✓ lines above; the advisory lane review remains authoritative.)"
+  if [ "$demoted_count" -gt 0 ]; then
+    echo "  ($demoted_count finding(s) pre-cleared by automated triage — see the ✓ lines above; the advisory lane review remains authoritative.)"
   fi
   exit 0
 else
