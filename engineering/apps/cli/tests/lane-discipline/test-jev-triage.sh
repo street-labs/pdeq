@@ -122,12 +122,11 @@ test_off_unchanged() {
   local mode root out code
   for mode in "absent" "false"; do
     if [ "$mode" = "absent" ]; then root="$(new_fixture "")"; else root="$(new_fixture '"jevTriage": false')"; fi
-    out="$(run_audit "$root" "allowed@0.95")"; code=$?; rm -rf "$root"
+    out="$(run_audit "$root" "allowed@0.95")"; code=$?; calls="$(call_count "$root")"; rm -rf "$root"
     assert_exit_code 1 "$code" "off($mode): unchanged exit" || return 1
     assert_contains "$out" "⚠" "off($mode): warning present" || return 1
     assert_not_contains "$out" "jev triage" "off($mode): no triage output" || return 1
-    # The stub records into $root/jev-calls.log, which we just deleted; verify
-    # non-invocation by asserting no ✓ line would exist without a demotion.
+    assert_eq "0" "$calls" "off($mode): jev never invoked" || return 1
   done
 }
 

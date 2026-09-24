@@ -142,11 +142,10 @@ Realizes `FR-lane-discipline-jev-triage`, `FR-lane-discipline-jev-failsafe`, `FR
 - **Gating.** Triage runs only when enabled AND at least one finding exists AND `jev` is on `PATH`. It applies **only to the warn-only lexical backstop** — never to `audit-structure.sh` or the downstream scan, which are commit-blocking and must stay deterministic (`NFR-lane-discipline-blocking-precision`).
 - **Invocation.** One call per finding, options mirroring the Layer-2 severity vocabulary:
   ```shell
-  jev --json choice \
+  printf '%s' "$finding" | jev --json choice \
     "Classify this product-spec line flagged for lane-discipline bleed" \
     violation="The line prescribes implementation, platform, or technical detail as a requirement" \
-    allowed="Legitimate mention: orientation in an overview, or a per-host constraint in a non-functional requirement" \
-    -s "$relpath:$line: $text"
+    allowed="Legitimate mention: orientation in an overview, or a per-host constraint in a non-functional requirement"
   ```
   The JSON response's `answers.choice.choice` and `answers.choice.confidence` are parsed with `python3` (already a dependency of the lib).
 - **Decision rule.** Demote only when `choice == "allowed"` AND `confidence >= 0.85` (`# ponytail:` single hardcoded constant; promote to config only if a project actually needs a different threshold). Demoted findings print as `  ✓ allowed (jev triage: legitimate mention) <finding>` and do not drive the exit status (`FR-lane-discipline-jev-labeled`). Every other answer keeps the finding unchanged.
