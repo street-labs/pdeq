@@ -51,10 +51,23 @@ The audit is a review, not a gate.
 - **Never blocks** `FR-conformance-advisory`: The conformance audit never blocks a commit, a push, or any other action. It produces a report; acting on it is a human or agent decision. This mirrors the Lane Reviewer, whose judgment-based findings are likewise advisory.
 - **Complements the deterministic audit** `FR-conformance-complements`: The conformance audit supplements, and does not replace, the deterministic coverage check. The deterministic audit remains the authoritative, fast, commit-time gate for marker presence and slug validity; the conformance audit adds the semantic layer the deterministic one is deliberately not built to provide.
 
+### Automated Alignment Pre-Screen
+
+The full conformance review is an agent pass: thorough, but expensive enough that it runs on demand rather than routinely. Drift between a requirement and its code therefore sits unexamined between reviews, hidden behind a valid marker the deterministic audit is satisfied by. The pre-screen closes that gap cheaply. It pairs each requirement with the code its traceability mapping already points at — the slice — and asks a low-cost automated judgment service one question per slice: does this code match this requirement? High-confidence matches pass quietly; anything doubtful is escalated to the full review. The screen makes conformance checking cheap enough to run routinely, so the expensive review is spent only where it is needed.
+
+- **Slice definition** `FR-conformance-jev-slice`: The screen evaluates one slice per requirement: the requirement's text as defined in its product spec, paired with the code location(s) the traceability index records for that slug. The slice is the unit of screening; this tier performs no broader source-tree read and produces no undocumented-behavior sweep — that remains the full review's job.
+- **Automated classification** `FR-conformance-jev-classify`: Each slice is classified by an external low-cost automated judgment service as either *aligned* (the code realizes, or plausibly realizes, the behavior the requirement specifies) or *drift* (the code clearly contradicts the requirement or bears no relation to it). The vocabulary mirrors the full review's verdicts, so screen output maps directly onto conformance categories. A thin or ambiguous slice can be neither: the service answers with a confidence, and only confident answers act.
+- **Escalate, never clear** `FR-conformance-jev-escalate`: The screen acts only on high-confidence answers — aligned passes only at high confidence, drift escalates only at high confidence. A low-confidence answer (either direction) or an unavailable or erroring service leaves the slice unassessed: reported as not screened, never passed and never escalated on a guess. The screen can only confirm or clearly reject, never clear a doubtful slice.
+- **Invocation is the opt-in** `FR-conformance-jev-opt-in`: The screen runs only when explicitly invoked. No hook, default audit, or commit path ever calls the judgment service, and the deterministic audits keep their no-network guarantee regardless.
+
+The screen is advisory like the full review: it produces a prioritized report — aligned, escalated, and unassessed slices with their evidence locations — and acting on it is a human or agent decision.
+
 ### Non-Functional Requirements
 
 - **Verifiable findings** `NFR-conformance-verifiable`: Every finding is traceable to a concrete code location and a specific requirement or behavior, so a reviewer can independently confirm or refute it. A finding a reader cannot check against the source is not acceptable output.
 - **Signal over noise** `NFR-conformance-precision`: The report distinguishes genuine divergence from acceptable variation and keeps findings high-signal. In particular, framework scaffolding, generated files, configuration, build glue, and test-support code are not reported as *undocumented behavior* — undocumented findings name product-relevant behavior, not incidental plumbing.
+- **Fail-safe unassessed** `NFR-conformance-jev-failsafe`: When the judgment service is unavailable or errors, every slice is reported as unassessed rather than guessed. The screen never mislabels an unexamined slice as aligned, and a failed service never surfaces as a crash or a traceback.
+- **Per-slice economy** `NFR-conformance-jev-economy`: Screening costs one bounded judgment call per slice — cheap enough to run routinely, so drift is caught between full reviews instead of only at them, and the expensive review is reserved for escalated slices.
 - **Honest about uncertainty** `NFR-conformance-uncertainty`: Because the verdicts are judgment-based, the audit marks findings it is not confident about as such rather than asserting them with false certainty. A reader can tell a firm verdict from a flagged suspicion.
 
 ## Acceptance Criteria
@@ -71,6 +84,10 @@ These cover the observable outcomes QA verifies directly.
 - [ ] **Never blocks a commit** `AC-conformance-non-blocking`: Invoking the audit — and committing in a repository where the audit would report findings — completes without the audit blocking either action.
 - [ ] **Per-platform isolation** `AC-conformance-platform-isolation`: An audit run for one platform reports only that platform's requirements and code, and does not surface findings belonging to another platform.
 - [ ] **No plumbing false positives** `AC-conformance-no-plumbing`: Framework scaffolding, generated files, configuration, and test-support code are not reported as undocumented behavior.
+- [ ] **Aligned slice passes quietly** `AC-conformance-jev-aligned`: With the service answering aligned at high confidence, a slice whose code matches its requirement is reported as aligned with its evidence location, without escalation.
+- [ ] **Drift escalates despite a valid marker** `AC-conformance-jev-drift`: A slice whose code the service judges to clearly contradict its requirement — at high confidence — is flagged for escalation even though the code carries a valid marker and passes the deterministic audit.
+- [ ] **Service failure screens nothing through** `AC-conformance-jev-failsafe`: With the judgment service unavailable, erroring, or answering with low confidence, every affected slice is reported as unassessed, no slice is reported aligned or escalated on a guess, and the run completes without an error traceback.
+- [ ] **No default-path calls** `AC-conformance-jev-no-default-calls`: Normal commits and the deterministic audits make no calls to the judgment service; the screen's output appears only when it is explicitly invoked.
 - [ ] **Uncertainty is marked** `AC-conformance-uncertainty-marked`: A finding the audit is not confident about is presented as a marked, lower-confidence suspicion rather than as a firm verdict.
 
 ## Open Questions

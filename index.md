@@ -354,9 +354,9 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-lane-discipline-update-review-no-edit | TC | qa/cli/lane-discipline.md |  |  |
 | TC-lane-discipline-slug-not-flagged | TC | qa/cli/lane-discipline.md |  |  |
 | FR-lane-guides-config | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
-| FR-lane-guides-distinct-from-standing | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542 |
-| FR-lane-guides-framework-surfaces | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542, design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
-| FR-lane-guides-harness-agnostic | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542, design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
+| FR-lane-guides-distinct-from-standing | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:544 |
+| FR-lane-guides-framework-surfaces | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:544, design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
+| FR-lane-guides-harness-agnostic | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:544, design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
 | FR-lane-guides-installer-no-stub | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
 | FR-lane-guides-installer-validates | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
 | FR-lane-guides-migration-advisory | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, migrations/0.14.0.md | migrations/0.14.0.md:8 |
@@ -365,14 +365,14 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-lane-guides-migration-scans | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, migrations/0.14.0.md | migrations/0.14.0.md:8 |
 | FR-lane-guides-missing-non-fatal | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137, scripts/init.sh:324 |
 | FR-lane-guides-paths-relative-to-specsroot | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
-| FR-lane-guides-per-lane-context | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542 |
+| FR-lane-guides-per-lane-context | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:544 |
 | FR-lane-guides-project-local | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | FR-lane-guides-reinstall-reconciles | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
 | FR-lane-guides-status-reports | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | pdeq-rules/commands/pdeq-status.md:45 |
 | FR-lane-guides-unknown-lane-rejected | FR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md, pdeq.schema.json |  |
 | NFR-lane-guides-cheap-read | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | design/AGENTS.md:127, engineering/AGENTS.md:216, product/AGENTS.md:85, qa/AGENTS.md:134, roadmap/AGENTS.md:137 |
 | NFR-lane-guides-no-new-deps | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | scripts/init.sh:324 |
-| NFR-lane-guides-survives-template-update | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:542 |
+| NFR-lane-guides-survives-template-update | NFR | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md | AGENTS.md:544 |
 | AC-lane-guides-agent-reads | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | AC-lane-guides-installer-no-stub | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
 | AC-lane-guides-installer-warns | AC | product/lane-guides.md | engineering/cli/lane-guides.md, qa/cli/lane-guides.md |  |
@@ -458,6 +458,16 @@ This file maps every requirement slug to all files that define or reference it. 
 | FR-conformance-actionable | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:73 |
 | FR-conformance-advisory | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:132 |
 | FR-conformance-complements | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:132 |
+| FR-conformance-jev-slice | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | scripts/alignment-check.sh:21 |
+| FR-conformance-jev-classify | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | scripts/alignment-check.sh:21 |
+| FR-conformance-jev-escalate | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | scripts/alignment-check.sh:22 |
+| FR-conformance-jev-opt-in | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | scripts/alignment-check.sh:22 |
+| NFR-conformance-jev-failsafe | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | scripts/alignment-check.sh:23 |
+| NFR-conformance-jev-economy | NFR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | scripts/alignment-check.sh:23 |
+| AC-conformance-jev-aligned | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-jev-drift | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-jev-failsafe | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
+| AC-conformance-jev-no-default-calls | AC | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md |  |
 | FR-conformance-evidence | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:40 |
 | FR-conformance-four-quadrant | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:1, pdeq-rules/commands/pdeq-conform.md:57 |
 | FR-conformance-fulfilled | FR | product/conformance.md | engineering/cli/conformance.md, qa/cli/conformance.md | AGENTS.md:497, pdeq-rules/commands/pdeq-conform.md:57 |
@@ -585,17 +595,17 @@ This file maps every requirement slug to all files that define or reference it. 
 | TC-coverage-audit-no-code-passes | TC | qa/cli/coverage-audit.md |  |  |
 | TC-coverage-audit-non-fr-ignored | TC | qa/cli/coverage-audit.md |  |  |
 | FR-project-orientation-file | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:580, scripts/seed-project-md.sh:78 |
-| FR-project-orientation-living | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
-| FR-project-orientation-standing-spec | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
+| FR-project-orientation-living | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:530 |
+| FR-project-orientation-standing-spec | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:530 |
 | FR-project-orientation-standing-manifest | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
-| FR-project-orientation-session-read | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
+| FR-project-orientation-session-read | FR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:530 |
 | FR-project-orientation-kickoff-maintains | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-kickoff.md:179 |
 | FR-project-orientation-status-surfaces | FR | product/project-orientation.md | engineering/cli/project-orientation.md | pdeq-rules/commands/pdeq-status.md:36 |
 | FR-project-orientation-migration-seeds | FR | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/seed-project-md.sh:78 |
 | FR-project-orientation-migration-pares | FR | product/project-orientation.md | engineering/cli/project-orientation.md | migrations/0.12.0.md:8 |
 | NFR-project-orientation-no-new-folder | NFR | product/project-orientation.md | engineering/cli/project-orientation.md |  |
 | NFR-project-orientation-cheap-read | NFR | product/project-orientation.md | engineering/cli/project-orientation.md |  |
-| NFR-project-orientation-llm-maintained | NFR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:528 |
+| NFR-project-orientation-llm-maintained | NFR | product/project-orientation.md | engineering/cli/project-orientation.md | AGENTS.md:530 |
 | AC-project-orientation-fresh-install | AC | product/project-orientation.md | engineering/cli/project-orientation.md | scripts/init.sh:580 |
 | AC-project-orientation-migration-idempotent | AC | product/project-orientation.md | engineering/cli/project-orientation.md |  |
 | AC-project-orientation-manifest-resolves | AC | product/project-orientation.md | engineering/cli/project-orientation.md |  |

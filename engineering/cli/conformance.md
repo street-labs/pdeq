@@ -1,6 +1,6 @@
 ---
-product-hash: bfbc2af08f3f6e5fab1e9b5a59ede6f7b0998e18bb36656c0b0213d7c31998c9
-product-slugs: [AC-conformance-evidence-cited, AC-conformance-exhaustive, AC-conformance-incorrect-detected, AC-conformance-no-plumbing, AC-conformance-non-blocking, AC-conformance-platform-isolation, AC-conformance-report-shape, AC-conformance-temporal-flagged, AC-conformance-uncertainty-marked, AC-conformance-undocumented-detected, AC-conformance-unfulfilled-behavioral, FR-conformance-actionable, FR-conformance-advisory, FR-conformance-complements, FR-conformance-evidence, FR-conformance-four-quadrant, FR-conformance-fulfilled, FR-conformance-incorrect, FR-conformance-per-platform, FR-conformance-requirement-scope, FR-conformance-seeded, FR-conformance-single-verdict, FR-conformance-summary, FR-conformance-temporal-specs, FR-conformance-undocumented, FR-conformance-unfulfilled, NFR-conformance-precision, NFR-conformance-uncertainty, NFR-conformance-verifiable]
+product-hash: 71e36ff5093b532b2b4d8840956c324ea9e560c0a025bc47beae23ae6cb22711
+product-slugs: [AC-conformance-evidence-cited, AC-conformance-exhaustive, AC-conformance-incorrect-detected, AC-conformance-jev-aligned, AC-conformance-jev-drift, AC-conformance-jev-failsafe, AC-conformance-jev-no-default-calls, AC-conformance-no-plumbing, AC-conformance-non-blocking, AC-conformance-platform-isolation, AC-conformance-report-shape, AC-conformance-temporal-flagged, AC-conformance-uncertainty-marked, AC-conformance-undocumented-detected, AC-conformance-unfulfilled-behavioral, FR-conformance-actionable, FR-conformance-advisory, FR-conformance-complements, FR-conformance-evidence, FR-conformance-four-quadrant, FR-conformance-fulfilled, FR-conformance-incorrect, FR-conformance-jev-classify, FR-conformance-jev-escalate, FR-conformance-jev-opt-in, FR-conformance-jev-slice, FR-conformance-per-platform, FR-conformance-requirement-scope, FR-conformance-seeded, FR-conformance-single-verdict, FR-conformance-summary, FR-conformance-temporal-specs, FR-conformance-undocumented, FR-conformance-unfulfilled, NFR-conformance-jev-economy, NFR-conformance-jev-failsafe, NFR-conformance-precision, NFR-conformance-uncertainty, NFR-conformance-verifiable]
 ---
 # Platform Conformance Audit — CLI Technical Spec
 
@@ -9,7 +9,7 @@ product-slugs: [AC-conformance-evidence-cited, AC-conformance-exhaustive, AC-con
 
 ## What We're Building
 
-The conformance audit is realized as **agent prose, not a shell script** — the same construction pattern as `/pdeq-bootstrap` and the Lane Reviewer, and the deliberate opposite of `scripts/audit-traceability.sh`. There is nothing to grep here: the four verdicts (`FR-conformance-fulfilled`, `FR-conformance-unfulfilled`, `FR-conformance-incorrect`) and the reverse-traceability scan (`FR-conformance-undocumented`) are judgments about whether code *behaves* the way a requirement says, which no lexical scanner can produce. So the feature ships as two Markdown artifacts that instruct whichever agent runs pdeq to perform the review: (a) a new **Conformance Reviewer** role documented in the root `AGENTS.md` §"Quality Subagents" — the fourth advisory reviewer alongside the Reviewer, Consistency Checker, and Lane Reviewer — and (b) a new slash-command prompt file `pdeq-rules/commands/pdeq-conform.md` implementing `/pdeq-conform <platform> [feature]`, which encodes the step-by-step workflow the reviewer follows.
+The conformance audit is realized as **agent prose plus one narrow script** — the same prose construction as `/pdeq-bootstrap` and the Lane Reviewer for the semantic verdicts, with a single mechanical exception documented in §Automated alignment pre-screen. The verdicts are not greppable: (`FR-conformance-fulfilled`, `FR-conformance-unfulfilled`, `FR-conformance-incorrect`) and the reverse-traceability scan (`FR-conformance-undocumented`) are judgments about whether code *behaves* the way a requirement says, which no lexical scanner can produce. So the feature ships as two Markdown artifacts that instruct whichever agent runs pdeq to perform the review: (a) a new **Conformance Reviewer** role documented in the root `AGENTS.md` §"Quality Subagents" — the fourth advisory reviewer alongside the Reviewer, Consistency Checker, and Lane Reviewer — and (b) a new slash-command prompt file `pdeq-rules/commands/pdeq-conform.md` implementing `/pdeq-conform <platform> [feature]`, which encodes the step-by-step workflow the reviewer follows.
 
 The design is shaped by two decisions. First, **it is grounded, not greenfield** (`FR-conformance-seeded`): the review does not rediscover the requirement→code mapping from a blank slate. It starts from the mapping pdeq already maintains — the engineering **Code Map** tables and the `Code` column of `index.md`, both owned by the Requirement ↔ Code Mapping feature — reads the code those cite, then reasons *beyond* the mapping to reach verdicts and to notice behavior the mapping never points at. Second, **it is advisory and never wired into a hook** (`FR-conformance-advisory`): it is the semantic complement to the deterministic coverage gate, never a replacement for it (`FR-conformance-complements`). This follows the Lane Reviewer precedent exactly — a judgment-based, occasionally-uncertain check must never become a merge gate, so unlike `audit-traceability.sh` and `audit-structure.sh` there is no `hooks/pre-commit` step for it and no exit-code contract to honor.
 
@@ -66,6 +66,20 @@ The deterministic audit stays the authoritative gate for marker presence and slu
 ### Advisory, never gating (`FR-conformance-advisory`)
 
 `/pdeq-conform` is invoked on demand by a human or an agent; it produces a report and exits. It is **not** referenced by `hooks/pre-commit`, `hooks/commit-msg`, or any other gate — there is no hook step to add and none is added. Committing in a repository where the audit *would* report findings completes normally, because nothing in the commit path invokes the audit (`AC-conformance-non-blocking`). This is the identical posture the product spec draws from the Lane Reviewer: a judgment-based check with occasional false positives must never block a merge. Acting on a finding is always a human or agent decision.
+
+### The automated alignment pre-screen (`scripts/alignment-check.sh`)
+
+The full review is agent prose and costs a read of the platform's source. The pre-screen (`FR-conformance-jev-slice`, `FR-conformance-jev-classify`) is the one part of this feature realized as a **real script**, and it answers a deliberately narrower question mechanically-cheaply: for each requirement→code slice, does the code still match the requirement?
+
+A **slice** is the pair the traceability index already maintains: the requirement's defining line in its product spec (the `Defined In` column) and the code at the location the `Code` column cites. The script:
+
+1. Parses `index.md` rows for `FR-` slugs (example `*-ex-*` slugs skipped, mirroring the audit's example-prefix rule) that have non-empty `Code` entries. `NFR-`/`AC-` are deferred, mirroring the FR-only verdict scope resolved in Open-question (a).
+2. For each slice, extracts the requirement line and a bounded code window (8 lines above, 12 below the cited line) and pipes both into one `jev --json choice aligned|drift` call — the same invocation, JSON parse, and fail-safe shape as `jev_triage_allowed` in `scripts/audit-lanes.sh`, reused rather than reinvented.
+3. Reports `✓ aligned` only when the answer is aligned at confidence ≥ 0.85 (same hardcoded threshold as lane triage — `ponytail:` promote to config only if a project needs a different one), and `⚠ drift` only when the answer is drift at the same threshold — the thresholds are **symmetric**: the screen acts only on confident answers. Anything else — an aligned or drift answer below threshold, a missing binary, a service error — is `?` unassessed; nothing doubtful ever passes or escalates on a guess. Dogfooding on this repo's own index drove the symmetric rule: thin slices (markers citing `:1` of a prose file) produced many low-confidence drift answers that are not actionable findings.
+
+Exit status: `0` when every slice is aligned or unassessed, `1` when any drift escalation exists. This is a **report signal, not a gate**: no hook references the script (`FR-conformance-jev-opt-in`), and `TC-conformance-jev-no-default-calls` guards that.
+
+The relationship to `/pdeq-conform` is strictly a pre-filter: escalated slices name the feature whose full review to run, and the full review remains the authoritative semantic judgment (`FR-conformance-jev-escalate` direction preserved — the screen only ever narrows where a human looks, never widens what passes).
 
 ## Component Architecture
 
@@ -197,6 +211,7 @@ Ordered so the contract is defined before the workflow that references it.
 3. **Verify harness materialization.** Rationale: confirm `init.sh` picks up the new command with no installer edit — run it and check `.claude/commands/pdeq-conform.md` appears. No code change expected; this is a confirmation step, not a build step.
 4. **Update `glossary.md` and `index.md`** (coordinator-owned per the task split) so the new terms and slugs are registered.
 5. **QA writes the conformance test plan** (`qa/cli/conformance.md`) with fixtures exercising `AC-conformance-incorrect-detected`, `AC-conformance-undocumented-detected`, `AC-conformance-unfulfilled-behavioral`, `AC-conformance-temporal-flagged`, `AC-conformance-no-plumbing`, `AC-conformance-non-blocking`, and `AC-conformance-platform-isolation` against a seeded fixture repo.
+6. **Add the alignment pre-screen script** (`scripts/alignment-check.sh`, §Automated alignment pre-screen). Rationale: the per-slice drift screen is mechanical per slice (bounded input, fixed choice vocabulary), so it is a script and not prose; it reuses the lane triage's jev invocation and fail-safe parse. Realizes `FR-conformance-jev-slice`, `FR-conformance-jev-classify`, `FR-conformance-jev-escalate`, `FR-conformance-jev-opt-in`.
 
 Open technical questions (resolve in review or during authoring):
 
@@ -227,9 +242,15 @@ Every slug defined in `product/conformance.md`, mapped to the section that addre
 | FR-conformance-seeded | §Workflow (Phase 1) | TC-conformance-seeded |
 | FR-conformance-advisory | §Advisory never gating, §Error Handling | TC-conformance-non-blocking |
 | FR-conformance-complements | §Relationship to the deterministic audit | TC-conformance-complements-deterministic |
+| FR-conformance-jev-slice | §Automated alignment pre-screen | TC-conformance-jev-aligned |
+| FR-conformance-jev-classify | §Automated alignment pre-screen | TC-conformance-jev-aligned |
+| FR-conformance-jev-escalate | §Automated alignment pre-screen | TC-conformance-jev-drift |
+| FR-conformance-jev-opt-in | §Automated alignment pre-screen | TC-conformance-jev-no-default-calls |
 | NFR-conformance-verifiable | §Workflow (Phase 2), §Report Format | TC-conformance-evidence-cited |
 | NFR-conformance-precision | §Precision | TC-conformance-no-plumbing |
 | NFR-conformance-uncertainty | §Confidence marking | TC-conformance-uncertainty-marked |
+| NFR-conformance-jev-failsafe | §Automated alignment pre-screen (unassessed path) | TC-conformance-jev-failsafe |
+| NFR-conformance-jev-economy | §Automated alignment pre-screen (one call per slice) | TC-conformance-jev-aligned |
 | AC-conformance-report-shape | §Report Format | TC-conformance-report-shape |
 | AC-conformance-incorrect-detected | §Workflow (Phase 3) | TC-conformance-incorrect-detected |
 | AC-conformance-undocumented-detected | §Workflow (Phase 3), §Precision | TC-conformance-undocumented-detected |
@@ -264,5 +285,9 @@ Authoritative code locations for every FR defined in `product/conformance.md`. B
 | FR-conformance-seeded | pdeq-rules/commands/pdeq-conform.md | implemented |
 | FR-conformance-advisory | AGENTS.md | implemented |
 | FR-conformance-complements | AGENTS.md | implemented |
+| FR-conformance-jev-slice | scripts/alignment-check.sh | implemented |
+| FR-conformance-jev-classify | scripts/alignment-check.sh | implemented |
+| FR-conformance-jev-escalate | scripts/alignment-check.sh | implemented |
+| FR-conformance-jev-opt-in | scripts/alignment-check.sh | implemented |
 
 NFRs (verifiable findings, precision, uncertainty marking) are cross-cutting properties of the review contract rather than one-line realizations — not listed in the Code Map. They are verified via QA (see `../../qa/cli/conformance.md`).

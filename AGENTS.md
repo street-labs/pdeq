@@ -523,6 +523,8 @@ Plus a fourth, code-side category — **Undocumented behavior**: product-relevan
 
 It is **advisory — never a commit-time gate**, exactly like the Lane Reviewer. Nothing in the commit path invokes it; acting on a finding is always a human or agent decision. Invoke it via `/pdeq-conform` on demand.
 
+A cheap **automated alignment pre-screen** (`scripts/alignment-check.sh`) can run before or between full reviews: it pairs each requirement with the code its traceability index cites and classifies each slice as aligned or drift with one low-cost automated judgment call, escalating anything doubtful to this review. It is advisory like the review itself, invoked explicitly, and never clears a doubtful slice — see `product/conformance.md` §Automated Alignment Pre-Screen.
+
 ## Project Orientation
 
 <!-- Implements: FR-project-orientation-session-read, FR-project-orientation-standing-spec, FR-project-orientation-living, NFR-project-orientation-llm-maintained -->
