@@ -1,6 +1,6 @@
 ---
-product-hash: 388b024e9649caa2071e10d74599313a3e9988635ee891f5a6a7d251f60c704c
-product-slugs: [AC-conformance-evidence-cited, AC-conformance-exhaustive, AC-conformance-incorrect-detected, AC-conformance-no-plumbing, AC-conformance-non-blocking, AC-conformance-platform-isolation, AC-conformance-report-shape, AC-conformance-uncertainty-marked, AC-conformance-undocumented-detected, AC-conformance-unfulfilled-behavioral, FR-conformance-actionable, FR-conformance-advisory, FR-conformance-complements, FR-conformance-evidence, FR-conformance-four-quadrant, FR-conformance-fulfilled, FR-conformance-incorrect, FR-conformance-per-platform, FR-conformance-requirement-scope, FR-conformance-seeded, FR-conformance-single-verdict, FR-conformance-summary, FR-conformance-undocumented, FR-conformance-unfulfilled, NFR-conformance-precision, NFR-conformance-uncertainty, NFR-conformance-verifiable]
+product-hash: 71e36ff5093b532b2b4d8840956c324ea9e560c0a025bc47beae23ae6cb22711
+product-slugs: [AC-conformance-evidence-cited, AC-conformance-exhaustive, AC-conformance-incorrect-detected, AC-conformance-jev-aligned, AC-conformance-jev-drift, AC-conformance-jev-failsafe, AC-conformance-jev-no-default-calls, AC-conformance-no-plumbing, AC-conformance-non-blocking, AC-conformance-platform-isolation, AC-conformance-report-shape, AC-conformance-temporal-flagged, AC-conformance-uncertainty-marked, AC-conformance-undocumented-detected, AC-conformance-unfulfilled-behavioral, FR-conformance-actionable, FR-conformance-advisory, FR-conformance-complements, FR-conformance-evidence, FR-conformance-four-quadrant, FR-conformance-fulfilled, FR-conformance-incorrect, FR-conformance-jev-classify, FR-conformance-jev-escalate, FR-conformance-jev-opt-in, FR-conformance-jev-slice, FR-conformance-per-platform, FR-conformance-requirement-scope, FR-conformance-seeded, FR-conformance-single-verdict, FR-conformance-summary, FR-conformance-temporal-specs, FR-conformance-undocumented, FR-conformance-unfulfilled, NFR-conformance-jev-economy, NFR-conformance-jev-failsafe, NFR-conformance-precision, NFR-conformance-uncertainty, NFR-conformance-verifiable]
 ---
 # Platform Conformance Audit — CLI Test Plan
 
@@ -78,9 +78,13 @@ Additional fixture variants (git states of the same repo), used by edge cases:
 | `AC-conformance-platform-isolation` | `TC-conformance-platform-isolation` | Manual | Not started |
 | `AC-conformance-no-plumbing` | `TC-conformance-no-plumbing` | Manual | Not started |
 | `AC-conformance-uncertainty-marked` | `TC-conformance-uncertainty-marked` | Manual | Not started |
+| `AC-conformance-jev-aligned` | `TC-conformance-jev-aligned` | Auto | Not started |
+| `AC-conformance-jev-drift` | `TC-conformance-jev-drift` | Auto | Not started |
+| `AC-conformance-jev-failsafe` | `TC-conformance-jev-failsafe` | Auto | Not started |
+| `AC-conformance-jev-no-default-calls` | `TC-conformance-jev-no-default-calls` | Auto | Not started |
 
 Supporting cases (no direct AC — cover FR/NFR behavior):
-`TC-conformance-fulfilled-genuine` (`FR-conformance-fulfilled`, `FR-conformance-four-quadrant`), `TC-conformance-summary` (`FR-conformance-summary`), `TC-conformance-actionable` (`FR-conformance-actionable`), `TC-conformance-seeded` (`FR-conformance-seeded`), `TC-conformance-scope-single-feature` (`FR-conformance-requirement-scope`), `TC-conformance-complements-deterministic` (`FR-conformance-complements`, the complementarity proof).
+`TC-conformance-fulfilled-genuine` (`FR-conformance-fulfilled`, `FR-conformance-four-quadrant`), `TC-conformance-summary` (`FR-conformance-summary`), `TC-conformance-actionable` (`FR-conformance-actionable`), `TC-conformance-seeded` (`FR-conformance-seeded`), `TC-conformance-scope-single-feature` (`FR-conformance-requirement-scope`), `TC-conformance-complements-deterministic` (`FR-conformance-complements`, the complementarity proof), `TC-conformance-jev-threshold` (`NFR-conformance-jev-economy` boundary), `TC-conformance-jev-filter` (`FR-conformance-jev-slice` scoping).
 
 ---
 
@@ -253,6 +257,34 @@ Probes that the audit is correctly scoped and grounded.
 - **Expected Result**: The deterministic audit **passes** the discount guard (valid marker, real slug) and reports nothing wrong; the conformance audit reports it as **incorrectly fulfilled**. This is concrete evidence the two are complementary, not redundant — the deterministic audit remains the fast commit-time gate for marker/slug validity, conformance adds the semantic layer.
 
 ---
+
+### Alignment Pre-Screen (Automated)
+
+The pre-screen is a real script, so its cases run fully automated: `./engineering/apps/cli/tests/conformance/test-jev-alignment.sh` builds each fixture (product spec, code file, index) in a mktemp git repo and stubs the judgment service on PATH. No real network call ever happens.
+
+#### Aligned slice passes quietly `TC-conformance-jev-aligned`
+- **Type**: Automated
+- **Covers**: `AC-conformance-jev-aligned`, `FR-conformance-jev-slice`, `FR-conformance-jev-classify`, `NFR-conformance-jev-economy`
+- **Steps**: run the test script; inspect `test_aligned_passes`.
+- **Expected Result**: With the service answering aligned at high confidence, every slice is reported ✓ aligned with its evidence location, the summary shows zero escalations, exit status is 0, and the service is called exactly once per slice.
+
+#### Drift escalates despite a valid marker `TC-conformance-jev-drift`
+- **Type**: Automated
+- **Covers**: `AC-conformance-jev-drift`, `FR-conformance-jev-escalate`
+- **Steps**: run the test script; inspect `test_drift_escalates`.
+- **Expected Result**: With the service answering drift at high confidence, the slices whose code contradicts their requirements are flagged ⚠ with the escalation path named, nothing is reported ✓ aligned, and the run signals failure via exit status (a report signal, not a gate). A low-confidence drift answer is not an escalation — it is unassessed (see `TC-conformance-jev-failsafe`).
+
+#### Service failure screens nothing through `TC-conformance-jev-failsafe`
+- **Type**: Automated
+- **Covers**: `AC-conformance-jev-failsafe`, `NFR-conformance-jev-failsafe`
+- **Steps**: run the test script; inspect `test_service_error_unassessed`, `test_jev_missing_unassessed`, `test_low_confidence_unassessed`, `test_threshold_boundary`.
+- **Expected Result**: An erroring or missing service, a low-confidence answer in either direction, and any answer below the 0.85 threshold all leave slices unassessed — no slice is reported ✓ aligned or ⚠ escalated and no traceback leaks.
+
+#### No default-path calls `TC-conformance-jev-no-default-calls`
+- **Type**: Automated
+- **Covers**: `AC-conformance-jev-no-default-calls`, `FR-conformance-jev-opt-in`
+- **Steps**: run the test script; inspect `test_no_hook_reference` and `test_feature_filter`.
+- **Expected Result**: No hook in the repository references the screen, and a feature argument outside the index screens nothing and calls the service zero times — the screen runs only when explicitly invoked.
 
 ## Edge Cases & Error Scenarios
 
