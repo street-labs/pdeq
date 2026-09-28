@@ -6,6 +6,25 @@ All notable changes to pdeq are documented here. The format is based on
 (lineage-breaking) release ships a matching migration under `migrations/<version>.md`;
 run `/pdeq-migrate` (or `/pdeq-update`) to advance a project.
 
+## [0.15.0] — 2026-09-28
+
+### Added
+- **Jev-assisted lane-audit triage.** Opt-in automated classification of lexical-backstop findings: with `laneAudit.jevTriage: true` in `pdeq.json` and the `jev` judgment CLI installed, each flagged line is additionally classified as a violation or an allowed mention. High-confidence allowed answers are demoted to labeled notes; triage can only demote, never hide. Off by default — a project that does nothing keeps the exact pre-0.15.0 deterministic, no-network audit behavior.
+- **Conformance alignment pre-screen** (`scripts/alignment-check.sh`) — cheap per-slice drift check pairing each indexed requirement with the code its traceability mapping cites, classified aligned/drift by one `jev --json choice` call per slice. Acts only on confident answers; a doubtful or unavailable service leaves the slice unassessed. Escalated drift names the feature whose full `/pdeq-conform` review to run. Invocation is the opt-in — no hook or default audit ever calls the judgment service.
+- Advisory migration `migrations/0.15.0.md` (`breaking: false`) — mechanically a no-op; the features are opt-in configuration or opt-in invocation.
+
+## [0.14.0] — 2026-09-28
+
+### Added
+- **Lane guides.** A config-driven, harness-agnostic way to attach a per-lane guide file (skills, architecture, guidelines) that the lane agent reads before authoring specs. Declared in `pdeq.json` under `laneGuides` (lane id → path relative to `specsRoot`); the installer validates paths and warns on misses; `/pdeq-status` reports configured guides and their resolve status. Distinct from standing specs (project-wide, surfaced at session start) — lane guides are lane-scoped and surfaced at authoring time; a single file may be both.
+- Advisory migration `migrations/0.14.0.md` (`breaking: false`) — scans a consumer's existing lane-specific content (appended prose in lane agent override files, standalone non-spec lane docs, lane-scoped standing specs) and consolidates it into declarative `<lane>/GUIDE.md` files; a project with no lane-specific content sees a no-op.
+
+## [0.13.0] — 2026-09-28
+
+### Added
+- **Implement command.** `/pdeq-implement` plus `scripts/implement-context.sh`: turns reviewed specs into implementing code in one step. Scope is derived from spec-tree changes relative to a base branch; the traceability index says where the code is; the context bundle is produced by one script invocation and is ephemeral (never committed). After implementation and marker annotation, the traceability audit is the done-check.
+- Advisory migration `migrations/0.13.0.md` (`breaking: false`) — the script, command, and 22-case test suite install on submodule bump; the only semantic step wires the implement suite into consumer CI alongside the existing pdeq suites.
+
 ## [0.12.0] — 2026-07-19
 
 ### Added
@@ -60,6 +79,9 @@ run `/pdeq-migrate` (or `/pdeq-update`) to advance a project.
 ### Added
 - `pdeqVersion` field in `pdeq.json` and the migrations feature — the on-ramp from pre-migrations projects.
 
+[0.15.0]: https://github.com/street-labs/pdeq/compare/ab6d056...v0.15.0
+[0.14.0]: https://github.com/street-labs/pdeq/compare/v0.12.0...ab6d056
+[0.13.0]: https://github.com/street-labs/pdeq/compare/v0.12.0...0d27295
 [0.12.0]: https://github.com/street-labs/pdeq/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/street-labs/pdeq/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/street-labs/pdeq/compare/v0.9.0...v0.10.0
