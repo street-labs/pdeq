@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+#
+# pdeq pre-push hook.
+#
+# Last local gate before CI. Why it exists: `git rebase --continue` does NOT run
+# pre-commit hooks (git only fires commit hooks for `git commit` proper), so a
+# rebased branch can carry spec-audit drift — e.g. a stale generated index.md —
+# straight past the local gate and fail in CI. The pre-push hook fires on every
+# `git push`, including pushes of rebased history.
+#
+# Today this re-runs the traceability audit (which regenerates the generated
+# index.md) and BLOCKS the push when the regenerated file drifts from what is
+# committed. Escape hatch matches the other pdeq hooks: PDEQ_SKIP_HOOKS=1.
+#
+# Installed by scripts/init.sh via `git config core.hooksPath <path>`.
+
+set -e
+
+if [ -n "${PDEQ_SKIP_HOOKS:-}" ]; then
+  exit 0
+fi
+
+REPO=$(git rev-parse --show-toplevel)
+
+if [ ! -x "$REPO/scripts/audit-traceability.sh" ]; then
+  exit 0
+fi
+
+"$REPO/scripts/audit-traceability.sh"
+
+INDEX_FILE="${PDEQ_INDEX_FILE:-index.md}"
+if [ -f "$REPO/$INDEX_FILE" ] && ! git -C "$REPO" diff --quiet -- "$INDEX_FILE"; then
+  echo ""
+  echo "✗ $INDEX_FILE drifted from the committed version after regeneration."
+  echo "  A rebase likely shifted line numbers past the pre-commit hook."
+  echo "  Fix: git add $INDEX_FILE && git commit --amend --no-edit (or a follow-up"
+  echo "  'chore: regenerate index.md' commit), then push again."
+  exit 1
+fi
+
+exit 0
