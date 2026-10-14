@@ -50,6 +50,17 @@ if [ -x "$REPO/scripts/audit-structure.sh" ]; then
   "$REPO/scripts/audit-structure.sh"
 fi
 
+# Coverage-matrix integrity — BLOCKS when a product-spec slug that has
+# implementing code is missing from (or non-terminal in) the QA coverage
+# matrix. This is the commit-time gate for the CI coverage job: a new FR/AC
+# added to a product spec without its qa/ matrix row is caught here, before
+# push (TestFlight fix 2026-10-05 landed a spec slug whose matrix row was
+# only caught by CI after the PR opened). Fast (markdown-only) scan.
+# Implements: FR-designsystem-no-bypass
+if [ -x "$REPO/scripts/audit-coverage.py" ]; then
+  python3 "$REPO/scripts/audit-coverage.py"
+fi
+
 if [ -x "$REPO/scripts/merge-decisions.sh" ]; then
   "$REPO/scripts/merge-decisions.sh"
 fi
